@@ -79,6 +79,7 @@
         android:layout_height="0dp"
         android:background="@drawable/ic_group_5"
         app:backgroundTint="@null"
+        android:onClick="camera"
         app:layout_constraintBottom_toTopOf="@+id/guideline27"
         app:layout_constraintEnd_toStartOf="@+id/guideline29"
         app:layout_constraintStart_toStartOf="@+id/guideline30"
@@ -120,7 +121,7 @@
         app:layout_constraintGuide_percent="0.04" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/buttonHistory"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/ic_codicon_history"
@@ -137,7 +138,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/ic_group"
-        android:onClick="finish"
+        android:onClick="back"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toTopOf="@+id/guideline25"
         app:layout_constraintDimensionRatio="1:1"
@@ -147,7 +148,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/buttonSetting"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/ic_cil_settings"
@@ -173,12 +174,12 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.example.qrreader.MainFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline26"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view4" />
+        app:layout_constraintTop_toBottomOf="@+id/view4"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

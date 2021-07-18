@@ -2,17 +2,16 @@ package com.example.qrreader
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
+import android.view.View
+import android.widget.EditText
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
 
 class Authorization : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
+
     private lateinit var binding: ActivityAuthorizationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,8 +23,13 @@ class Authorization : AppCompatActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.enterButton.setOnClickListener {
-           val intent= Intent(this,MainActivity::class.java)
-           startActivity(intent)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
+    }
+
+    fun switchPasswordVisibility(v: View) {
+        binding.editTextTextPersonName3.transformationMethod =
+            if (binding.editTextTextPersonName3.transformationMethod == null) PasswordTransformationMethod() else null
     }
 }

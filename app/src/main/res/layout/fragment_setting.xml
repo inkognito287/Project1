@@ -7,6 +7,9 @@
         <variable
             name="settingItems"
             type="com.example.qrreader.SettingItems" />
+        <variable
+            name="activity"
+            type="com.example.qrreader.MainActivity" />
 
 
     </data>
@@ -29,6 +32,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline37"
                 app:layout_constraintTop_toTopOf="parent"
                 app:text="@{settingItems.securePolicy.text}"
+                android:onClick="@{(view)->activity.secure(view)}"
                 tools:layout_editor_absoluteX="1dp">
 
             </include>
@@ -42,6 +46,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline38"
                 app:layout_constraintTop_toBottomOf="@+id/include"
                 app:text="@{settingItems.data.text}"
+                android:onClick="@{(view)->activity.data(view)}"
                 tools:layout_editor_absoluteX="1dp">
 
             </include>
@@ -54,20 +59,10 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline39"
                 app:layout_constraintTop_toBottomOf="@+id/include2"
                 app:text="@{settingItems.exit.text}"
+                android:onClick="@{(view)->activity.finish(view)}"
                 tools:layout_editor_absoluteX="1dp">
 
             </include>
-
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="409dp"
-                android:layout_height="729dp"
-                android:orientation="vertical"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="1dp">
-
-            </LinearLayout>
-
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline37"
                 android:layout_width="wrap_content"

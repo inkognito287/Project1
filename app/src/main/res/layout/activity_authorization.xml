@@ -29,7 +29,7 @@
 
     <ImageView
         android:id="@+id/logoLineImageView"
-        android:layout_width="412dp"
+        android:layout_width="0dp"
         android:layout_height="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -77,13 +77,16 @@
         app:layout_constraintStart_toStartOf="@+id/guideline15"
         app:layout_constraintTop_toTopOf="@+id/guideline13" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/enterButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/authorization_button_enter"
         android:text="Войти"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
         app:backgroundTint="@null"
+        app:backgroundTintMode="add"
         app:layout_constraintBottom_toTopOf="@+id/guideline22"
         app:layout_constraintEnd_toStartOf="@+id/guideline24"
         app:layout_constraintStart_toStartOf="@+id/guideline23"
@@ -110,7 +113,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="text|textPassword"
         android:text="Пароль"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
@@ -128,7 +131,8 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline17"
         app:layout_constraintStart_toStartOf="@+id/guideline18"
         app:layout_constraintTop_toTopOf="@+id/guideline13"
-        app:srcCompat="@drawable/authorization_eye" />
+        app:srcCompat="@drawable/authorization_eye"
+        android:onClick="switchPasswordVisibility"/>
 
     <ImageView
         android:id="@+id/imageView6"
