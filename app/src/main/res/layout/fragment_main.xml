@@ -6,7 +6,7 @@
     <data>
         <variable
             name="sizeHeight"
-            type="Float" />
+            type="com.google.zxing.Dimension" />
         <variable
             name="sizeWidth"
             type="Float" />
@@ -24,15 +24,14 @@
             <com.journeyapps.barcodescanner.DecoratedBarcodeView
                 android:id="@+id/scanner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:zxing_framing_rect_width="350dp"
-                app:zxing_framing_rect_height="350dp"
-                app:zxing_preview_scaling_strategy="centerCrop"
-                app:zxing_use_texture_view="false">
+                app:zxing_framing_rect_width="900dp"
+                app:zxing_framing_rect_height="900dp"
+                app:zxing_use_texture_view="true">
 
             </com.journeyapps.barcodescanner.DecoratedBarcodeView>
 
@@ -73,7 +72,7 @@
                 android:background="@drawable/ic_group_5"
                 android:onClick="camera"
                 app:backgroundTint="@null"
-                app:layout_constraintBottom_toTopOf="@+id/guideline60"
+                app:layout_constraintBottom_toTopOf="@+id/guideline59"
                 app:layout_constraintEnd_toStartOf="@+id/guideline61"
                 app:layout_constraintStart_toStartOf="@+id/guideline62"
                 app:layout_constraintTop_toTopOf="@+id/guideline58" />

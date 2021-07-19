@@ -52,7 +52,7 @@ class MainFragment : Fragment() {
     private fun scan() {
 
         IntentIntegrator(requireActivity()).setOrientationLocked(false)
-            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true).setBarcodeImageEnabled(true)
+            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true).setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false).setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
             .initiateScan()
 
     }

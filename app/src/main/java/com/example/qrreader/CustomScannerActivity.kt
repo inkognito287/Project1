@@ -19,16 +19,14 @@ class CustomScannerActivity : Activity(), TorchListener {
 
     private var capture: CaptureManager? = null
     private lateinit var barcodeScannerView: DecoratedBarcodeView
-    lateinit var binding:FragmentMainBinding
+
     lateinit var viewfinderView: ViewfinderView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = FragmentMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.fragment_main)
         barcodeScannerView = findViewById(R.id.scanner)
         barcodeScannerView.setTorchListener(this)
         viewfinderView = findViewById(R.id.zxing_viewfinder_view)
-
 
         capture = CaptureManager(this, barcodeScannerView)
         capture!!.initializeFromIntent(intent, savedInstanceState)
@@ -99,5 +97,8 @@ class CustomScannerActivity : Activity(), TorchListener {
 
     override fun onTorchOff() {
         TODO("Not yet implemented")
+    }
+    fun back(v: View){
+        finish()
     }
 }

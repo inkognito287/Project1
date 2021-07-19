@@ -2,31 +2,39 @@ package com.example.qrreader
 
 
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.net.Uri.parse
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-
+import android.os.Environment
 import android.view.View
 import android.widget.ImageView
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.zxing.integration.android.IntentIntegrator
-import java.net.URI
-import java.util.Date.parse
-import java.util.logging.Level.parse
+import java.io.File
+import java.io.FileOutputStream
+
+
+const val APP_PREFERENCES = "mysettings"
+const val APP_PREFERENCES_Image = "Image" // имя кота
+const val APP_PREFERENCES_Code = "Code" // возраст кота
 
 
 class MainActivity : AppCompatActivity() {
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        fragmentTransactionReplace(MainFragment())
+        fragmentTransactionReplace(HistoryFragment())
+        sharedPreferences=getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE)
     }
 
     fun history(v: View) {
@@ -34,7 +42,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
-        fragmentTransactionReplace(MainFragment())
+        IntentIntegrator(this).setOrientationLocked(false)
+            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true)
+            .setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false)
+            .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+            .initiateScan()
     }
 
     fun setting(v: View) {
@@ -72,38 +84,40 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         else super.onBackPressed()
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
-            if (result.contents!=null){
-                val builder= AlertDialog.Builder(this)
+            if (result.contents != null) {
+                val builder = AlertDialog.Builder(this)
                 builder.setMessage(result.contents)
-               var path =result.barcodeImagePath
-                val imageView=ImageView(this)
+                val path = result.barcodeImagePath
+                val imageView = ImageView(this)
                 imageView.setImageURI(Uri.parse(path))
-                 //setImageResource(resources.getIdentifier(path,"drawable",packageName))
                 builder.setTitle("Scanning Result")
                 builder.setView(imageView)
-                //   builder.setPositiveButton("Scan Again")
-                val dialog=builder.create()
+                val dialog = builder.create()
                 dialog.show()
+                val editor = sharedPreferences.edit()
+                editor.putString(APP_PREFERENCES_Code, result.contents)
+                editor.putString(APP_PREFERENCES_Image, path)
+                editor.apply()
+
             }
 
         }
     }
-    private fun takePicture() {
-
-
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(takePictureIntent, 1)
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-        }
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun saveAsBitmap(imageView: ImageView, filename: String) {
+        val bitmap = imageView.drawable as BitmapDrawable
+        var bit=bitmap.bitmap
+        var outputStream=null
+        var File=Environment.getStorageDirectory()
 
     }
-
 }
+
+
 
 
