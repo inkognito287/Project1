@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
 import java.io.FileOutputStream
+import java.util.*
 
 
 const val APP_PREFERENCES = "mysettings"
@@ -100,22 +101,15 @@ class MainActivity : AppCompatActivity() {
                 val dialog = builder.create()
                 dialog.show()
                 val editor = sharedPreferences.edit()
-                editor.putString(APP_PREFERENCES_Code, result.contents)
-                editor.putString(APP_PREFERENCES_Image, path)
+                val date = Date()
+                editor.putString(date.toString(), path)
                 editor.apply()
 
             }
 
         }
     }
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun saveAsBitmap(imageView: ImageView, filename: String) {
-        val bitmap = imageView.drawable as BitmapDrawable
-        var bit=bitmap.bitmap
-        var outputStream=null
-        var File=Environment.getStorageDirectory()
 
-    }
 }
 
 

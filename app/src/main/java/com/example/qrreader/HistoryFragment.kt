@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -31,12 +30,12 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       
+
         val recyclerView: RecyclerView? = activity?.findViewById(R.id.recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(requireContext())
           Log.d("MyLog", sharedPreferences.all.toString())
         recyclerView?.adapter = CustomRecyclerAdapter(fillList(),fillList(),
-            sharedPreferences.getString("Image","")!!
+            sharedPreferences.all
 
 
         )
