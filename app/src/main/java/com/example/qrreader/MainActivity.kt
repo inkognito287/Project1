@@ -138,11 +138,11 @@ class MainActivity : AppCompatActivity() {
         try {
             val reader=BufferedReader(InputStreamReader(openFileInput("single.json")))
             //findViewById<ImageView>(R.id.imageView3).setImageBitmap(getBitmapFromString(reader.readText()))
-
+            text=reader.readLine()
             Log.d("MyLog","ReadFile="+reader.readText())
             reader.close()
-            text=reader.readLine()
-            return reader.readText()
+
+            return text
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: " + e.toString())
             return "ERROR"
