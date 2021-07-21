@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -26,23 +28,20 @@ import com.google.gson.stream.JsonReader
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-const val APP_PREFERENCES = "mysettings"
-const val APP_PREFERENCES_Image = "Image" // имя кота
-const val APP_PREFERENCES_Code = "Code" // возраст кота
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var sharedPreferences: SharedPreferences
+
     lateinit var text:String
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fragmentTransactionReplace(HistoryFragment())
-        sharedPreferences=getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE)
-        text=readToFile()
+
     }
 
     fun history(v: View) {
@@ -55,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             .setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false)
             .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
             .initiateScan()
+
     }
 
     fun setting(v: View) {
@@ -103,29 +103,30 @@ class MainActivity : AppCompatActivity() {
                 builder.setMessage(result.contents)
                 val path = result.barcodeImagePath
                 val imageView = ImageView(this)
+
                 imageView.setImageURI(Uri.parse(path))
 
                 builder.setTitle("Scanning Result")
                 builder.setView(imageView)
                 val dialog = builder.create()
                 dialog.show()
-                val editor = sharedPreferences.edit()
+
                 val date = Date()
-                editor.putString(date.toString(), path)
-                editor.apply()
+
 //getStringFromBitmap(imageView.drawable.toBitmap())!!
-                writeToFile(createJsonObject("",result.contents,"11"))
+                writeToFile(createJsonObject(getStringFromBitmap(imageView.drawable.toBitmap())!!,result.contents, date.toString()))
                 readToFile()
                 deserealization()
 
+               // findViewById<RecyclerView>(R.id.recycler_view).adapter=CustomRecyclerAdapter
             }
 
         }
     }
-    private fun writeToFile(jsonData: JsonObject) {
+    private fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(openFileOutput("single.json", MODE_PRIVATE))
-            outputStreamWriter.write(jsonData.toString())
+            outputStreamWriter.write(jsonData)
 
             outputStreamWriter.close()
             println("good")
@@ -137,11 +138,8 @@ class MainActivity : AppCompatActivity() {
     private fun readToFile():String {
         try {
             val reader=BufferedReader(InputStreamReader(openFileInput("single.json")))
-            //findViewById<ImageView>(R.id.imageView3).setImageBitmap(getBitmapFromString(reader.readText()))
-            text=reader.readLine()
-            Log.d("MyLog","ReadFile="+reader.readText())
+            text=reader.readText()
             reader.close()
-
             return text
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: " + e.toString())
@@ -169,21 +167,54 @@ class MainActivity : AppCompatActivity() {
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 
-    fun createJsonObject(photo: String, code: String, date: String): JsonObject {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createJsonObject(photo: String, code: String, date: String): String? {
+        var jsonNowString = readToFile()
+        Log.d("MyLog","ReadFile="+text)
+
+        val gson = Gson()
+        val rootObject = JsonObject()
+        val arrayObject = JsonArray()
+        try {
+            val deserializer = gson.fromJson(jsonNowString, Response::class.java)
+          //  Log.d("MyLog", "deserializer =" + deserializer.documents!![0].toString())
 
 
+            for (i in 0..deserializer.documents!!.size - 1) {
 
+                val childObject = JsonObject()
 
-        val rootObject = JsonObject() // создаем главный объект
-        val childObject = JsonObject()// создаем объект Place
-        childObject.addProperty("photo", photo) // записываем текст в поле "message"
+                childObject.addProperty("code", deserializer.documents.get(i)?.code)
+                childObject.addProperty("date", deserializer.documents.get(i)?.date)
+                childObject.addProperty(
+                    "photo",
+                    deserializer.documents.get(i)?.photo
+                ) // записываем текст в поле "message"
+                arrayObject.add(childObject)
+
+            }
+        }catch (e:Exception){}
+         // создаем главный объект
+
+        val childObject = JsonObject()
+        // записываем текст в поле "message"
         childObject.addProperty("code", code)
-        rootObject.add("kek",childObject)
+        childObject.addProperty("date", date)
+        childObject.addProperty("photo", photo)
+        arrayObject.add(childObject)
+
+        rootObject.add("documents",arrayObject)
+//        //rootObject.add("kek",childObject)
+//        arrayObject.add(childObject)
+//        rootObject.add("documents",arrayObject)
+
+        val json = gson.toJson(rootObject)
+
        // val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
         //очерний объект в поле "place"
-        val gson = Gson()
 
-        return rootObject  // генерация json строки
+
+        return json  // генерация json строки
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -191,10 +222,10 @@ class MainActivity : AppCompatActivity() {
     {
         val gson=Gson()
 
-        val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
-        Log.d("MyLog","data ="+data)
+        //val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
+            // Log.d("MyLog","data ="+data)
         val kek = gson.fromJson(readToFile(),Response::class.java)
-        Log.d("MyLog", kek.kek?.code.toString())
+
 
     }
 }
