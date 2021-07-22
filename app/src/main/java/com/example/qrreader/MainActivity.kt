@@ -1,10 +1,7 @@
 package com.example.qrreader
 
 
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -13,34 +10,32 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.stream.JsonReader
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.*
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-
-
 
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var text:String
+    lateinit var text: String
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        fragmentTransactionReplace(HistoryFragment())
+       fragmentTransactionReplace(HistoryFragment())
+
 
     }
 
@@ -80,6 +75,10 @@ class MainActivity : AppCompatActivity() {
         fragmentTransactionReplace(data)
     }
 
+    fun historBack(v:View){
+        finish()
+    }
+
     fun fragmentTransactionReplace(fragment: Fragment) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainerView, fragment)
@@ -89,143 +88,40 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount != 0)
-            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            supportFragmentManager.popBackStack()
         else super.onBackPressed()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                val builder = AlertDialog.Builder(this)
-                builder.setMessage(result.contents)
-                val path = result.barcodeImagePath
-                val imageView = ImageView(this)
 
-                imageView.setImageURI(Uri.parse(path))
-
-                builder.setTitle("Scanning Result")
-                builder.setView(imageView)
-                val dialog = builder.create()
-                dialog.show()
-
-                val date = Date()
-
-//getStringFromBitmap(imageView.drawable.toBitmap())!!
-                writeToFile(createJsonObject(getStringFromBitmap(imageView.drawable.toBitmap())!!,result.contents, date.toString()))
-                readToFile()
-                deserealization()
-
-               // findViewById<RecyclerView>(R.id.recycler_view).adapter=CustomRecyclerAdapter
-            }
-
-        }
-    }
-    private fun writeToFile(jsonData: String?) {
-        try {
-            val outputStreamWriter = OutputStreamWriter(openFileOutput("single.json", MODE_PRIVATE))
-            outputStreamWriter.write(jsonData)
-
-            outputStreamWriter.close()
-            println("good")
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
-        }
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun readToFile():String {
-        try {
-            val reader=BufferedReader(InputStreamReader(openFileInput("single.json")))
-            text=reader.readText()
-            reader.close()
-            return text
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
-            return "ERROR"
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
-        val COMPRESSION_QUALITY = 100
-        val encodedImage: String
-        val byteArrayBitmapStream = ByteArrayOutputStream()
-        bitmapPicture.compress(
-            Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
-            byteArrayBitmapStream
-        )
-        val b: ByteArray = byteArrayBitmapStream.toByteArray()
-        encodedImage = Base64.getEncoder().encodeToString(b)
-        return encodedImage
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getBitmapFromString(stringPicture: String): Bitmap? {
-        val decodedString: ByteArray = Base64.getDecoder().decode(stringPicture)
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createJsonObject(photo: String, code: String, date: String): String? {
-        var jsonNowString = readToFile()
-        Log.d("MyLog","ReadFile="+text)
-
-        val gson = Gson()
-        val rootObject = JsonObject()
-        val arrayObject = JsonArray()
-        try {
-            val deserializer = gson.fromJson(jsonNowString, Response::class.java)
-          //  Log.d("MyLog", "deserializer =" + deserializer.documents!![0].toString())
-
-
-            for (i in 0..deserializer.documents!!.size - 1) {
-
-                val childObject = JsonObject()
-
-                childObject.addProperty("code", deserializer.documents.get(i)?.code)
-                childObject.addProperty("date", deserializer.documents.get(i)?.date)
-                childObject.addProperty(
-                    "photo",
-                    deserializer.documents.get(i)?.photo
-                ) // записываем текст в поле "message"
-                arrayObject.add(childObject)
+                val bundle = Bundle()
+                bundle.putString("path", result.barcodeImagePath)
+                bundle.putString("code", result.contents)
+                val imageFragment = ImageFragment()
+                imageFragment.setArguments(bundle)
+                fragmentTransactionReplace(imageFragment)
 
             }
-        }catch (e:Exception){}
-         // создаем главный объект
 
-        val childObject = JsonObject()
-        // записываем текст в поле "message"
-        childObject.addProperty("code", code)
-        childObject.addProperty("date", date)
-        childObject.addProperty("photo", photo)
-        arrayObject.add(childObject)
-
-        rootObject.add("documents",arrayObject)
-//        //rootObject.add("kek",childObject)
-//        arrayObject.add(childObject)
-//        rootObject.add("documents",arrayObject)
-
-        val json = gson.toJson(rootObject)
-
-       // val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
-        //очерний объект в поле "place"
-
-
-        return json  // генерация json строки
+        }
+        if (resultCode==1){
+            if (data?.getIntExtra("fragment",1)==1)
+            fragmentTransactionReplace(HistoryFragment())
+            else if (data?.getIntExtra("fragment",1)==2)
+                fragmentTransactionReplace(SettingFragment())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun deserealization()
-    {
-        val gson=Gson()
-
-        //val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
-            // Log.d("MyLog","data ="+data)
-        val kek = gson.fromJson(readToFile(),Response::class.java)
-
+    override fun onDestroy() {
+        applicationContext.cacheDir.deleteRecursively()
+        super.onDestroy()
 
     }
 }

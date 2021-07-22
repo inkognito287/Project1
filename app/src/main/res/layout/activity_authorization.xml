@@ -123,7 +123,7 @@
         app:layout_constraintVertical_bias="0.433" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/imageViewEye"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
@@ -135,7 +135,7 @@
         android:onClick="switchPasswordVisibility"/>
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/imageViewPerson"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline19"

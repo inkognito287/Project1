@@ -29,7 +29,14 @@ class Authorization : AppCompatActivity() {
     }
 
     fun switchPasswordVisibility(v: View) {
-        binding.editTextTextPersonName3.transformationMethod =
-            if (binding.editTextTextPersonName3.transformationMethod == null) PasswordTransformationMethod() else null
+
+        if (binding.editTextTextPersonName3.transformationMethod == null) {
+            binding.imageViewEye.setImageResource(R.drawable.authorization_eye)
+            binding.editTextTextPersonName3.transformationMethod = PasswordTransformationMethod()
+
+        } else {
+            binding.imageViewEye.setImageResource(R.drawable.authorization_close_eye)
+            binding.editTextTextPersonName3.transformationMethod = null
+        }
     }
 }

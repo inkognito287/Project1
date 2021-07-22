@@ -1,11 +1,13 @@
 package com.example.qrreader
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.example.qrreader.databinding.FragmentMainBinding
 import com.journeyapps.barcodescanner.CameraPreview
 import com.journeyapps.barcodescanner.CaptureManager
@@ -100,5 +102,24 @@ class CustomScannerActivity : Activity(), TorchListener {
     }
     fun back(v: View){
         finish()
+    }
+    fun startdecode(v:View)
+    {
+
+    }
+    fun settingScanner(v: View){
+
+        val intent= Intent()
+        intent.putExtra("fragment",2)
+        setResult(1,intent)
+        finish()
+
+    }
+    fun historyScanner(v: View){
+        val intent= Intent()
+        intent.putExtra("fragment",1)
+        setResult(1,intent)
+        finish()
+
     }
 }

@@ -56,4 +56,7 @@ class SecureFragment : Fragment() {
                 }
             }
     }
+    fun back(v:View){
+        activity?.onBackPressed()
+    }
 }

@@ -17,7 +17,12 @@ data class DocumentsItem(
 	val code: String? = null,
 
 	@field:SerializedName("photo")
-	val photo: String? = null
+	val photo: String? = null,
 
+	@field:SerializedName("day")
+	val day: String? = null,
+
+	@field:SerializedName("time")
+	val time: String? = null
 
 )
