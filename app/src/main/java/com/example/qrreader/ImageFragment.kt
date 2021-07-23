@@ -40,7 +40,7 @@ class ImageFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         var binding = FragmentImageBinding.inflate(inflater, container, false)
-        binding.imageView7.setImageURI(Uri.parse(arguments?.getString("path")))
+        //binding.imageView7.setImageURI(Uri.parse(arguments?.getString("path")))
         binding.imageFragmentSubmit.setOnClickListener(){
             submitImage()
         }
@@ -49,7 +49,7 @@ class ImageFragment : Fragment() {
         }
         imageVew=binding.imageView7
 
-        binding.code.text = arguments?.getString("code")
+        binding.code.text = activity?.intent?.getStringExtra("code")
         return binding.root
     }
 
@@ -189,7 +189,7 @@ class ImageFragment : Fragment() {
         writeToFile(
             createJsonObject(
                 getStringFromBitmap(imageVew.drawable.toBitmap())!!,
-                arguments?.getString("code").toString(),
+                activity?.intent?.getStringExtra("code")!!,
                 date.toString(),
                 day,
                 time

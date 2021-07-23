@@ -44,11 +44,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
-        IntentIntegrator(this).setOrientationLocked(false)
-            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true)
-            .setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false)
-            .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-            .initiateScan()
+        val intent=Intent(this,ImageActivity::class.java)
+        startActivity(intent)
+//        IntentIntegrator(this).setOrientationLocked(false)
+//            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true)
+//            .setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false)
+//            .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+//            .initiateScan()
 
     }
 
@@ -115,6 +117,9 @@ class MainActivity : AppCompatActivity() {
             fragmentTransactionReplace(HistoryFragment())
             else if (data?.getIntExtra("fragment",1)==2)
                 fragmentTransactionReplace(SettingFragment())
+        }
+        if (resultCode==28){
+            fragmentTransactionReplace(ImageFragment())
         }
     }
 

@@ -65,6 +65,19 @@ class HistoryFragment : Fragment() {
 
 
         }
+        if (readToFile()=="ERROR")
+        {
+            val outputStreamWriter = OutputStreamWriter(
+                activity?.openFileOutput(
+                    "single.json",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+            )
+
+
+            outputStreamWriter.close()
+
+        }
         val gson = Gson()
         val kek = gson.fromJson(readToFile(), Response::class.java)
         if (kek!=null) {
