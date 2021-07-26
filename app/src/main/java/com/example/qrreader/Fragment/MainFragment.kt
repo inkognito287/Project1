@@ -1,6 +1,5 @@
-package com.example.qrreader
+package com.example.qrreader.Fragment
 
-import android.hardware.Camera
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +7,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.qrreader.CustomScannerActivity
 import com.example.qrreader.databinding.FragmentMainBinding
 import com.google.zxing.integration.android.IntentIntegrator
-import com.journeyapps.barcodescanner.camera.CameraManager
 
 
 /**

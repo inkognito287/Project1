@@ -1,4 +1,4 @@
-package com.example.qrreader
+package com.example.qrreader.activities
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -6,7 +6,9 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,35 +19,59 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.qrreader.Fragment.ImageFragment
+import com.example.qrreader.QrCodeAnalyzer
+import com.example.qrreader.R
+import com.example.qrreader.databinding.FragmentImageBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+
 
 class ImageActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 10
     }
-    lateinit var code:String
+
+    lateinit var code: String
 
     private lateinit var textureView: PreviewView
-    private lateinit var bitmap:Bitmap
+    private lateinit var bitmap: Bitmap
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
+        code = "не найден"
+
+
+        // var bottomSheet = findViewById<View>(R.id.bottom_sheet);
+        //     var mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+
 
         textureView = findViewById(R.id.textureView)
-        var button=findViewById<Button>(R.id.button)
-        button.setOnClickListener(){
-            bitmap = textureView.bitmap!!
+        val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener() {
 
-            var imageView=ImageView(this)
-            imageView.setImageBitmap(bitmap)
-            findViewById<ConstraintLayout>(R.id.dad).addView(imageView)
-            intent.putExtra("code",code)
-            setResult(28,intent)
-            finish()
+
+            //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            val bottomFragment = ImageFragment()
+            val bundle = Bundle()
+            bundle.putString("code", code)
+            bottomFragment.arguments = bundle
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.containerBottomSheet, bottomFragment)
+                .commit()
+
+
+            val bottomSheetBehaviour =
+                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
+
+            bottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
+           // button.isClickable = false
+
+            //finish()
         }
 
         // Request camera permissions
@@ -67,8 +93,6 @@ class ImageActivity : AppCompatActivity() {
             CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         val previewConfig = Preview.Builder()
-            // We want to show input from back camera of the device
-//            .setTargetResolution(Size(400,400))
             .build()
 
         previewConfig.setSurfaceProvider(textureView.surfaceProvider)
@@ -76,18 +100,13 @@ class ImageActivity : AppCompatActivity() {
 
         val imageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-//            .setTargetResolution(Size(400,400))
-            // We request aspect ratio but no resolution to match preview config, but letting
-            // CameraX optimize for whatever specific resolution best fits requested capture mode
-            // Set initial target rotation, we will have to call this again if rotation changes
-            // during the lifecycle of this use case
             .build()
         val executor = ContextCompat.getMainExecutor(this)
         val imageAnalyzer = ImageAnalysis.Builder().build().also {
             it.setAnalyzer(executor, QrCodeAnalyzer { qrCodes ->
                 qrCodes?.forEach {
-                    code=it.rawValue.toString()
-                    Toast.makeText(this, it.rawValue, Toast.LENGTH_SHORT).show()
+                    code = it.rawValue.toString()
+                    //  Toast.makeText(this, it.rawValue, Toast.LENGTH_SHORT).show()
                     Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
                 }
             })
@@ -105,7 +124,7 @@ class ImageActivity : AppCompatActivity() {
             )
 
             //Handle flash
-            camera.cameraControl.enableTorch(true)
+            camera.cameraControl.enableTorch(false)
         }, executor)
     }
 

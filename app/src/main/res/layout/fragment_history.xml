@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/historyConstraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HistoryFragment">
+    tools:context=".Fragment.HistoryFragment">
 
     <include
         android:id="@+id/view4"
@@ -74,7 +75,6 @@
         app:layout_constraintGuide_percent="0.04" />
 
     <Button
-        tools:context=".MainActivity"
         android:id="@+id/historyBack"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -86,7 +86,8 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline66"
         app:layout_constraintHorizontal_bias="0.32"
         app:layout_constraintStart_toStartOf="@+id/guideline71"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".activities.MainActivity" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -95,8 +96,12 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/historyClear" />
+        app:layout_constraintTop_toBottomOf="@+id/historyClear"
+        app:layout_constraintVertical_bias="1.0">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <Button
         android:id="@+id/historyClear"
@@ -104,6 +109,17 @@
         android:layout_height="wrap_content"
         android:text="Очистить историю"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view4" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

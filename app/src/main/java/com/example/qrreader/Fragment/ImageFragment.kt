@@ -1,8 +1,8 @@
-package com.example.qrreader
+package com.example.qrreader.Fragment
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,13 +10,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.view.PreviewView
 import androidx.core.graphics.drawable.toBitmap
 import com.example.qrreader.Pojo.Response
+import com.example.qrreader.R
+import com.example.qrreader.activities.ImageActivity
 import com.example.qrreader.databinding.FragmentImageBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -26,8 +30,11 @@ import java.util.*
 
 
 class ImageFragment : Fragment() {
-  lateinit  var imageVew:ImageView
-    lateinit var text:String
+    lateinit var imageVew: ImageView
+    lateinit var text: String
+    lateinit var saveCode: String
+    lateinit var saveImage: Bitmap
+    lateinit var  binding:FragmentImageBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,19 +44,22 @@ class ImageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        var binding = FragmentImageBinding.inflate(inflater, container, false)
+        binding = FragmentImageBinding.inflate(inflater, container, false)
         //binding.imageView7.setImageURI(Uri.parse(arguments?.getString("path")))
-        binding.imageFragmentSubmit.setOnClickListener(){
+        binding.imageFragmentSubmit.setOnClickListener() {
             submitImage()
         }
-        binding.imageFragmentBack.setOnClickListener(){
+        binding.imageFragmentBack.setOnClickListener() {
             backImage()
         }
-        imageVew=binding.imageView7
+        saveImage = activity?.findViewById<PreviewView>(R.id.textureView)?.bitmap!!
+        saveCode = arguments?.getString("code")!!
+        imageVew = binding.imageView7
+        imageVew.setImageBitmap(saveImage)
 
-        binding.code.text = activity?.intent?.getStringExtra("code")
+        binding.code.text = saveCode
         return binding.root
     }
 
@@ -59,9 +69,15 @@ class ImageFragment : Fragment() {
 
 
     }
+
     private fun writeToFile(jsonData: String?) {
         try {
-            val outputStreamWriter = OutputStreamWriter(activity?.openFileOutput("single.json", AppCompatActivity.MODE_PRIVATE))
+            val outputStreamWriter = OutputStreamWriter(
+                activity?.openFileOutput(
+                    "single.json",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+            )
             outputStreamWriter.write(jsonData)
 
             outputStreamWriter.close()
@@ -92,7 +108,7 @@ class ImageFragment : Fragment() {
         day: String,
         time: String
     ): String? {
-        var jsonNowString = readToFile()
+        val jsonNowString = readToFile()
         Log.d("MyLog", "ReadFile=" + text)
 
         val gson = Gson()
@@ -109,10 +125,12 @@ class ImageFragment : Fragment() {
 
                 childObject.addProperty(
                     "code",
-                    deserializer.documents.get(i)?.code)
+                    deserializer.documents.get(i)?.code
+                )
                 childObject.addProperty(
                     "date",
-                    deserializer.documents.get(i)?.date)
+                    deserializer.documents.get(i)?.date
+                )
                 childObject.addProperty(
                     "photo",
                     deserializer.documents.get(i)?.photo
@@ -176,31 +194,40 @@ class ImageFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun submitImage(){
-        val date = Date()
-        var dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
-        var dateFormatDay = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
-        var OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
-        var OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
-        var test = dateFormatTime.parse(date.toString())
-        var time = OUTPUT_PATERN_TIME.format(test)
-        var day = OUTPUT_PATERN_DAY.format(test)
+    fun submitImage() {
+        binding.progressBar.visibility=View.VISIBLE
+        Thread() {
+            val date = Date()
+            var dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
+            var dateFormatDay = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
+            var OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
+            var OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
+            var test = dateFormatTime.parse(date.toString())
+            var time = OUTPUT_PATERN_TIME.format(test)
+            var day = OUTPUT_PATERN_DAY.format(test)
 
-        writeToFile(
-            createJsonObject(
-                getStringFromBitmap(imageVew.drawable.toBitmap())!!,
-                activity?.intent?.getStringExtra("code")!!,
-                date.toString(),
-                day,
-                time
+            writeToFile(
+                createJsonObject(
+                    getStringFromBitmap(saveImage)!!,
+                    saveCode,
+                    date.toString(),
+                    day,
+                    time
+                )
             )
-        )
-        readToFile()
-        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.fragmentContainerView,HistoryFragment())?.commit()
+
+        //readToFile()
+        activity?.setResult(28)
+        activity?.finish()
+        }.start()
     }
 
-    fun backImage(){
-        activity?.onBackPressed()
+    fun backImage() {
+        val bottomSheetBehaviour =
+            BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        //activity?.findViewById<Button>(R.id.button)?.isClickable=true
     }
+
 
 }

@@ -9,7 +9,7 @@
             type="com.example.qrreader.SettingItems" />
         <variable
             name="activity"
-            type="com.example.qrreader.MainActivity" />
+            type="com.example.qrreader.activities.MainActivity" />
 
 
     </data>
@@ -17,7 +17,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".SettingFragment">
+        tools:context=".Fragment.SettingFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

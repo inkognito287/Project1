@@ -1,7 +1,6 @@
-package com.example.qrreader
+package com.example.qrreader.Fragment
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +8,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.databinding.FragmentHistoryBinding
@@ -22,28 +20,38 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import android.view.MotionEvent
+import com.example.qrreader.OnSwipeTouchListener
+import kotlin.concurrent.thread
 
 
 class HistoryFragment : Fragment() {
 
-    //val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
-    // Log.d("MyLog","data ="+data)
-    var myAdapter: CustomRecyclerAdapter?=null
-
-
+    var myAdapter: CustomRecyclerAdapter? = null
+    lateinit var binding: FragmentHistoryBinding
+    lateinit var array:ArrayList<DocumentsItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("MyLog","CreateFragment")
+        Log.d("MyLog", "CreateFragment")
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val binding =FragmentHistoryBinding.inflate(inflater, container,false)
+        binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        binding.historyConstraint.setOnTouchListener(object:  OnSwipeTouchListener(activity){
+            override fun onSwipeDown() {
+                super.onSwipeDown()
+                myAdapter?.notifyDataSetChanged()
+            }
+        })
+
+
         binding.historyClear.setOnClickListener() {
 
 
@@ -65,8 +73,7 @@ class HistoryFragment : Fragment() {
 
 
         }
-        if (readToFile()=="ERROR")
-        {
+        if (readToFile() == "ERROR") {
             val outputStreamWriter = OutputStreamWriter(
                 activity?.openFileOutput(
                     "single.json",
@@ -78,57 +85,66 @@ class HistoryFragment : Fragment() {
             outputStreamWriter.close()
 
         }
-        val gson = Gson()
-        val kek = gson.fromJson(readToFile(), Response::class.java)
-        if (kek!=null) {
-            var array = ArrayList<DocumentsItem>()
-            for (i in 0 until kek.documents!!.size!!)
-                array.add(kek.documents[i]!!)
-            Log.d("MyLog", "ReadCheck = " + array)
-            myAdapter = CustomRecyclerAdapter(array)
-            binding.recyclerView.adapter = myAdapter
-            binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-            myAdapter!!.notifyDataSetChanged()
-        }
+
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         Log.d("MyLog", "OnViewCreated")
+        binding.progressBar2.visibility=View.VISIBLE
+        Thread() {
+            val gson = Gson()
+            //val kek = gson.fromJson(readToFile(), Response::class.java)
+            val zek=readToFile()
+            if (zek != "") {
+                val kek = gson.fromJson(zek, Response::class.java)
+                 array = ArrayList<DocumentsItem>()
+                for (element in kek.documents!!)
+                    array.add(element!!)
+                activity?.runOnUiThread() {
+                    myAdapter = CustomRecyclerAdapter(array, requireContext())
+                    binding.recyclerView.adapter = myAdapter
+                    binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
+                    myAdapter!!.notifyDataSetChanged()
+                    binding.progressBar2.visibility=View.INVISIBLE
+                }
 
 
-
-
-            //recyclerView.setAdapter(CustomRecyclerAdapter(array))
-           // myAdapter!!.notifyDataSetChanged()
-
-
+            }
+            else  activity?.runOnUiThread() {
+                binding.progressBar2.visibility=View.INVISIBLE
+            }
+        }.start()
 
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        if(myAdapter!=null){
-
-            var array = ArrayList<DocumentsItem>()
-            val gson = Gson()
-            val kek = gson.fromJson(readToFile(), Response::class.java)
-            for (i in 0 until kek.documents!!.size!!)
-                array.add(kek.documents[i]!!)
-            myAdapter?.updateRecyclerView(array)
-        }
+        Thread() {
+            if (myAdapter != null) {
+                val gson = Gson()
+                val kek = gson.fromJson(readToFile(), Response::class.java)
+                array.clear()
+                for (element in kek.documents!!)
+                    array.add(element!!)
+                activity?.runOnUiThread() {
+                    myAdapter?.notifyDataSetChanged()
+                }
+            }
+        }.start()
     }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun readToFile(): String {
+
         try {
-            val reader = BufferedReader(InputStreamReader(activity?.openFileInput("single.json")))
+            val reader =
+                BufferedReader(InputStreamReader(activity?.openFileInput("single.json")))
             val text = reader.readText()
             reader.close()
             return text
@@ -136,6 +152,7 @@ class HistoryFragment : Fragment() {
             Log.e("Exception", "File write failed: " + e.toString())
             return "ERROR"
         }
+
     }
 
 }

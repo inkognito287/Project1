@@ -1,29 +1,18 @@
-package com.example.qrreader
+package com.example.qrreader.activities
 
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.MotionEventCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import com.example.qrreader.Pojo.Response
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
+import com.example.qrreader.Fragment.*
+import com.example.qrreader.R
 import com.google.zxing.integration.android.IntentIntegrator
-import java.io.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,14 +33,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
-        val intent=Intent(this,ImageActivity::class.java)
+        val intent=Intent(this, ImageActivity::class.java)
         startActivity(intent)
-//        IntentIntegrator(this).setOrientationLocked(false)
-//            .setCaptureActivity(CustomScannerActivity::class.java).setBarcodeImageEnabled(true)
-//            .setBarcodeImageEnabled(true).setPrompt("").setOrientationLocked(false)
-//            .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-//            .initiateScan()
-
     }
 
     fun setting(v: View) {
@@ -119,9 +102,11 @@ class MainActivity : AppCompatActivity() {
                 fragmentTransactionReplace(SettingFragment())
         }
         if (resultCode==28){
-            fragmentTransactionReplace(ImageFragment())
+            fragmentTransactionReplace(HistoryFragment())
         }
     }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
