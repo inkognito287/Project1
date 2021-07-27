@@ -63,7 +63,10 @@ class CustomRecyclerAdapter(
             bundle.putInt("position",position)
             var fragment= HistoryItem()
             fragment.arguments=bundle
-            (context as AppCompatActivity).supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView,fragment ).commit()
+
+            var myFragmentTransaction = MyFragmentTransaction(context)
+            myFragmentTransaction.fragmentTransactionReplace(fragment)
+            //(context as AppCompatActivity).supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView,fragment ).commit()
 
         }
 
@@ -73,7 +76,7 @@ class CustomRecyclerAdapter(
 
     override fun getItemCount(): Int {
 
-        return names1!!.size
+        return names1.size
     }
 
     fun clearRecyclerView() {

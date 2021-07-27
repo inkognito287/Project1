@@ -4,7 +4,7 @@
     package="com.example.qrreader">
 
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.CLEAR_APP_CACHE"
@@ -14,7 +14,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
-
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:hardwareAccelerated="true"

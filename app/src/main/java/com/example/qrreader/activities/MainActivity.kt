@@ -1,16 +1,17 @@
 package com.example.qrreader.activities
 
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MotionEventCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.qrreader.Fragment.*
+import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.google.zxing.integration.android.IntentIntegrator
 
@@ -23,8 +24,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-       fragmentTransactionReplace(HistoryFragment())
 
+
+        fragmentTransactionReplace(HistoryFragment())
 
     }
 
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
-        val intent=Intent(this, ImageActivity::class.java)
+        val intent = Intent(this, ImageActivity::class.java)
         startActivity(intent)
     }
 
@@ -43,6 +45,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun finish(v: View) {
+        var sharedPreferences=getSharedPreferences("user",Context.MODE_PRIVATE)
+        val editor=sharedPreferences.edit()
+        editor.clear().apply()
+        var intent=Intent(this,Authorization::class.java)
+        startActivity(intent)
         finish()
     }
 
@@ -60,21 +67,21 @@ class MainActivity : AppCompatActivity() {
         fragmentTransactionReplace(data)
     }
 
-    fun historBack(v:View){
+    fun historBack(v: View) {
         finish()
     }
 
     fun fragmentTransactionReplace(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragmentContainerView, fragment)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+
+        var myFragmentTransaction=MyFragmentTransaction(this)
+        myFragmentTransaction.fragmentTransactionReplace(fragment)
+
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount != 0)
+        if (supportFragmentManager.backStackEntryCount != 1)
             supportFragmentManager.popBackStack()
-        else super.onBackPressed()
+        else finish()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -95,17 +102,16 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        if (resultCode==1){
-            if (data?.getIntExtra("fragment",1)==1)
-            fragmentTransactionReplace(HistoryFragment())
-            else if (data?.getIntExtra("fragment",1)==2)
+        if (resultCode == 1) {
+            if (data?.getIntExtra("fragment", 1) == 1)
+                fragmentTransactionReplace(HistoryFragment())
+            else if (data?.getIntExtra("fragment", 1) == 2)
                 fragmentTransactionReplace(SettingFragment())
         }
-        if (resultCode==28){
+        if (resultCode == 28) {
             fragmentTransactionReplace(HistoryFragment())
         }
     }
-
 
 
     @RequiresApi(Build.VERSION_CODES.O)

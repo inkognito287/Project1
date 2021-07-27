@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import com.example.qrreader.Fragment.ImageFragment
 import com.example.qrreader.QrCodeAnalyzer
 import com.example.qrreader.R
+import com.example.qrreader.databinding.ActivityImageBinding
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
@@ -38,21 +39,32 @@ class ImageActivity : AppCompatActivity() {
 
     private lateinit var textureView: PreviewView
     private lateinit var bitmap: Bitmap
+    lateinit var binding:ActivityImageBinding
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image)
+        binding= ActivityImageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         code = "не найден"
-
 
         // var bottomSheet = findViewById<View>(R.id.bottom_sheet);
         //     var mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
 
-        textureView = findViewById(R.id.textureView)
-        val button = findViewById<Button>(R.id.button)
-        button.setOnClickListener() {
+        textureView = binding.textureView
+        binding.buttonHistory2.setOnClickListener(){
+            setResult(1)
+            intent.putExtra("fragment",1)
+            finish()
+        }
+        binding.captureActivityButtonSetting2.setOnClickListener(){
+
+            setResult(1)
+            intent.putExtra("fragment",2)
+            finish()
+        }
+        binding.button.setOnClickListener() {
 
 
             //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
