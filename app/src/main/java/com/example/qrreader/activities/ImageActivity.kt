@@ -2,7 +2,8 @@ package com.example.qrreader.activities
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,9 +22,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.times
 import com.example.qrreader.Fragment.ImageFragment
 import com.example.qrreader.QrCodeAnalyzer
 import com.example.qrreader.R
+import com.example.qrreader.RectDrawable
 import com.example.qrreader.databinding.ActivityImageBinding
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -116,8 +119,18 @@ class ImageActivity : AppCompatActivity() {
         val executor = ContextCompat.getMainExecutor(this)
         val imageAnalyzer = ImageAnalysis.Builder().build().also {
             it.setAnalyzer(executor, QrCodeAnalyzer { qrCodes ->
+
                 qrCodes?.forEach {
                     code = it.rawValue.toString()
+
+                    Log.d("MyLog", it.boundingBox.toString())
+                    binding.rectDrawable.drawFaceBounds(RectF(
+                        it.boundingBox!!.left*1.0f*binding.textureView.width/binding.textureView.bitmap!!.width, it.boundingBox!!.top*1.0f*binding.textureView.height/binding.textureView.bitmap!!.height,
+                        it.boundingBox!!.right*1.0f*binding.textureView.width/binding.textureView.bitmap!!.width,it.boundingBox!!.bottom*1.0f*binding.textureView.height/binding.textureView.bitmap!!.height))
+
+                    //binding.textureView.s
+
+
                     //  Toast.makeText(this, it.rawValue, Toast.LENGTH_SHORT).show()
                     Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
                 }

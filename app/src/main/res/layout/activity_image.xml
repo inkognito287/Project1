@@ -126,14 +126,25 @@
 
         <androidx.camera.view.PreviewView
             android:id="@+id/textureView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline74"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@+id/guideline77">
 
         </androidx.camera.view.PreviewView>
+
+        <com.example.qrreader.RectDrawable
+            android:id="@+id/rectDrawable"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline74"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline77">
+
+        </com.example.qrreader.RectDrawable>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline74"
