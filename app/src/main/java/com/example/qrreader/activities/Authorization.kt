@@ -59,11 +59,13 @@ class Authorization : AppCompatActivity() {
 
         fun request( url: String,  password: String,  name: String) {
             var string=""
+
             val url =
                 URL("$url/Home/test?name=$name&password=$password")
 
             Thread {
                 with(url.openConnection() as HttpURLConnection) {
+
                     requestMethod = "POST"  // optional default is GET
                     inputStream.bufferedReader().use {
                         it.lines().forEach { line ->

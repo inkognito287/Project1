@@ -21,11 +21,12 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import android.view.MotionEvent
+import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.OnSwipeTouchListener
 import kotlin.concurrent.thread
 
 
-class HistoryFragment : Fragment() {
+class HistoryFragment : Fragment(),UpdateAdapter {
 
     var myAdapter: CustomRecyclerAdapter? = null
     lateinit var binding: FragmentHistoryBinding
@@ -69,7 +70,10 @@ class HistoryFragment : Fragment() {
             } catch (e: IOException) {
                 Log.e("MyLog", "File write failed: " + e.toString())
             }
-            myAdapter?.clearRecyclerView()
+           // myAdapter?.clearRecyclerView()
+            //myAdapter=null
+            array.clear()
+            myAdapter!!.notifyDataSetChanged()
 
 
         }
@@ -98,10 +102,10 @@ class HistoryFragment : Fragment() {
         Thread() {
             val gson = Gson()
             //val kek = gson.fromJson(readToFile(), Response::class.java)
-            val zek=readToFile()
+            val zek = readToFile()
             if (zek != "") {
                 val kek = gson.fromJson(zek, Response::class.java)
-                 array = ArrayList<DocumentsItem>()
+                array = ArrayList<DocumentsItem>()
                 for (element in kek.documents!!)
                     array.add(element!!)
                 activity?.runOnUiThread() {
@@ -109,13 +113,12 @@ class HistoryFragment : Fragment() {
                     binding.recyclerView.adapter = myAdapter
                     binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
                     myAdapter!!.notifyDataSetChanged()
-                    binding.progressBar2.visibility=View.INVISIBLE
+                    binding.progressBar2.visibility = View.INVISIBLE
                 }
 
 
-            }
-            else  activity?.runOnUiThread() {
-                binding.progressBar2.visibility=View.INVISIBLE
+            } else activity?.runOnUiThread() {
+                binding.progressBar2.visibility = View.INVISIBLE
             }
         }.start()
 
@@ -124,18 +127,7 @@ class HistoryFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        Thread() {
-            if (myAdapter != null) {
-                val gson = Gson()
-                val kek = gson.fromJson(readToFile(), Response::class.java)
-                array.clear()
-                for (element in kek.documents!!)
-                    array.add(element!!)
-                activity?.runOnUiThread() {
-                    myAdapter?.notifyDataSetChanged()
-                }
-            }
-        }.start()
+
     }
 
 
@@ -152,6 +144,22 @@ class HistoryFragment : Fragment() {
             Log.e("Exception", "File write failed: " + e.toString())
             return "ERROR"
         }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun update() {
+
+            if (myAdapter != null) {
+                val gson = Gson()
+                val kek = gson.fromJson(readToFile(), Response::class.java)
+                array.clear()
+                for (element in kek.documents!!)
+                    array.add(element!!)
+                activity?.runOnUiThread() {
+                    myAdapter?.notifyDataSetChanged()
+                }
+            }
 
     }
 

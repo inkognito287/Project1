@@ -17,7 +17,7 @@ class MyFragmentTransaction (var context: Context){
 
             var fragmentTransaction = (context as AppCompatActivity).supportFragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.fragmentContainerView, fragment)
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+
 
             if ((context as AppCompatActivity).supportFragmentManager.backStackEntryCount == 0){
                 fragmentTransaction.addToBackStack(backStateName)

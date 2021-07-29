@@ -41,7 +41,7 @@
             android:theme="@style/Theme.QRReader.NoActionBar">
 
         </activity>
-        <activity android:name=".activities.ImageActivity"
+        <activity android:name=".activities.BarcodeScanActivity"
 
 
             android:screenOrientation="portrait"

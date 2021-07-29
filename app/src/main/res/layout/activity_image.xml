@@ -125,7 +125,7 @@
             app:layout_constraintGuide_percent="0.96" />
 
         <androidx.camera.view.PreviewView
-            android:id="@+id/textureView"
+            android:id="@+id/preview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline74"
@@ -135,16 +135,15 @@
 
         </androidx.camera.view.PreviewView>
 
-        <com.example.qrreader.RectDrawable
-            android:id="@+id/rectDrawable"
+
+        <com.example.qrreader.BarcodeOverlay
+            android:id="@+id/barcode_overlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline74"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline77">
-
-        </com.example.qrreader.RectDrawable>
+            app:layout_constraintEnd_toEndOf="@+id/preview"
+            app:layout_constraintStart_toStartOf="@+id/preview"
+            app:layout_constraintTop_toTopOf="@+id/guideline77" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline74"
@@ -169,7 +168,6 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/ic_group"
-            android:onClick="back"
             app:backgroundTint="@null"
             app:layout_constraintBottom_toTopOf="@+id/guideline77"
             app:layout_constraintDimensionRatio="1:1"

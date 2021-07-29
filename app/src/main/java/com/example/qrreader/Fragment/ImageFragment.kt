@@ -1,6 +1,5 @@
 package com.example.qrreader.Fragment
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -10,15 +9,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
-import androidx.core.graphics.drawable.toBitmap
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.R
-import com.example.qrreader.activities.ImageActivity
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
@@ -54,7 +50,7 @@ class ImageFragment : Fragment() {
         binding.imageFragmentBack.setOnClickListener() {
             backImage()
         }
-        saveImage = activity?.findViewById<PreviewView>(R.id.textureView)?.bitmap!!
+        saveImage = activity?.findViewById<PreviewView>(R.id.preview)?.bitmap!!
         saveCode = arguments?.getString("code")!!
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
@@ -217,8 +213,8 @@ class ImageFragment : Fragment() {
             )
 
         //readToFile()
-        activity?.setResult(28)
-        activity?.finish()
+        requireActivity().setResult(28)
+        requireActivity().finish()
         }.start()
     }
 

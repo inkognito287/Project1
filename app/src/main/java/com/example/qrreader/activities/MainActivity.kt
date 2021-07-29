@@ -8,24 +8,27 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.example.qrreader.Fragment.*
+import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
-import com.google.zxing.integration.android.IntentIntegrator
 
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var text: String
 
+
+    lateinit var text: String
+    lateinit var historyFragment: HistoryFragment
+    //lateinit var updateAdapter:UpdateAdapter
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
+       // historyFragment= HistoryFragment()
+       findViewById<ConstraintLayout>(R.id.mainConstraint).isEnabled=false
         fragmentTransactionReplace(HistoryFragment())
 
     }
@@ -35,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
-        val intent = Intent(this, ImageActivity::class.java)
-        startActivity(intent)
+        val intent = Intent(this, BarcodeScanActivity::class.java)
+        startActivityForResult(intent,8)
     }
 
     fun setting(v: View) {
@@ -87,30 +90,22 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents != null) {
-
-                val bundle = Bundle()
-                bundle.putString("path", result.barcodeImagePath)
-                bundle.putString("code", result.contents)
-                val imageFragment = ImageFragment()
-                imageFragment.setArguments(bundle)
-                fragmentTransactionReplace(imageFragment)
-
-            }
-
-        }
         if (resultCode == 1) {
             if (data?.getIntExtra("fragment", 1) == 1)
-                fragmentTransactionReplace(HistoryFragment())
+                fragmentTransactionReplace(historyFragment)
             else if (data?.getIntExtra("fragment", 1) == 2)
                 fragmentTransactionReplace(SettingFragment())
         }
         if (resultCode == 28) {
-            fragmentTransactionReplace(HistoryFragment())
+
+          //  updateAdapter=HistoryFragment()
+            var z=HistoryFragment()
+            fragmentTransactionReplace( z)
+            z.update()
+          //  updateAdapter.update()
+
         }
+
     }
 
 
