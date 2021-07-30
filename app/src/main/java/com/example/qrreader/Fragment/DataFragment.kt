@@ -1,4 +1,4 @@
-package com.example.qrreader.Fragment
+package com.example.qrreader.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,4 +1,4 @@
-package com.example.qrreader.Fragment
+package com.example.qrreader.fragment
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -20,10 +20,11 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import android.view.MotionEvent
 import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.OnSwipeTouchListener
-import kotlin.concurrent.thread
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 
 class HistoryFragment : Fragment(),UpdateAdapter {
@@ -121,7 +122,7 @@ class HistoryFragment : Fragment(),UpdateAdapter {
                 binding.progressBar2.visibility = View.INVISIBLE
             }
         }.start()
-
+        deserialize()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -150,7 +151,7 @@ class HistoryFragment : Fragment(),UpdateAdapter {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun update() {
 
-            if (myAdapter != null) {
+            //if (myAdapter != null) {
                 val gson = Gson()
                 val kek = gson.fromJson(readToFile(), Response::class.java)
                 array.clear()
@@ -159,7 +160,59 @@ class HistoryFragment : Fragment(),UpdateAdapter {
                 activity?.runOnUiThread() {
                     myAdapter?.notifyDataSetChanged()
                 }
+           // }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun deserialize(){
+        val gson=Gson()
+
+        var result = gson.fromJson(readToFile(), Response::class.java)
+
+        var s = result.documents!!.size
+
+        for (x in result.documents!!.size-1 downTo 0){
+         var   last = result.documents!![x]
+        imageRequest(last?.photo.toString(), last?.day!!+" "+ last.time!![0].toString()+last.time!![1].toString()+"-"+last.time!![3].toString()+last.time!![4].toString(),
+            last.code!!
+        )
+        }
+    }
+
+
+    fun imageRequest(image:String, name:String,code:String){
+        Thread {
+            var token = "rerere"
+            var client= OkHttpClient()
+            var requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", image.toString())
+                .addFormDataPart("name", name.toString())
+                .addFormDataPart("code", code.toString())
+                .build();
+
+            var request = Request.Builder()
+                .addHeader("token", token)
+                .url("http://86.57.171.246:7777/Home/image")
+                .post(requestBody)
+                .build();
+
+
+            try {
+                val response: okhttp3.Response = client.newCall(request).execute()
+
+                    Log.d("MyLog","image send = "+response.body!!.string())
+
+
+
+                // Do something with the response.
+            } catch (e: IOException) {
+                Log.d("MyLog","exception"+e.toString())
+
             }
+        }.start()
+
 
     }
 

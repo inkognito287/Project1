@@ -1,7 +1,6 @@
 package com.example.qrreader
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.Fragment.HistoryItem
+import com.example.qrreader.fragment.HistoryItem
 import com.example.qrreader.Pojo.DocumentsItem
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(

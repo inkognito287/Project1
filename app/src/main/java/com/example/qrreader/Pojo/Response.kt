@@ -11,18 +11,21 @@ data class Response(
 data class DocumentsItem(
 
 	@field:SerializedName("date")
-	val date: String? = null,
+	var date: String? = null,
 
 	@field:SerializedName("code")
-	val code: String? = null,
+	var code: String? = null,
 
 	@field:SerializedName("photo")
-	val photo: String? = null,
+	var photo: String? = null,
 
 	@field:SerializedName("day")
-	val day: String? = null,
+	var day: String? = null,
 
 	@field:SerializedName("time")
-	val time: String? = null
+	var time: String? = null,
+
+	@field:SerializedName("status")
+	var status: String? = null
 
 )

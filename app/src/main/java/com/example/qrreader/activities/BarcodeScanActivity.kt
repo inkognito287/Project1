@@ -15,7 +15,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.qrreader.*
-import com.example.qrreader.Fragment.ImageFragment
+import com.example.qrreader.fragment.ImageFragment
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior

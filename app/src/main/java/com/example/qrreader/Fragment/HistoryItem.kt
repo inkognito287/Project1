@@ -1,4 +1,4 @@
-package com.example.qrreader.Fragment
+package com.example.qrreader.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,7 +13,6 @@ import androidx.annotation.RequiresApi
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
-import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentHistoryItemBinding
 import com.google.gson.Gson
 import java.io.BufferedReader

@@ -1,4 +1,4 @@
-package com.example.qrreader.Fragment
+package com.example.qrreader.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -102,7 +102,8 @@ class ImageFragment : Fragment() {
         code: String,
         date: String,
         day: String,
-        time: String
+        time: String,
+        status: String
     ): String? {
         val jsonNowString = readToFile()
         Log.d("MyLog", "ReadFile=" + text)
@@ -139,6 +140,10 @@ class ImageFragment : Fragment() {
                     "time",
                     deserializer.documents.get(i)?.time
                 )
+                childObject.addProperty(
+                    "status",
+                    deserializer.documents.get(i)?.status
+                )
                 arrayObject.add(childObject)
 
             }
@@ -153,6 +158,7 @@ class ImageFragment : Fragment() {
         childObject.addProperty("photo", photo)
         childObject.addProperty("day", day)
         childObject.addProperty("time", time)
+        childObject.addProperty("status", status)
         arrayObject.add(childObject)
 
         rootObject.add("documents", arrayObject)
@@ -208,7 +214,8 @@ class ImageFragment : Fragment() {
                     saveCode,
                     date.toString(),
                     day,
-                    time
+                    time,
+                    "no"
                 )
             )
 

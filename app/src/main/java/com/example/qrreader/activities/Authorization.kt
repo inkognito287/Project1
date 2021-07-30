@@ -1,18 +1,28 @@
 package com.example.qrreader.activities
 
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.ColorSpace
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+
+import com.example.qrreader.Model.User
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
-import java.io.InputStream
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.HashMap
+
 
 class Authorization : AppCompatActivity() {
     lateinit var  sharedPreferences: SharedPreferences
@@ -58,6 +68,7 @@ class Authorization : AppCompatActivity() {
 
 
         fun request( url: String,  password: String,  name: String) {
+
             var string=""
 
             val url =
