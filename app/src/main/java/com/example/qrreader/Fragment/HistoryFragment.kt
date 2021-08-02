@@ -1,6 +1,7 @@
 package com.example.qrreader.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -26,12 +27,13 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+ var array: ArrayList<DocumentsItem>? = null
+ var myAdapter: CustomRecyclerAdapter? = null
+class HistoryFragment : Fragment(), UpdateAdapter {
 
-class HistoryFragment : Fragment(),UpdateAdapter {
 
-    var myAdapter: CustomRecyclerAdapter? = null
     lateinit var binding: FragmentHistoryBinding
-    lateinit var array:ArrayList<DocumentsItem>
+    //lateinit var array: ArrayList<DocumentsItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,7 +48,7 @@ class HistoryFragment : Fragment(),UpdateAdapter {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
-        binding.historyConstraint.setOnTouchListener(object:  OnSwipeTouchListener(activity){
+        binding.historyConstraint.setOnTouchListener(object : OnSwipeTouchListener(activity) {
             override fun onSwipeDown() {
                 super.onSwipeDown()
                 myAdapter?.notifyDataSetChanged()
@@ -69,12 +71,13 @@ class HistoryFragment : Fragment(),UpdateAdapter {
                 outputStreamWriter.close()
 
             } catch (e: IOException) {
-                Log.e("MyLog", "File write failed: " + e.toString())
+                Log.e("MyLog", "File write failed: $e")
             }
-           // myAdapter?.clearRecyclerView()
-            //myAdapter=null
-            array.clear()
+
+            if (myAdapter!=null){
+            array?.clear()
             myAdapter!!.notifyDataSetChanged()
+            }
 
 
         }
@@ -99,30 +102,31 @@ class HistoryFragment : Fragment(),UpdateAdapter {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MyLog", "OnViewCreated")
-        binding.progressBar2.visibility=View.VISIBLE
+        binding.progressBar2.visibility = View.VISIBLE
         Thread() {
             val gson = Gson()
             //val kek = gson.fromJson(readToFile(), Response::class.java)
             val zek = readToFile()
             if (zek != "") {
                 val kek = gson.fromJson(zek, Response::class.java)
-                array = ArrayList<DocumentsItem>()
+                    array?.clear()
                 for (element in kek.documents!!)
-                    array.add(element!!)
+                    array?.add(element!!)
                 activity?.runOnUiThread() {
-                    myAdapter = CustomRecyclerAdapter(array, requireContext())
+                    myAdapter = CustomRecyclerAdapter(array!!, requireContext())
                     binding.recyclerView.adapter = myAdapter
                     binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
                     myAdapter!!.notifyDataSetChanged()
                     binding.progressBar2.visibility = View.INVISIBLE
                 }
 
+              //  deserialize()
 
             } else activity?.runOnUiThread() {
                 binding.progressBar2.visibility = View.INVISIBLE
             }
         }.start()
-        deserialize()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -151,40 +155,66 @@ class HistoryFragment : Fragment(),UpdateAdapter {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun update() {
 
-            //if (myAdapter != null) {
-                val gson = Gson()
-                val kek = gson.fromJson(readToFile(), Response::class.java)
-                array.clear()
-                for (element in kek.documents!!)
-                    array.add(element!!)
-                activity?.runOnUiThread() {
-                    myAdapter?.notifyDataSetChanged()
-                }
-           // }
+        //if (myAdapter != null) {
+        val gson = Gson()
+        val kek = gson.fromJson(readToFile(), Response::class.java)
+        array?.clear()
+        for (element in kek.documents!!)
+            array?.add(element!!)
+        activity?.runOnUiThread() {
+            myAdapter?.notifyDataSetChanged()
+        }
+        // }
 
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun deserialize(){
-        val gson=Gson()
+    fun deserialize() {
+        Thread {
+        val gson = Gson()
 
         var result = gson.fromJson(readToFile(), Response::class.java)
 
-        var s = result.documents!!.size
+        var s = result.documents!!.size-1
 
-        for (x in result.documents!!.size-1 downTo 0){
-         var   last = result.documents!![x]
-        imageRequest(last?.photo.toString(), last?.day!!+" "+ last.time!![0].toString()+last.time!![1].toString()+"-"+last.time!![3].toString()+last.time!![4].toString(),
-            last.code!!
-        )
+
+            var last = result.documents!![s-1]
+            if (last?.status=="no")
+                if(imageRequest(
+                last?.photo.toString(),
+                last?.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                last.code!!
+            )=="true")
+                result.documents!![s]!!.status="yes"
+                 var resultEnd=gson.toJson(result)
+                 writeToFile(resultEnd,context)
+        }.start()
+    }
+
+    private fun writeToFile(jsonData: String? , context: Context?) {
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                context?.openFileOutput(
+                    "single.json",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+            )
+            outputStreamWriter.write(jsonData)
+
+            outputStreamWriter.close()
+            println("good")
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: " + e.toString())
         }
     }
 
 
-    fun imageRequest(image:String, name:String,code:String){
-        Thread {
+
+
+    fun imageRequest(image: String, name: String, code: String):String? {
+
             var token = "rerere"
-            var client= OkHttpClient()
+            var client = OkHttpClient()
             var requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", image.toString())
@@ -194,7 +224,7 @@ class HistoryFragment : Fragment(),UpdateAdapter {
 
             var request = Request.Builder()
                 .addHeader("token", token)
-                .url("http://86.57.171.246:7777/Home/image")
+                .url("https://686de5f02685.ngrok.io/Home/image")
                 .post(requestBody)
                 .build();
 
@@ -202,16 +232,15 @@ class HistoryFragment : Fragment(),UpdateAdapter {
             try {
                 val response: okhttp3.Response = client.newCall(request).execute()
 
-                    Log.d("MyLog","image send = "+response.body!!.string())
-
+                return response.body?.string()
 
 
                 // Do something with the response.
             } catch (e: IOException) {
-                Log.d("MyLog","exception"+e.toString())
-
+                Log.d("MyLog", "exception" + e.toString())
+                return null
             }
-        }.start()
+
 
 
     }

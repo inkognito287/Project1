@@ -2,12 +2,15 @@ package com.example.qrreader
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.fragment.HistoryItem
 import com.example.qrreader.Pojo.DocumentsItem
@@ -23,13 +26,14 @@ class CustomRecyclerAdapter(
         var image: ImageView? = null
         var time: TextView
         var day: TextView
+        var status: ImageView
         init {
             itemView.setOnClickListener(this)
             largeTextView = itemView.findViewById(R.id.txt_name)
             smallTextView = itemView.findViewById(R.id.txt_number)
-            image = itemView.findViewById(R.id.imageViewStatus)
             time = itemView.findViewById(R.id.textViewDateTime)
             day = itemView.findViewById(R.id.textViewDateDay)
+            status = itemView.findViewById(R.id.imageViewStatus)
         }
 
         override fun onClick(v: View?) {
@@ -53,11 +57,16 @@ class CustomRecyclerAdapter(
         holder.smallTextView?.text = names1?.get(position)?.date.toString()
         holder.day.text = names1?.get(position)?.day
         holder.time.text = names1?.get(position)?.time
+        if(names1.get(position).status=="no") {
+            holder.status.setImageResource(R.drawable.history_status_no)
+
+        }
+        else     holder.status.setImageResource(R.drawable.submitted)
 
         holder.itemView.setOnClickListener(){
            var bundle= Bundle()
             bundle.putInt("position",position)
-            var fragment= HistoryItem()
+            var fragment = HistoryItem()
             fragment.arguments=bundle
 
             var myFragmentTransaction = MyFragmentTransaction(context)

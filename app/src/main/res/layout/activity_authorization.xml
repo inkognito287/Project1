@@ -93,13 +93,13 @@
         app:layout_constraintTop_toTopOf="@+id/guideline14" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/editTextName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@null"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Логин"
+        android:text="Nikita"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintHorizontal_bias="0.361"
@@ -108,13 +108,13 @@
         app:layout_constraintVertical_bias="0.411" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/editTextPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@null"
         android:ems="10"
         android:inputType="text|textPassword"
-        android:text="Пароль"
+        android:text="123"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintHorizontal_bias="0.385"

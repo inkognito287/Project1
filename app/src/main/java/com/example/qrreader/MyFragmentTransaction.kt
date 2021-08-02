@@ -11,7 +11,7 @@ class MyFragmentTransaction (var context: Context){
     fun fragmentTransactionReplace(fragment: Fragment) {
 
         val backStateName: String = fragment.javaClass.name
-        val fragmentPopped =(context as AppCompatActivity).supportFragmentManager.popBackStackImmediate(backStateName, 0);
+        val fragmentPopped = (context as AppCompatActivity).supportFragmentManager.popBackStackImmediate(backStateName, 0);
 
         if (!fragmentPopped) {
 

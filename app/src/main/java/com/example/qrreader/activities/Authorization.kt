@@ -19,33 +19,41 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.HashMap
 
 
 class Authorization : AppCompatActivity() {
-    lateinit var  sharedPreferences: SharedPreferences
-    var url="http://6636b7428e6d.ngrok.io"
+    lateinit var sharedPreferences: SharedPreferences
+    lateinit var url: String
+    var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityAuthorizationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-
-        sharedPreferences= getSharedPreferences("user", Context.MODE_PRIVATE)
-        if (sharedPreferences.getString("user","false")=="true") {
+        sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
+        url = "https://9d395b8b4dff.ngrok.io"
+                //sharedPreferences.getString("url", "").toString()
+        if (sharedPreferences.getString("user", "false") == "true") {
             val intent = Intent(this@Authorization, MainActivity::class.java)
             startActivity(intent)
+            authorized = true
             finish()
         }
 
-        binding = ActivityAuthorizationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
         binding.enterButton.setOnClickListener {
-
-            request(url,binding.editTextTextPersonName3.text.toString(),binding.editTextTextPersonName2.text.toString())
-
+            if (!authorized)
+                request(
+                    url,
+                    binding.editTextPassword.text.toString(),
+                    binding.editTextName.text.toString()
+                )
 
 
         }
@@ -53,56 +61,58 @@ class Authorization : AppCompatActivity() {
 
     fun switchPasswordVisibility(v: View) {
 
-        if (binding.editTextTextPersonName3.transformationMethod == null) {
+        if (binding.editTextPassword.transformationMethod == null) {
             binding.imageViewEye.setImageResource(R.drawable.authorization_eye)
-            binding.editTextTextPersonName3.transformationMethod = PasswordTransformationMethod()
+            binding.editTextPassword.transformationMethod = PasswordTransformationMethod()
 
         } else {
             binding.imageViewEye.setImageResource(R.drawable.authorization_close_eye)
-            binding.editTextTextPersonName3.transformationMethod = null
+            binding.editTextPassword.transformationMethod = null
         }
     }
 
 
+    fun request(url: String, password: String, name: String) {
+
+        var string = ""
+
+        val fullUrl =
+            URL("$url/Home/test?name=$name&password=$password")
+
+        Thread {
+            try {
 
 
-
-        fun request( url: String,  password: String,  name: String) {
-
-            var string=""
-
-            val url =
-                URL("$url/Home/test?name=$name&password=$password")
-
-            Thread {
-                with(url.openConnection() as HttpURLConnection) {
+                with(fullUrl.openConnection() as HttpURLConnection) {
 
                     requestMethod = "POST"  // optional default is GET
                     inputStream.bufferedReader().use {
                         it.lines().forEach { line ->
                             string = line
                         }
-                        if (string=="true"|| (name=="admin"&& password=="admin")) {
+                        if (string == "true" || (name == "admin" && password == "admin")) {
                             val intent = Intent(this@Authorization, MainActivity::class.java)
                             startActivity(intent)
-                            val editor=sharedPreferences.edit()
-                            editor.putString ("user","true")
-                             editor.apply()
+                            val editor = sharedPreferences.edit()
+                            editor.putString("user", "true")
+                            editor.apply()
                             finish()
                         }
 
 
-
-
                     }
                 }
-            runOnUiThread(){
-                Log.d("MyLog", string)
+                runOnUiThread() {
+                    Log.d("MyLog", "token = $string")
+                    sharedPreferences.edit().putString("token", string).apply()
+                }
+            }catch (e:Exception){
+
             }
-            }.start()
 
-        }
+        }.start()
 
+    }
 
 
 }
