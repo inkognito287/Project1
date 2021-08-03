@@ -31,6 +31,7 @@ class ImageFragment : Fragment() {
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
     lateinit var  binding:FragmentImageBinding
+    lateinit var newCode:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,7 +56,20 @@ class ImageFragment : Fragment() {
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
 
-        binding.code.text = saveCode
+
+        try{if(saveCode.contains("http://")){
+            saveCode=saveCode.removePrefix("http://")
+        }
+        else if (saveCode.contains("https://")){
+            saveCode=saveCode.removePrefix("https://")
+        }
+            val parts=saveCode.split("/")
+            parts[3]
+            newCode="Заказ №${parts[2]}, Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
+        }catch (e:Exception){
+            newCode = "ошибка "
+        }
+        binding.code.text = newCode
         return binding.root
     }
 
@@ -208,10 +222,12 @@ class ImageFragment : Fragment() {
             var time = OUTPUT_PATERN_TIME.format(test)
             var day = OUTPUT_PATERN_DAY.format(test)
 
+
+
             writeToFile(
                 createJsonObject(
                     getStringFromBitmap(saveImage)!!,
-                    saveCode,
+                    newCode,
                     date.toString(),
                     day,
                     time,

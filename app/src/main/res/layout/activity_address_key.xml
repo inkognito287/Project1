@@ -58,7 +58,7 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline67"
-            app:layout_constraintStart_toStartOf="@+id/guideline70"
+            app:layout_constraintStart_toStartOf="@+id/guideline66"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.41" />
 
@@ -75,20 +75,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.04" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_group"
-            android:onClick="back"
-            app:backgroundTint="@null"
-            app:layout_constraintBottom_toTopOf="@+id/guideline67"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/guideline66"
-            app:layout_constraintHorizontal_bias="0.32"
-            app:layout_constraintStart_toStartOf="@+id/guideline71"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/view"
@@ -121,6 +107,20 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline16"
             app:layout_constraintStart_toStartOf="@+id/guideline15"
             app:layout_constraintTop_toTopOf="@+id/guideline13" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/enterDataButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/authorization_button_enter"
+            android:text="Подтвердить"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toTopOf="@+id/guideline22"
+            app:layout_constraintEnd_toStartOf="@+id/guideline24"
+            app:layout_constraintStart_toStartOf="@+id/guideline23"
+            app:layout_constraintTop_toTopOf="@+id/guideline14" />
 
         <EditText
             android:id="@+id/editTextTextAddress"

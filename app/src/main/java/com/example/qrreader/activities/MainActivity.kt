@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -56,8 +57,6 @@ class MainActivity : AppCompatActivity() {
         array = ArrayList()
         myFragmentTransaction = MyFragmentTransaction(this)
         val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
-        if (shardPreference.contains("key") && shardPreference.contains("address")) {
-            //historyFragment = HistoryFragment()
 
             // request()
             val filter = IntentFilter().apply {
@@ -67,11 +66,6 @@ class MainActivity : AppCompatActivity() {
             this.registerReceiver(myBroadcastReceiver, filter)
             //fragmentTransactionReplace(historyFragment)
             myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-        } else {
-            myFragmentTransaction.fragmentTransactionReplace(DataFragment())
-
-
-        }
     }
 
     fun history(v: View) {
@@ -134,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (resultCode == 28) {
 
-            var zxf= readToFile()
+            var zxf = readToFile()
             val gson = Gson()
             val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
 //            for (x in 0..res.documents?.size!!-1)
@@ -175,25 +169,29 @@ class MainActivity : AppCompatActivity() {
                             last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
                             last.code!!
                         ) == "true"
-                    )
+                    ) {
                         result.documents[s]!!.status = "yes"
-                val resultEnd = gson.toJson(result)
-                writeToFile(resultEnd, this)
-                runOnUiThread {
-                    val gson = Gson()
-                    val res =
-                        gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-                    array?.clear()
-                    for (x in 0 until res.documents?.size!!)
-                        array?.add(res.documents[x]!!)
-                    myAdapter?.notifyDataSetChanged()
-                    historyClear?.isEnabled = true
-
-                }
+                        val resultEnd = gson.toJson(result)
+                        writeToFile(resultEnd, this)
+                        runOnUiThread {
+                            val gson = Gson()
+                            val res =
+                                gson.fromJson(
+                                    readToFile(),
+                                    com.example.qrreader.Pojo.Response::class.java
+                                )
+                            array?.clear()
+                            for (x in 0 until res.documents?.size!!)
+                                array?.add(res.documents[x]!!)
+                            myAdapter?.notifyDataSetChanged()
+                            historyClear?.isEnabled = true
+                        }
+                    }
 
 
             } catch (e: Exception) {
-
+                Toast.makeText(this, "Не удалось отправить на сервер", Toast.LENGTH_SHORT).show()
+                historyClear?.isEnabled = true
             }
 
         }.start()
@@ -237,7 +235,8 @@ class MainActivity : AppCompatActivity() {
     fun imageRequest(image: String, name: String, code: String): String? {
         val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", "")
-        val url = sharedPreferences.getString("address", "")
+        val sharedPreferencesAdress = getSharedPreferences("address",Context.MODE_PRIVATE)
+        val url = sharedPreferencesAdress.getString("address", "")
         val client = OkHttpClient()
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)

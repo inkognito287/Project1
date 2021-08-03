@@ -55,30 +55,6 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.66" />
 
-        <Button
-            android:id="@+id/buttonHistory2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_codicon_history"
-            app:backgroundTint="@null"
-            app:layout_constraintBottom_toTopOf="@+id/guideline76"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline75" />
-
-        <Button
-            android:id="@+id/captureActivityButtonSetting2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_cil_settings"
-            app:backgroundTint="@null"
-            app:layout_constraintBottom_toTopOf="@+id/guideline76"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button"
-            app:layout_constraintTop_toTopOf="@+id/guideline75" />
-
         <View
             android:id="@+id/view11"
             android:layout_width="0dp"
@@ -88,15 +64,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline74"
+            app:layout_constraintTop_toTopOf="@+id/guideline72"
             app:layout_constraintVertical_bias="1.0" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/ic_group_5"
-            android:backgroundTint="@null"
+            android:background="@drawable/shape"
             app:layout_constraintBottom_toTopOf="@+id/guideline73"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toStartOf="@+id/guideline81"
@@ -140,7 +115,7 @@
             android:id="@+id/barcode_overlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline74"
+            app:layout_constraintBottom_toTopOf="@+id/guideline72"
             app:layout_constraintEnd_toEndOf="@+id/preview"
             app:layout_constraintStart_toStartOf="@+id/preview"
             app:layout_constraintTop_toTopOf="@+id/guideline77" />
@@ -180,7 +155,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Документ"
+            android:text="Сканирование"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline77"

@@ -27,9 +27,10 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
- var array: ArrayList<DocumentsItem>? = null
- var myAdapter: CustomRecyclerAdapter? = null
-class HistoryFragment : Fragment(), UpdateAdapter {
+lateinit var array: ArrayList<DocumentsItem>
+ lateinit var myAdapter: CustomRecyclerAdapter
+ lateinit var myAdapterUpdate:UpdateAdapter
+class HistoryFragment : Fragment() {
 
 
     lateinit var binding: FragmentHistoryBinding
@@ -114,6 +115,7 @@ class HistoryFragment : Fragment(), UpdateAdapter {
                     array?.add(element!!)
                 activity?.runOnUiThread() {
                     myAdapter = CustomRecyclerAdapter(array!!, requireContext())
+                    myAdapterUpdate = myAdapter
                     binding.recyclerView.adapter = myAdapter
                     binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
                     myAdapter!!.notifyDataSetChanged()
@@ -152,21 +154,6 @@ class HistoryFragment : Fragment(), UpdateAdapter {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun update() {
-
-        //if (myAdapter != null) {
-        val gson = Gson()
-        val kek = gson.fromJson(readToFile(), Response::class.java)
-        array?.clear()
-        for (element in kek.documents!!)
-            array?.add(element!!)
-        activity?.runOnUiThread() {
-            myAdapter?.notifyDataSetChanged()
-        }
-        // }
-
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun deserialize() {

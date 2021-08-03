@@ -9,7 +9,13 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.example.qrreader.CustomRecyclerAdapter
+import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.Pojo.Response
+import com.example.qrreader.fragment.array
+import com.example.qrreader.fragment.myAdapter
+import com.example.qrreader.fragment.myAdapterUpdate
 import com.google.android.gms.common.util.SharedPreferencesUtils
 import com.google.gson.Gson
 import okhttp3.MultipartBody
@@ -24,12 +30,60 @@ import java.lang.Exception
 
 class MyBroadcastReceiver : BroadcastReceiver() {
     lateinit var sharedPreferences: SharedPreferences
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
+    @SuppressLint("UnsafeProtectedBroadcastReceiver", "ServiceCast")
     override fun onReceive(context: Context?, intent: Intent?) {
          sharedPreferences = context?.getSharedPreferences("user", Context.MODE_PRIVATE)!!
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val wf = cm.activeNetwork
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
             ?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+       // val activeWifi = wf.getNetworkCapabilities(wf.activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        if (wf!=null){
+
+
+            Thread {try {
+                val gson = Gson()
+
+                val result = gson.fromJson(readToFile(context), Response::class.java)
+
+                var s = result.documents!!.size
+
+                for (x in result.documents.size - 1 downTo 0) {
+                    val last = result.documents[x]
+                    if (last?.status == "no")
+                        if (imageRequest(
+                                last.photo.toString(),
+                                last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                                last.code!!
+                            ) == "true"
+                        ) {
+                            result.documents[x]!!.status = "yes"
+
+                        }
+                    array?.clear()
+
+                    for (x in 0..result.documents.size-1)
+                      array!!.add(result.documents[x]!!)
+
+                    Log.d("MyLog",array.toString())
+
+                }
+
+                val resultEnd = gson.toJson(result)
+                writeToFile(resultEnd, context)
+
+                (context as AppCompatActivity).runOnUiThread {
+                    myAdapter.update()
+                }
+            }catch (e:Exception){
+
+                Log.d("MyLog","wifi exception=$e")
+
+            }
+            }.start()
+
+        }
+        else
         if (activeNetwork == true) {
 
 
@@ -53,7 +107,14 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             ) {
                                 result.documents[x]!!.status = "yes"
 
+                                //myAdapter?.notifyDataSetChanged()
+
                             }
+                        array?.clear()
+                        for (x in 0 until result.documents?.size!!)
+                            array?.add(result.documents[x]!!)
+                        myAdapter.update()
+
                     }
 
                     val resultEnd = gson.toJson(result)
@@ -72,7 +133,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 
         val token = sharedPreferences.getString("token", "")
-        val url = sharedPreferences.getString("url", "")
+        val url = sharedPreferences.getString("address", "")
         val client = OkHttpClient()
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)

@@ -72,17 +72,17 @@ class BarcodeScanActivity : AppCompatActivity() {
 
 
 
-        binding.buttonHistory2.setOnClickListener(){
-            setResult(1,intent)
-            intent.putExtra("fragment",1)
-            finish()
-        }
-        binding.captureActivityButtonSetting2.setOnClickListener(){
-
-            setResult(1,intent)
-            intent.putExtra("fragment",2)
-            finish()
-        }
+//        binding.buttonHistory2.setOnClickListener(){
+//            setResult(1,intent)
+//            intent.putExtra("fragment",1)
+//            finish()
+//        }
+//        binding.captureActivityButtonSetting2.setOnClickListener(){
+//
+//            setResult(1,intent)
+//            intent.putExtra("fragment",2)
+//            finish()
+//        }
         binding.button2.setOnClickListener(){
             finish()
         }

@@ -32,39 +32,14 @@ class DataFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val sharedPreference = requireActivity().getSharedPreferences("user", Context.MODE_PRIVATE)
-        if (sharedPreference.contains("key") && sharedPreference.contains("address")) {
+        val sharedPreference = requireActivity().getSharedPreferences("address", Context.MODE_PRIVATE)
+
             binding.editTextTextKey.isEnabled = false
+            binding.editTextTextKey.setText(sharedPreference.getString("key", ""))
             binding.editTextTextAddress.isEnabled = false
-
-        } else {
-            binding.enterDataButton.setOnClickListener() {
-                sharedPreference.edit().putString("key", binding.editTextTextKey.text.toString())
-                    .putString(
-                        "address",
-                        binding.editTextTextAddress.text.toString()
-
-                    ).apply()
-                binding.button3.isEnabled = true
-                requireActivity().findViewById<Button>(R.id.buttonHistory).isEnabled = true
-                requireActivity().findViewById<Button>(R.id.button).isEnabled = true
-                requireActivity().findViewById<Button>(R.id.buttonSetting).isEnabled = true
+            binding.editTextTextAddress.setText(sharedPreference.getString("address", ""))
 
 
 
-                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-            }
-
-            binding.button3.isEnabled = false
-            requireActivity().findViewById<Button>(R.id.buttonHistory).isEnabled = false
-            requireActivity().findViewById<Button>(R.id.button).isEnabled = false
-            requireActivity().findViewById<Button>(R.id.buttonSetting).isEnabled = false
-
-            binding.editTextTextKey.isEnabled = true
-            binding.editTextTextAddress.isEnabled = true
-
-        }
-    }
-
-
+}
 }

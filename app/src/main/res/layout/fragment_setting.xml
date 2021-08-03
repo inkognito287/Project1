@@ -104,30 +104,17 @@
                 app:layout_constraintStart_toStartOf="@+id/guideline71"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <include
-                android:id="@+id/include"
-                layout="@layout/setting_button"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:onClick="@{(view)->activity.secure(view)}"
-                app:image="@{settingItems.securePolicy.image}"
-                app:layout_constraintBottom_toTopOf="@+id/guideline37"
-                app:layout_constraintTop_toBottomOf="@+id/view4"
-                app:text="@{settingItems.securePolicy.text}"
-                tools:layout_editor_absoluteX="1dp">
-
-            </include>
 
             <include
                 android:id="@+id/include2"
                 layout="@layout/setting_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:image="@{settingItems.data.image}"
-                app:layout_constraintBottom_toTopOf="@+id/guideline38"
-                app:layout_constraintTop_toBottomOf="@+id/include"
-                app:text="@{settingItems.data.text}"
                 android:onClick="@{(view)->activity.data(view)}"
+                app:image="@{settingItems.data.image}"
+                app:layout_constraintBottom_toTopOf="@+id/guideline37"
+                app:layout_constraintTop_toBottomOf="@+id/view4"
+                app:text="@{settingItems.data.text}"
                 tools:layout_editor_absoluteX="1dp">
 
             </include>
@@ -136,11 +123,11 @@
                 layout="@layout/setting_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:onClick="@{(view)->activity.finish(view)}"
                 app:image="@{settingItems.exit.image}"
-                app:layout_constraintBottom_toTopOf="@+id/guideline39"
+                app:layout_constraintBottom_toTopOf="@+id/guideline38"
                 app:layout_constraintTop_toBottomOf="@+id/include2"
                 app:text="@{settingItems.exit.text}"
-                android:onClick="@{(view)->activity.finish(view)}"
                 tools:layout_editor_absoluteX="1dp">
 
             </include>

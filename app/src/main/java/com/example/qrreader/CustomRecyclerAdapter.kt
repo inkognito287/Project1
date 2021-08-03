@@ -2,24 +2,27 @@ package com.example.qrreader
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.fragment.HistoryItem
 import com.example.qrreader.Pojo.DocumentsItem
+import com.example.qrreader.Pojo.Response
+import com.google.gson.Gson
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
     var names1: ArrayList<DocumentsItem>, var context:Context
-) :
-    RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+) :  UpdateAdapter,RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
         var largeTextView: TextView? = null
         var smallTextView: TextView? = null
@@ -95,4 +98,37 @@ class CustomRecyclerAdapter(
     }
     fun kek(){
     }
+
+    override fun update() {
+       // Thread(){
+
+         val gson= Gson()
+        val result= gson.fromJson(readToFile(context),Response::class.java)
+
+        names1.clear()
+        for (x in 0..result.documents!!.size-1)
+        names1.add(result.documents!![x]!!)
+           // (context as AppCompatActivity).runOnUiThread(){
+                notifyDataSetChanged()
+            //}
+       // }
+
+
+    }
+
+    private fun readToFile(context: Context?): String {
+
+        return try {
+            val reader =
+                BufferedReader(InputStreamReader(context?.openFileInput("single.json")))
+            val text = reader.readText()
+            reader.close()
+            text
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+            "ERROR"
+        }
+
+    }
+
 }
