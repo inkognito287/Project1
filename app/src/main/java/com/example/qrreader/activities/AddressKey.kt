@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
+import com.example.qrreader.CustomDialog
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
 import com.example.qrreader.fragment.HistoryFragment
@@ -20,63 +22,78 @@ import java.net.URL
 class AddressKey : AppCompatActivity() {
 
 
-    lateinit var binding:ActivityAddressKeyBinding
+    lateinit var binding: ActivityAddressKeyBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddressKeyBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreference=getSharedPreferences("address", Context.MODE_PRIVATE)
+        val sharedPreference = getSharedPreferences("address", Context.MODE_PRIVATE)
         if (sharedPreference.contains("key") && sharedPreference.contains("address")) {
-            val intent = Intent (this@AddressKey,Authorization::class.java)
+            val intent = Intent(this@AddressKey, Authorization::class.java)
             startActivity(intent)
             finish()
-        }
-         else {
+        } else {
             binding.enterDataButton.setOnClickListener() {
+                binding.progressBarFirst.visibility = View.VISIBLE
                 Thread {
-                    var responseBody = ""
-                    val address = binding.editTextTextAddress.text.toString()
-                    val key = binding.editTextTextKey.text.toString()
-                    val client = OkHttpClient()
-                    val requestBody = MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("key", key)
-                        .build();
-
-
-                    val request = Request.Builder()
-                        .url("$address/Account/testService?key=$key")
-                        .post(requestBody)
-                        .build();
 
                     try {
-                        val response: Response = client.newCall(request).execute()
-                        responseBody = response.body?.string().toString()
+                        val address = binding.editTextTextAddress.text.toString()
+
+                        val key = binding.editTextTextKey.text.toString()
+                        var responseBody = ""
+
+                        val client = OkHttpClient()
+                        val requestBody = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("key", key)
+                            .build();
+
+
+                        val request = Request.Builder()
+                            .url("$address/Account/testService?key=$key")
+                            .post(requestBody)
+                            .build();
+
+                        try {
+                            val response: Response = client.newCall(request).execute()
+                            responseBody = response.body?.string().toString()
+                        } catch (e: Exception) {
+                            responseBody = "false"
+                        }
+                        if (responseBody != "false") {
+
+                            sharedPreference.edit()
+                                .putString("key", binding.editTextTextKey.text.toString())
+                                .putString(
+                                    "address",
+                                    binding.editTextTextAddress.text.toString()
+
+                                ).apply()
+                            val intent = Intent(this@AddressKey, Authorization::class.java)
+                            startActivity(intent)
+                        } else {
+
+
+                            Log.d("MyLog", "error")
+                        }
+                        binding.progressBarFirst.visibility = View.GONE
+
+
                     } catch (e: Exception) {
-                        responseBody="false"
-                    }
-                    if (responseBody!="false")
-                    {
 
-                        sharedPreference.edit().putString("key", binding.editTextTextKey.text.toString())
-                            .putString(
-                                "address",
-                                binding.editTextTextAddress.text.toString()
+                        runOnUiThread {
+                            binding.progressBarFirst.visibility = View.GONE
+                            val alert = CustomDialog()
+                            alert.showDialog(this, "error")
+                        }
 
-                            ).apply()
-                        val intent = Intent (this@AddressKey,Authorization::class.java)
-                        startActivity(intent)
                     }
-                    else {
-                        Log.d("MyLog", "error")
-                    }
-
                 }.start()
-
 
 
             }
 
+        }
     }
-}
 }

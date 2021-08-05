@@ -81,6 +81,7 @@ class Authorization : AppCompatActivity() {
             URL("$url/Account/test?name=$name&password=$password")
 
         Thread {
+            binding.progressBarSecond.visibility=View.VISIBLE
             try {
 
 
@@ -115,8 +116,10 @@ class Authorization : AppCompatActivity() {
                 }
             } catch (e: Exception) {
 
-            }
 
+
+            }
+            binding.progressBarSecond.visibility=View.GONE
         }.start()
 
     }

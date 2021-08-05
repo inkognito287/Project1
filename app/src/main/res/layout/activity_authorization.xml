@@ -98,8 +98,8 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:ems="10"
+        android:hint="Логин"
         android:inputType="textPersonName"
-        android:text="Nikita"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintHorizontal_bias="0.361"
@@ -113,8 +113,8 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:ems="10"
+        android:hint="Пароль"
         android:inputType="text|textPassword"
-        android:text="123"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintHorizontal_bias="0.385"
@@ -306,4 +306,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.13" />
+
+    <ProgressBar
+        android:id="@+id/progressBarSecond"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
