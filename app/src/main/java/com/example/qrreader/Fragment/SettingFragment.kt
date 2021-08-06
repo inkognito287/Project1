@@ -21,14 +21,14 @@ class SettingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding= FragmentSettingBinding.inflate(inflater, container,false)
+        binding = FragmentSettingBinding.inflate(inflater, container,false)
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.settingItems= SettingData().getSettingItems()
+        binding.settingItems = SettingData().getSettingItems()
         binding.activity = activity as MainActivity?
 //        activity?.findViewById<Button>(R.id.buttonHistory)?.setOnClickListener(){
 //            Navigation.findNavController(this.requireView()).navigate(R.id.action_settingFragment_to_historyFragment)

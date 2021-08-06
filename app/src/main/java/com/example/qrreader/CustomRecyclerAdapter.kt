@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.fragment.HistoryItem
@@ -18,6 +19,7 @@ import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
@@ -74,7 +76,8 @@ class CustomRecyclerAdapter(
 
             var myFragmentTransaction = MyFragmentTransaction(context)
             myFragmentTransaction.fragmentTransactionReplace(fragment)
-            //(context as AppCompatActivity).supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView,fragment ).commit()
+
+
 
         }
 
@@ -113,6 +116,19 @@ class CustomRecyclerAdapter(
             //}
        // }
 
+
+    }
+
+    override fun clear() {
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                context?.openFileOutput(
+                    "single.json",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+            )
+            outputStreamWriter.close()
+        }catch (e:Exception){}
 
     }
 

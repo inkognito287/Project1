@@ -19,6 +19,7 @@ import com.example.qrreader.fragment.ImageFragment
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -32,17 +33,17 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     private lateinit var textureView: PreviewView
     private lateinit var bitmap: Bitmap
-    lateinit var binding:ActivityImageBinding
-
+    lateinit var binding: ActivityImageBinding
+    var timer: Timer? = null
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityImageBinding.inflate(layoutInflater)
+        binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        code="Не найден"
+        code = "не найден"
 
 
 
@@ -50,52 +51,41 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         binding.button.setOnClickListener() {
 
+            if (code!="не найден") {
+                //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                val bottomFragment = ImageFragment()
+                val bundle = Bundle()
+                bundle.putString("code", code)
+                bottomFragment.arguments = bundle
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.containerBottomSheet, bottomFragment)
+                    .commit()
 
-            //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            val bottomFragment = ImageFragment()
-            val bundle = Bundle()
-            bundle.putString("code", code)
-            bottomFragment.arguments = bundle
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.containerBottomSheet, bottomFragment)
-                .commit()
 
+                val bottomSheetBehaviour =
+                    BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
 
-            val bottomSheetBehaviour =
-                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
+                bottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
+                // button.isClickable = false
 
-            bottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
-            // button.isClickable = false
-
-            //finish()
+                //finish()
+            }
         }
 
 
-
-//        binding.buttonHistory2.setOnClickListener(){
-//            setResult(1,intent)
-//            intent.putExtra("fragment",1)
-//            finish()
-//        }
-//        binding.captureActivityButtonSetting2.setOnClickListener(){
-//
-//            setResult(1,intent)
-//            intent.putExtra("fragment",2)
-//            finish()
-//        }
-        binding.button2.setOnClickListener(){
+        binding.button2.setOnClickListener() {
             finish()
         }
-
-
-
-
 
         // Request camera permissions if needed
         if (isCameraPermissionGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_PERMS_CAMERA)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CODE_PERMS_CAMERA
+            )
         }
     }
 
@@ -104,7 +94,11 @@ class BarcodeScanActivity : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMS_CAMERA) {
             if (isCameraPermissionGranted()) {
@@ -135,7 +129,8 @@ class BarcodeScanActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Camera initialization failed.")
 
         // CameraSelector
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        val cameraSelector =
+            CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
 
         // Preview
         val preview = Preview.Builder().build()
@@ -153,15 +148,23 @@ class BarcodeScanActivity : AppCompatActivity() {
             .apply {
                 setAnalyzer(cameraExecutor, BarcodeAnalyzer { result ->
                     // update UI
-                   binding.barcodeOverlay.update(result)
+                    binding.barcodeOverlay.update(result)
                     // send result if not empty
                     if (result.barcodes.isNotEmpty() && !isFinishing) {
-                      result.barcodes.forEach{
-                          code=it.rawValue.toString()
-                      }
+                        result.barcodes.forEach {
+                            code = it.rawValue.toString()
+                            timer=Timer()
+                            timer!!.schedule(object :TimerTask(){
+                                override fun run() {
+                                    code = "не найден"
+                                    timer!!.cancel()
+                                }
+                            },4000)
+
+                        }
 
                         //setResult(RESULT_OK, prepareIntentBarcodeDetected(result.barcodes.mapNotNull { it.rawValue }))
-                      //  finish()
+                        //  finish()
                     }
                 })
             }

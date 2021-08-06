@@ -32,7 +32,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
     lateinit var sharedPreferences: SharedPreferences
     @SuppressLint("UnsafeProtectedBroadcastReceiver", "ServiceCast")
     override fun onReceive(context: Context?, intent: Intent?) {
-         sharedPreferences = context?.getSharedPreferences("user", Context.MODE_PRIVATE)!!
+         sharedPreferences = context?.getSharedPreferences("address", Context.MODE_PRIVATE)!!
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wf = cm.activeNetwork
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
@@ -73,7 +73,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 writeToFile(resultEnd, context)
 
                 (context as AppCompatActivity).runOnUiThread {
-                    myAdapter.update()
+                    myAdapter?.update()
                 }
             }catch (e:Exception){
 
@@ -113,7 +113,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                         array?.clear()
                         for (x in 0 until result.documents?.size!!)
                             array?.add(result.documents[x]!!)
-                        myAdapter.update()
+                        myAdapter?.update()
 
                     }
 
@@ -144,7 +144,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
         var request = Request.Builder()
             .addHeader("token", token.toString())
-            .url("$url/Home/image")
+            .url("$url/Account/image")
             .post(requestBody)
             .build();
 

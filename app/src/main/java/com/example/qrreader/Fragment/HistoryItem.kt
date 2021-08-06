@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.example.qrreader.Pojo.DocumentsItem
@@ -70,7 +71,12 @@ class HistoryItem : Fragment() {
         val kek = gson.fromJson(readToFile(), Response::class.java)
         for (element in kek.documents!!)
             array.add(element!!)
-       binding.documentImage.setImage(ImageSource.bitmap(getBitmapFromString(array[position].photo!!)!!))
+       binding.documentImage.setImageBitmap((getBitmapFromString(array[position].photo!!)!!))
+       binding.documentFormat.text=array[position].date
+       binding.orderNumber.text=array[position].code
+        binding.documentImage.scaleType=ImageView.ScaleType.CENTER_CROP
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

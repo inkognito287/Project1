@@ -119,16 +119,33 @@
 
             </include>
 
+
             <include
+                android:id="@+id/include"
                 layout="@layout/setting_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:onClick="@{(view)->activity.finish(view)}"
                 app:image="@{settingItems.exit.image}"
-                app:layout_constraintBottom_toTopOf="@+id/guideline38"
-                app:layout_constraintTop_toBottomOf="@+id/include2"
+                app:layout_constraintBottom_toTopOf="@+id/guideline39"
+                app:layout_constraintTop_toTopOf="@+id/guideline38"
                 app:text="@{settingItems.exit.text}"
                 tools:layout_editor_absoluteX="1dp">
+
+            </include>
+
+
+            <include
+                layout="@layout/setting_button"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:onClick="@{(view)->activity.clearHistory(view)}"
+                app:image="@{settingItems.clearHistory.image}"
+                app:layout_constraintBottom_toTopOf="@+id/include"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/include2"
+                app:text="@{settingItems.clearHistory.text}">
 
             </include>
 

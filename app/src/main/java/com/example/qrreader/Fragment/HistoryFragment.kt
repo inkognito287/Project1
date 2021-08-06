@@ -28,8 +28,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 lateinit var array: ArrayList<DocumentsItem>
- lateinit var myAdapter: CustomRecyclerAdapter
- lateinit var myAdapterUpdate:UpdateAdapter
+  var myAdapter: CustomRecyclerAdapter?=null
+  var myAdapterUpdate:UpdateAdapter?=null
 class HistoryFragment : Fragment() {
 
 
@@ -57,31 +57,7 @@ class HistoryFragment : Fragment() {
         })
 
 
-        binding.historyClear.setOnClickListener() {
 
-
-            try {
-                val outputStreamWriter = OutputStreamWriter(
-                    activity?.openFileOutput(
-                        "single.json",
-                        AppCompatActivity.MODE_PRIVATE
-                    )
-                )
-                outputStreamWriter.write("")
-
-                outputStreamWriter.close()
-
-            } catch (e: IOException) {
-                Log.e("MyLog", "File write failed: $e")
-            }
-
-            if (myAdapter!=null){
-            array?.clear()
-            myAdapter!!.notifyDataSetChanged()
-            }
-
-
-        }
         if (readToFile() == "ERROR") {
             val outputStreamWriter = OutputStreamWriter(
                 activity?.openFileOutput(
@@ -201,6 +177,8 @@ class HistoryFragment : Fragment() {
     fun imageRequest(image: String, name: String, code: String):String? {
 
             var token = "rerere"
+            var sharedPreferencesAddress=activity?.getSharedPreferences("address",Context.MODE_PRIVATE)
+            var url=sharedPreferencesAddress?.getString("address","")
             var client = OkHttpClient()
             var requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -211,7 +189,7 @@ class HistoryFragment : Fragment() {
 
             var request = Request.Builder()
                 .addHeader("token", token)
-                .url("https://686de5f02685.ngrok.io/Home/image")
+                .url("$url/Home/image")
                 .post(requestBody)
                 .build();
 

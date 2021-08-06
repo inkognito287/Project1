@@ -46,12 +46,12 @@ class AddressKey : AppCompatActivity() {
                         val client = OkHttpClient()
                         val requestBody = MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
-                            .addFormDataPart("key", key)
+                            .addFormDataPart("password", key)
                             .build();
 
 
                         val request = Request.Builder()
-                            .url("$address/Account/testService?key=$key")
+                            .url("$address/Account/test")
                             .post(requestBody)
                             .build();
 
@@ -69,7 +69,7 @@ class AddressKey : AppCompatActivity() {
                                     "address",
                                     binding.editTextTextAddress.text.toString()
 
-                                ).apply()
+                                ).putString("token",responseBody).apply()
                             val intent = Intent(this@AddressKey, Authorization::class.java)
                             startActivity(intent)
                         } else {
@@ -85,7 +85,7 @@ class AddressKey : AppCompatActivity() {
                         runOnUiThread {
                             binding.progressBarFirst.visibility = View.GONE
                             val alert = CustomDialog()
-                            alert.showDialog(this, "error")
+                            alert.showDialog(this, "Ошибка")
                         }
 
                     }

@@ -1,6 +1,8 @@
 package com.example.qrreader.activities
 
 
+import android.app.ActivityManager
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -13,6 +15,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -26,6 +29,7 @@ import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
+import com.example.qrreader.service.MyService
 import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -106,6 +110,43 @@ class MainActivity : AppCompatActivity() {
         myFragmentTransaction.fragmentTransactionReplace(data)
     }
 
+    fun clearHistory(v:View){
+
+        val builder = AlertDialog.Builder(this)
+        builder
+            //.setTitle("Важное сообщение! Пожалуйста, прочитайте его! Очень прошу!")
+            .setTitle("Очистка истории")
+            .setMessage("Вы уверены, что хотите очистить историю? Неотправленные данные будут удалены")
+            .setIcon(R.drawable.clear_history)
+            .setPositiveButton("Ок") {
+                    dialog, id ->  dialog.cancel()
+                myAdapterUpdate= myAdapter
+                if (myAdapter!=null)
+                myAdapterUpdate?.clear()
+
+
+
+
+//                if(isMyServiceRunning(MyService::class.java)){
+//
+//                    Log.d("MyLog", "Service started")
+//                    stopService(Intent(this,MyService::class.java))
+//                }else
+//                {
+//                    Log.d("MyLog", "Service stopped")
+//                    startService(Intent(this,MyService::class.java))
+//
+//                }
+
+            }
+            .setNegativeButton("Отмена"){
+                dialog,_->dialog.dismiss()
+            }
+        builder.create()
+        builder.show()
+
+    }
+
     fun historBack(v: View) {
         finish()
     }
@@ -131,9 +172,9 @@ class MainActivity : AppCompatActivity() {
             var zxf = readToFile()
             val gson = Gson()
             val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-//            for (x in 0..res.documents?.size!!-1)
-//                array?.add(res.documents[x]!!)
-//            myAdapter?.notifyDataSetChanged()
+            for (x in 0..res.documents?.size!!-1)
+                array?.add(res.documents[x]!!)
+            myAdapter?.notifyDataSetChanged()
             myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
 
             myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
@@ -146,11 +187,6 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun deserialize() {
-        val historyClear =
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView)?.view?.findViewById<Button>(
-                R.id.historyClear
-            )
-        historyClear?.isEnabled = false
         Thread {
             val gson = Gson()
 
@@ -184,14 +220,14 @@ class MainActivity : AppCompatActivity() {
                             for (x in 0 until res.documents?.size!!)
                                 array?.add(res.documents[x]!!)
                             myAdapter?.notifyDataSetChanged()
-                            historyClear?.isEnabled = true
+
                         }
                     }
 
 
             } catch (e: Exception) {
                 Toast.makeText(this, "Не удалось отправить на сервер", Toast.LENGTH_SHORT).show()
-                historyClear?.isEnabled = true
+
             }
 
         }.start()
@@ -233,10 +269,12 @@ class MainActivity : AppCompatActivity() {
 
 
     fun imageRequest(image: String, name: String, code: String): String? {
-        val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", "")
         val sharedPreferencesAdress = getSharedPreferences("address",Context.MODE_PRIVATE)
         val url = sharedPreferencesAdress.getString("address", "")
+
+
         val client = OkHttpClient()
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -247,7 +285,7 @@ class MainActivity : AppCompatActivity() {
 
         val request = Request.Builder()
             .addHeader("token", token.toString())
-            .url("$url/Home/image")
+            .url("$url/Account/image")
             .post(requestBody)
             .build();
 
@@ -270,10 +308,38 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
         applicationContext.cacheDir.deleteRecursively()
+
+        startService(Intent(this,MyService::class.java))
+
+
         super.onDestroy()
 
     }
-}
+
+
+    private fun  isMyServiceRunning(mclass: Class<MyService>):Boolean {
+
+        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+
+        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
+
+
+            if (mclass.name.equals(service.service.className)) {
+
+                return true
+
+               }
+
+        }
+        return false
+    }
+
+
+    }
+
+
+
 
 
 

@@ -10,6 +10,7 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.qrreader.CustomDialog
 
 import com.example.qrreader.Model.User
 import com.example.qrreader.R
@@ -40,7 +41,7 @@ class Authorization : AppCompatActivity() {
 
         url = sharedPreferencesAdress.getString("address", "").toString()
         //sharedPreferences.getString("url", "").toString()
-        if (sharedPreferences.contains("token")) {
+        if (sharedPreferences.contains("user")) {
             val intent = Intent(this@Authorization, MainActivity::class.java)
             startActivity(intent)
             authorized = true
@@ -76,12 +77,12 @@ class Authorization : AppCompatActivity() {
     fun request(url: String, password: String, name: String) {
 
         var string = ""
-
+        var token=sharedPreferencesAdress.getString("token","")
         val fullUrl =
-            URL("$url/Account/test?name=$name&password=$password")
-
+            URL("$url/Account/testService?name=$name&password=$password")
+        binding.progressBarSecond.visibility=View.VISIBLE
         Thread {
-            binding.progressBarSecond.visibility=View.VISIBLE
+
             try {
 
 
@@ -90,6 +91,7 @@ class Authorization : AppCompatActivity() {
                 val password = binding.editTextPassword.text.toString()
                 val client = OkHttpClient()
                 val requestBody = MultipartBody.Builder()
+
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("name", name)
                     .addFormDataPart("password", password)
@@ -98,6 +100,7 @@ class Authorization : AppCompatActivity() {
 
                 val request = Request.Builder()
                     .url(fullUrl)
+                    .addHeader("token", token.toString())
                     .post(requestBody)
                     .build();
 
@@ -106,20 +109,31 @@ class Authorization : AppCompatActivity() {
                     responseBody = response.body?.string().toString()
                 } catch (e: Exception) {
 
-                    responseBody = "false"
+                    responseBody = "Сервер не отвечает"
                 }
-                if (responseBody != "error") {
-                    sharedPreferences.edit().putString("token", responseBody).apply()
+                if (responseBody == "correct") {
+
+                    sharedPreferences.edit().putString("user",binding.editTextName.text.toString()).apply()
                     val intent = Intent(this@Authorization, MainActivity::class.java)
                     startActivity(intent)
+
                     finish()
                 }
+                else {
+                    runOnUiThread {
+                        //binding.progressBarFirst.visibility = View.GONE
+                        val alert = CustomDialog()
+                        alert.showDialog(this, responseBody)
+                    }
+
+                }
             } catch (e: Exception) {
-
-
+                Log.d("MyLog", e.toString())
 
             }
-            binding.progressBarSecond.visibility=View.GONE
+            runOnUiThread() {
+                binding.progressBarSecond.visibility = View.GONE
+            }
         }.start()
 
     }

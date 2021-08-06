@@ -30,8 +30,9 @@ class ImageFragment : Fragment() {
     lateinit var text: String
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
-    lateinit var  binding:FragmentImageBinding
-    lateinit var newCode:String
+    lateinit var binding: FragmentImageBinding
+    lateinit var numberOfOrder: String
+    lateinit var documentFormat: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,23 +54,27 @@ class ImageFragment : Fragment() {
         }
         saveImage = activity?.findViewById<PreviewView>(R.id.preview)?.bitmap!!
         saveCode = arguments?.getString("code")!!
+        Log.d("MyLog", saveCode)
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
 
 
-        try{if(saveCode.contains("http://")){
-            saveCode=saveCode.removePrefix("http://")
-        }
-        else if (saveCode.contains("https://")){
-            saveCode=saveCode.removePrefix("https://")
-        }
-            val parts=saveCode.split("/")
+        try {
+            if (saveCode.contains("http://")) {
+                saveCode = saveCode.removePrefix("http://")
+            } else if (saveCode.contains("https://")) {
+                saveCode = saveCode.removePrefix("https://")
+            }
+            val parts = saveCode.split("/")
             parts[3]
-            newCode="Заказ №${parts[2]}, Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
-        }catch (e:Exception){
-            newCode = "ошибка "
+            numberOfOrder = "Заказ №${parts[2]}"
+            documentFormat = "Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
+
+        } catch (e: Exception) {
+            numberOfOrder = "Неизвестный документ "
+            documentFormat = ""
         }
-        binding.code.text = newCode
+
         return binding.root
     }
 
@@ -211,7 +216,7 @@ class ImageFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitImage() {
-        binding.progressBar.visibility=View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         Thread() {
             val date = Date()
             var dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
@@ -227,17 +232,17 @@ class ImageFragment : Fragment() {
             writeToFile(
                 createJsonObject(
                     getStringFromBitmap(saveImage)!!,
-                    newCode,
-                    date.toString(),
+                    numberOfOrder,
+                    documentFormat,
                     day,
                     time,
                     "no"
                 )
             )
 
-        //readToFile()
-        requireActivity().setResult(28)
-        requireActivity().finish()
+            //readToFile()
+            requireActivity().setResult(28)
+            requireActivity().finish()
         }.start()
     }
 
