@@ -373,7 +373,7 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    fun checkStatus(): Boolean {
+    private fun checkStatus(): Boolean {
 
 
         if (myAdapter != null) {

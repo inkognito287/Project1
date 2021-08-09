@@ -1,4 +1,6 @@
-package com.example.qrreader
+package com.example.qrreader.Model
+
+import com.example.qrreader.R
 
 class SettingData {
 

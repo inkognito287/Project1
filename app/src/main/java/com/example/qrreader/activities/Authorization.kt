@@ -1,10 +1,8 @@
 package com.example.qrreader.activities
 
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.ColorSpace
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
@@ -12,21 +10,16 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.CustomDialog
 
-import com.example.qrreader.Model.User
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
 import okhttp3.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
-import java.net.HttpURLConnection
 import java.net.URL
-import java.util.HashMap
 
 
 class Authorization : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
-    lateinit var sharedPreferencesAdress: SharedPreferences
+    private lateinit var sharedPreferencesAddress: SharedPreferences
     lateinit var url: String
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
@@ -37,9 +30,9 @@ class Authorization : AppCompatActivity() {
         setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
-        sharedPreferencesAdress = getSharedPreferences("address",Context.MODE_PRIVATE)
+        sharedPreferencesAddress = getSharedPreferences("address",Context.MODE_PRIVATE)
 
-        url = sharedPreferencesAdress.getString("address", "").toString()
+        url = sharedPreferencesAddress.getString("address", "").toString()
         //sharedPreferences.getString("url", "").toString()
         if (sharedPreferences.contains("user")) {
             val intent = Intent(this@Authorization, MainActivity::class.java)
@@ -77,7 +70,7 @@ class Authorization : AppCompatActivity() {
     fun request(url: String, password: String, name: String) {
 
         var string = ""
-        var token=sharedPreferencesAdress.getString("token","")
+        var token=sharedPreferencesAddress.getString("token","")
         val fullUrl =
             URL("$url/Account/testService?name=$name&password=$password")
         binding.progressBarSecond.visibility=View.VISIBLE
