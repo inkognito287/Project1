@@ -60,15 +60,20 @@ class ImageFragment : Fragment() {
 
 
         try {
-            if (saveCode.contains("http://")) {
-                saveCode = saveCode.removePrefix("http://")
-            } else if (saveCode.contains("https://")) {
-                saveCode = saveCode.removePrefix("https://")
+            if (saveCode.contains("http")) {
+                if (saveCode.contains("http://")) {
+                    saveCode = saveCode.removePrefix("http://")
+                } else if (saveCode.contains("https://")) {
+                    saveCode = saveCode.removePrefix("https://")
+                }
+                val parts = saveCode.split("/")
+                parts[3]
+                numberOfOrder = "Заказ №${parts[2]}"
+                documentFormat = "Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
+            } else {
+                numberOfOrder = "Неизвестный документ "
+                documentFormat = ""
             }
-            val parts = saveCode.split("/")
-            parts[3]
-            numberOfOrder = "Заказ №${parts[2]}"
-            documentFormat = "Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
 
         } catch (e: Exception) {
             numberOfOrder = "Неизвестный документ "

@@ -40,12 +40,13 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.lang.Exception
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
 
 
-    private var myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
+    private lateinit var myBroadcastReceiver: com.example.qrreader.broadcastReceiver.MyBroadcastReceiver
     lateinit var text: String
     lateinit var binding: ActivityMainBinding
 
@@ -58,18 +59,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        if (!isMyServiceRunning(MyService::class.java)) {
+//            stopService(Intent(this,MyService::class.java))
+//        }
+
+
+
         array = ArrayList()
         myFragmentTransaction = MyFragmentTransaction(this)
+        myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
         val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
 
-            // request()
-            val filter = IntentFilter().apply {
-                addAction("android.net.conn.CONNECTIVITY_CHANGE")
-                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
-            }
-            this.registerReceiver(myBroadcastReceiver, filter)
-            //fragmentTransactionReplace(historyFragment)
-            myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+        // request()
+        val filter = IntentFilter().apply {
+            addAction("android.net.conn.CONNECTIVITY_CHANGE")
+            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        }
+        this.registerReceiver(myBroadcastReceiver, filter)
+        //fragmentTransactionReplace(historyFragment)
+        myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
     }
 
     fun history(v: View) {
@@ -110,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         myFragmentTransaction.fragmentTransactionReplace(data)
     }
 
-    fun clearHistory(v:View){
+    fun clearHistory(v: View) {
 
         val builder = AlertDialog.Builder(this)
         builder
@@ -118,13 +127,11 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Очистка истории")
             .setMessage("Вы уверены, что хотите очистить историю? Неотправленные данные будут удалены")
             .setIcon(R.drawable.clear_history)
-            .setPositiveButton("Ок") {
-                    dialog, id ->  dialog.cancel()
-                myAdapterUpdate= myAdapter
-                if (myAdapter!=null)
-                myAdapterUpdate?.clear()
-
-
+            .setPositiveButton("Ок") { dialog, id ->
+                dialog.cancel()
+                myAdapterUpdate = myAdapter
+                if (myAdapter != null)
+                    myAdapterUpdate?.clear()
 
 
 //                if(isMyServiceRunning(MyService::class.java)){
@@ -139,8 +146,8 @@ class MainActivity : AppCompatActivity() {
 //                }
 
             }
-            .setNegativeButton("Отмена"){
-                dialog,_->dialog.dismiss()
+            .setNegativeButton("Отмена") { dialog, _ ->
+                dialog.dismiss()
             }
         builder.create()
         builder.show()
@@ -172,7 +179,7 @@ class MainActivity : AppCompatActivity() {
             var zxf = readToFile()
             val gson = Gson()
             val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-            for (x in 0..res.documents?.size!!-1)
+            for (x in 0..res.documents?.size!! - 1)
                 array?.add(res.documents[x]!!)
             myAdapter?.notifyDataSetChanged()
             myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
@@ -271,7 +278,7 @@ class MainActivity : AppCompatActivity() {
     fun imageRequest(image: String, name: String, code: String): String? {
         val sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", "")
-        val sharedPreferencesAdress = getSharedPreferences("address",Context.MODE_PRIVATE)
+        val sharedPreferencesAdress = getSharedPreferences("address", Context.MODE_PRIVATE)
         val url = sharedPreferencesAdress.getString("address", "")
 
 
@@ -306,18 +313,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onDestroy() {
-        applicationContext.cacheDir.deleteRecursively()
+//    override fun onDestroy() {
+//        //applicationContext.cacheDir.deleteRecursively()
+//
+//        startService(Intent(this, MyService::class.java))
+//
+//
+//        super.onDestroy()
+//
+//    }
 
-        startService(Intent(this,MyService::class.java))
 
-
-        super.onDestroy()
-
-    }
-
-
-    private fun  isMyServiceRunning(mclass: Class<MyService>):Boolean {
+    private fun isMyServiceRunning(mclass: Class<MyService>): Boolean {
 
         val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
@@ -329,14 +336,48 @@ class MainActivity : AppCompatActivity() {
 
                 return true
 
-               }
+            }
 
         }
         return false
     }
 
+    fun checkStatus(): Boolean {
+
+        var s = 0
+        for (x in 0..myAdapter!!.names1.size - 1)
+            if (myAdapter!!.names1[x].status == "no")
+                s++
+        if (s > 0)
+
+            return true
+        return false
 
     }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("life", "Stop")
+        Thread() {
+            if (checkStatus())
+                if (!isMyServiceRunning(MyService::class.java)) {
+                    startService(Intent(this, MyService::class.java))
+                }
+        }.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.d("life", "resume")
+        if (isMyServiceRunning(MyService::class.java)) {
+            stopService(Intent(this, MyService::class.java))
+        }
+        }
+
+
+
+}
 
 
 

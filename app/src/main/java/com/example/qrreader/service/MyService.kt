@@ -49,7 +49,7 @@ class MyService: Service() {
                 }catch (e:Exception){}
             }
         }
-        timer.scheduleAtFixedRate(timeTask,10000,4)
+        timer.schedule(timeTask,0,5000)
 
         createNotificationChannel()
 
@@ -127,7 +127,7 @@ class MyService: Service() {
         val pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0)
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setContentText("Отправка документов")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_group6)
             .setContentIntent(pendingIntent)
             .build()
 

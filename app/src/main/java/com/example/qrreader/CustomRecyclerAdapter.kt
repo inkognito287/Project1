@@ -23,26 +23,33 @@ import java.io.OutputStreamWriter
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
-    var names1: ArrayList<DocumentsItem>, var context:Context
+    var names1: ArrayList<DocumentsItem>, var context:Context, var itemListener:onItemListener
 ) :  UpdateAdapter,RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
+
+    private var mItemListener: onItemListener=itemListener
+
+    class MyViewHolder(itemView: View,onItemListener: onItemListener) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
         var largeTextView: TextView? = null
         var smallTextView: TextView? = null
         var image: ImageView? = null
         var time: TextView
         var day: TextView
         var status: ImageView
+        var  onItemListener: onItemListener = onItemListener
+
         init {
+
             itemView.setOnClickListener(this)
             largeTextView = itemView.findViewById(R.id.txt_name)
             smallTextView = itemView.findViewById(R.id.txt_number)
             time = itemView.findViewById(R.id.textViewDateTime)
             day = itemView.findViewById(R.id.textViewDateDay)
             status = itemView.findViewById(R.id.imageViewStatus)
+
         }
 
         override fun onClick(v: View?) {
-            TODO("Not yet implemented")
+            onItemListener.onItemClick(adapterPosition)
         }
 
     }
@@ -51,7 +58,7 @@ class CustomRecyclerAdapter(
         val itemView =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.history_item, parent, false)
-        return MyViewHolder(itemView)
+        return MyViewHolder(itemView,mItemListener)
     }
 
     //E MMM dd HH:mm:ss z yyyy
@@ -68,18 +75,18 @@ class CustomRecyclerAdapter(
         }
         else     holder.status.setImageResource(R.drawable.submitted)
 
-        holder.itemView.setOnClickListener(){
-           var bundle= Bundle()
-            bundle.putInt("position",position)
-            var fragment = HistoryItem()
-            fragment.arguments=bundle
-
-            var myFragmentTransaction = MyFragmentTransaction(context)
-            myFragmentTransaction.fragmentTransactionReplace(fragment)
-
-
-
-        }
+//        holder.itemView.setOnClickListener(){
+//           var bundle= Bundle()
+//            bundle.putInt("position",position)
+//            var fragment = HistoryItem()
+//            fragment.arguments=bundle
+//
+//            var myFragmentTransaction = MyFragmentTransaction(context)
+//            myFragmentTransaction.fragmentTransactionReplace(fragment)
+//
+//
+//
+//        }
 
 
         //holder.image?.setImageURI(Uri.parse(text))
@@ -145,6 +152,11 @@ class CustomRecyclerAdapter(
             "ERROR"
         }
 
+    }
+    interface onItemListener{
+        fun  onItemClick(position: Int) {
+            
+        }
     }
 
 }

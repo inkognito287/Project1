@@ -24,7 +24,7 @@ import kotlin.collections.ArrayList
 
 
 class HistoryItem : Fragment() {
-   lateinit var binding:FragmentHistoryItemBinding
+    lateinit var binding: FragmentHistoryItemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +44,10 @@ class HistoryItem : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.progressBarHistoryItem.visibility = View.VISIBLE
+        Thread() {
             getImage(readToFile(), requireArguments().getInt("position"))
-
+        }.start()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -65,16 +67,19 @@ class HistoryItem : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getImage(json:String,position:Int){
+    fun getImage(json: String, position: Int) {
         val array = ArrayList<DocumentsItem>()
         val gson = Gson()
         val kek = gson.fromJson(readToFile(), Response::class.java)
         for (element in kek.documents!!)
             array.add(element!!)
-       binding.documentImage.setImageBitmap((getBitmapFromString(array[position].photo!!)!!))
-       binding.documentFormat.text=array[position].date
-       binding.orderNumber.text=array[position].code
-        binding.documentImage.scaleType=ImageView.ScaleType.CENTER_CROP
+           activity?.runOnUiThread {
+                binding.documentImage.setImageBitmap((getBitmapFromString(array[position].photo!!)!!))
+                binding.documentFormat.text = array[position].date
+                binding.orderNumber.text = array[position].code
+                binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                binding.progressBarHistoryItem.visibility = View.GONE
+            }
 
 
     }

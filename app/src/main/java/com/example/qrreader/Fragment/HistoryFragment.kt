@@ -22,6 +22,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import com.example.qrreader.Interfaces.UpdateAdapter
+import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.OnSwipeTouchListener
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -30,7 +31,7 @@ import okhttp3.Request
 lateinit var array: ArrayList<DocumentsItem>
   var myAdapter: CustomRecyclerAdapter?=null
   var myAdapterUpdate:UpdateAdapter?=null
-class HistoryFragment : Fragment() {
+class HistoryFragment : Fragment(),CustomRecyclerAdapter.onItemListener {
 
 
     lateinit var binding: FragmentHistoryBinding
@@ -90,7 +91,7 @@ class HistoryFragment : Fragment() {
                 for (element in kek.documents!!)
                     array?.add(element!!)
                 activity?.runOnUiThread() {
-                    myAdapter = CustomRecyclerAdapter(array!!, requireContext())
+                    myAdapter = CustomRecyclerAdapter(array!!, requireContext(),this)
                     myAdapterUpdate = myAdapter
                     binding.recyclerView.adapter = myAdapter
                     binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -208,6 +209,16 @@ class HistoryFragment : Fragment() {
 
 
 
+    }
+    override fun onItemClick(position: Int) {
+
+        var bundle= Bundle()
+        bundle.putInt("position",position)
+        var fragment = HistoryItem()
+        fragment.arguments=bundle
+
+        var myFragmentTransaction = MyFragmentTransaction(this.requireContext())
+        myFragmentTransaction.fragmentTransactionReplace(fragment)
     }
 
 }

@@ -4,10 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Github/Project1/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/authorization_button_enter.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/authorization_close_eye.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/authorization_edit_text_background.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/authorization_eye.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/bottom_sheet_background.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/clear_history.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/header_background.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/history_status_no.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic___________.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic____________.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_bi_person_circle.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_cil_settings.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_codicon_history.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_cross.xml" value="0.3828125" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_data_key.xml" value="0.21875" />
@@ -17,8 +25,10 @@
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_group_1.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_group_5.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_launcher_background.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_main_icon.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_data.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_exit.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_politicy_secure.xml" value="0.225" />
         <entry key="..\:/Github/Project1/app/src/main/res/layout/activity_address_key.xml" value="0.36666666666666664" />
         <entry key="..\:/Github/Project1/app/src/main/res/layout/activity_authorization.xml" value="0.36666666666666664" />
         <entry key="..\:/Github/Project1/app/src/main/res/layout/activity_image.xml" value="0.36666666666666664" />
@@ -41,6 +51,7 @@
         <entry key="..\:/Github/Project1/app/src/main/res/layout/setting_button.xml" value="0.36666666666666664" />
         <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.23802083333333332" />
         <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.23802083333333332" />
+        <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_logo_image.xml" value="0.2140625" />
       </map>
     </option>
   </component>
