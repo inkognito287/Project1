@@ -22,11 +22,7 @@ class CustomDialog {
         val text = dialog.findViewById<View>(R.id.text_dialog) as TextView
         text.text = msg
         val dialogButton: Button = dialog.findViewById<View>(R.id.btn_ok) as Button
-        dialogButton.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                dialog.dismiss()
-            }
-        })
+        dialogButton.setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
 }

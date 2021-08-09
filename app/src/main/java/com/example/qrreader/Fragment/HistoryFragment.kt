@@ -31,7 +31,7 @@ import okhttp3.Request
 lateinit var array: ArrayList<DocumentsItem>
   var myAdapter: CustomRecyclerAdapter?=null
   var myAdapterUpdate:UpdateAdapter?=null
-class HistoryFragment : Fragment(),CustomRecyclerAdapter.onItemListener {
+class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
 
 
     lateinit var binding: FragmentHistoryBinding

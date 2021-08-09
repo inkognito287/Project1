@@ -1,6 +1,7 @@
 package com.example.qrreader.activities
 
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Dialog
 import android.content.Context
@@ -14,6 +15,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -65,7 +67,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-
         array = ArrayList()
         myFragmentTransaction = MyFragmentTransaction(this)
         myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
@@ -88,8 +89,11 @@ class MainActivity : AppCompatActivity() {
 
     fun camera(v: View) {
         val intent = Intent(this, BarcodeScanActivity::class.java)
-        startActivityForResult(intent, 28)
+        //startActivityForResult(intent, 28)
+        resultLauncher.launch(intent)
+
     }
+
 
     fun setting(v: View) {
 
@@ -165,31 +169,58 @@ class MainActivity : AppCompatActivity() {
         else finish()
     }
 
+    //    @RequiresApi(Build.VERSION_CODES.O)
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == 1) {
+//            if (data?.getIntExtra("fragment", 1) == 1)
+//                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+//            else if (data?.getIntExtra("fragment", 1) == 2)
+//                myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+//        }
+//        if (resultCode == 28) {
+//
+//            var zxf = readToFile()
+//            val gson = Gson()
+//            val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
+//            for (x in 0 until res.documents?.size!!)
+//                array?.add(res.documents[x]!!)
+//            myAdapter?.notifyDataSetChanged()
+//            myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+//
+//            myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+//            deserialize()
+//
+//        }
+//
+//    }
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == 1) {
-            if (data?.getIntExtra("fragment", 1) == 1)
-                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-            else if (data?.getIntExtra("fragment", 1) == 2)
+    var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent? = result.data
+                if (data?.getIntExtra("fragment", 1) == 1)
+                    myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+                else if (data?.getIntExtra("fragment", 1) == 2)
+                    myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+            } else if (result.resultCode == 28) {
+                val data: Intent? = result.data
+                var zxf = readToFile()
+                val gson = Gson()
+                val res =
+                    gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
+                for (x in 0 until res.documents?.size!!)
+                    array?.add(res.documents[x]!!)
+                myAdapter?.notifyDataSetChanged()
                 myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
-        }
-        if (resultCode == 28) {
 
-            var zxf = readToFile()
-            val gson = Gson()
-            val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-            for (x in 0..res.documents?.size!! - 1)
-                array?.add(res.documents[x]!!)
-            myAdapter?.notifyDataSetChanged()
-            myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+                deserialize()
 
-            myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-            deserialize()
+            }
 
         }
-
-    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -312,7 +343,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-   
+
 //    override fun onDestroy() {
 //        //applicationContext.cacheDir.deleteRecursively()
 //
@@ -344,13 +375,16 @@ class MainActivity : AppCompatActivity() {
 
     fun checkStatus(): Boolean {
 
-        var s = 0
-        for (x in 0..myAdapter!!.names1.size - 1)
-            if (myAdapter!!.names1[x].status == "no")
-                s++
-        if (s > 0)
 
-            return true
+        if (myAdapter != null) {
+            var s = 0
+            for (x in 0 until myAdapter!!.names1.size)
+                if (myAdapter!!.names1[x].status == "no")
+                    s++
+            if (s > 0)
+
+                return true
+        }
         return false
 
     }
@@ -373,8 +407,7 @@ class MainActivity : AppCompatActivity() {
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }
-        }
-
+    }
 
 
 }

@@ -2,7 +2,6 @@ package com.example.qrreader
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Interfaces.UpdateAdapter
-import com.example.qrreader.fragment.HistoryItem
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.google.gson.Gson
@@ -23,19 +21,19 @@ import java.io.OutputStreamWriter
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
-    var names1: ArrayList<DocumentsItem>, var context:Context, var itemListener:onItemListener
+    var names1: ArrayList<DocumentsItem>, var context:Context, var itemListener:OnItemListener
 ) :  UpdateAdapter,RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
-    private var mItemListener: onItemListener=itemListener
+    private var mItemListener: OnItemListener=itemListener
 
-    class MyViewHolder(itemView: View,onItemListener: onItemListener) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
+    class MyViewHolder(itemView: View,onItemListener: OnItemListener) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
         var largeTextView: TextView? = null
         var smallTextView: TextView? = null
         var image: ImageView? = null
         var time: TextView
         var day: TextView
         var status: ImageView
-        var  onItemListener: onItemListener = onItemListener
+        var  onItemListener: OnItemListener = onItemListener
 
         init {
 
@@ -116,8 +114,8 @@ class CustomRecyclerAdapter(
         val result= gson.fromJson(readToFile(context),Response::class.java)
 
         names1.clear()
-        for (x in 0..result.documents!!.size-1)
-        names1.add(result.documents!![x]!!)
+        for (element in result.documents!!)
+        names1.add(element!!)
            // (context as AppCompatActivity).runOnUiThread(){
                 notifyDataSetChanged()
             //}
@@ -129,7 +127,7 @@ class CustomRecyclerAdapter(
     override fun clear() {
         try {
             val outputStreamWriter = OutputStreamWriter(
-                context?.openFileOutput(
+                context.openFileOutput(
                     "single.json",
                     AppCompatActivity.MODE_PRIVATE
                 )
@@ -153,7 +151,7 @@ class CustomRecyclerAdapter(
         }
 
     }
-    interface onItemListener{
+    interface OnItemListener{
         fun  onItemClick(position: Int) {
             
         }
