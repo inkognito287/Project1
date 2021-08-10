@@ -21,25 +21,26 @@ import java.io.OutputStreamWriter
 import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
-    var names1: ArrayList<DocumentsItem>, var context:Context, var itemListener:OnItemListener
-) :  UpdateAdapter,RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+    var names1: ArrayList<DocumentsItem>, var context: Context, var itemListener: OnItemListener
+) : UpdateAdapter, RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
-    private var mItemListener: OnItemListener=itemListener
+    private var mItemListener: OnItemListener = itemListener
 
-    class MyViewHolder(itemView: View,onItemListener: OnItemListener) : RecyclerView.ViewHolder(itemView),View.OnClickListener{
-        var largeTextView: TextView? = null
-        var smallTextView: TextView? = null
+    class MyViewHolder(itemView: View, onItemListener: OnItemListener) :
+        RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        var documentFormatField: TextView? = null
+        var numberOfOrderField: TextView? = null
         var image: ImageView? = null
         var time: TextView
         var day: TextView
         var status: ImageView
-        var  onItemListener: OnItemListener = onItemListener
+        var onItemListener: OnItemListener = onItemListener
 
         init {
 
             itemView.setOnClickListener(this)
-            largeTextView = itemView.findViewById(R.id.txt_name)
-            smallTextView = itemView.findViewById(R.id.txt_number)
+            documentFormatField = itemView.findViewById(R.id.txt_name)
+            numberOfOrderField = itemView.findViewById(R.id.txt_number)
             time = itemView.findViewById(R.id.textViewDateTime)
             day = itemView.findViewById(R.id.textViewDateDay)
             status = itemView.findViewById(R.id.imageViewStatus)
@@ -56,38 +57,23 @@ class CustomRecyclerAdapter(
         val itemView =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.history_item, parent, false)
-        return MyViewHolder(itemView,mItemListener)
+        return MyViewHolder(itemView, mItemListener)
     }
 
     //E MMM dd HH:mm:ss z yyyy
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.largeTextView?.text = names1?.get(position)?.code.toString()
-        holder.smallTextView?.text = names1?.get(position)?.date.toString()
-        holder.day.text = names1?.get(position)?.day
-        holder.time.text = names1?.get(position)?.time
-        if(names1.get(position).status=="no") {
+        holder.documentFormatField?.text = names1[position].documentFormatField .toString()
+        holder.numberOfOrderField?.text = names1[position].numberOfOrderField .toString()
+        holder.day.text = names1[position].day
+        holder.time.text = names1[position].time
+        if (names1[position].status == "no") {
             holder.status.setImageResource(R.drawable.history_status_no)
 
-        }
-        else     holder.status.setImageResource(R.drawable.submitted)
-
-//        holder.itemView.setOnClickListener(){
-//           var bundle= Bundle()
-//            bundle.putInt("position",position)
-//            var fragment = HistoryItem()
-//            fragment.arguments=bundle
-//
-//            var myFragmentTransaction = MyFragmentTransaction(context)
-//            myFragmentTransaction.fragmentTransactionReplace(fragment)
-//
-//
-//
-//        }
+        } else holder.status.setImageResource(R.drawable.submitted)
 
 
-        //holder.image?.setImageURI(Uri.parse(text))
     }
 
     override fun getItemCount(): Int {
@@ -104,22 +90,23 @@ class CustomRecyclerAdapter(
         this.names1 = names1
         notifyDataSetChanged()
     }
-    fun kek(){
+
+    fun kek() {
     }
 
     override fun update() {
-       // Thread(){
+        // Thread(){
 
-         val gson= Gson()
-        val result= gson.fromJson(readToFile(context),Response::class.java)
+        val gson = Gson()
+        val result = gson.fromJson(readToFile(context), Response::class.java)
 
         names1.clear()
         for (element in result.documents!!)
-        names1.add(element!!)
-           // (context as AppCompatActivity).runOnUiThread(){
-                notifyDataSetChanged()
-            //}
-       // }
+            names1.add(element!!)
+        // (context as AppCompatActivity).runOnUiThread(){
+        notifyDataSetChanged()
+        //}
+        // }
 
 
     }
@@ -133,7 +120,8 @@ class CustomRecyclerAdapter(
                 )
             )
             outputStreamWriter.close()
-        }catch (e:Exception){}
+        } catch (e: Exception) {
+        }
 
     }
 
@@ -151,9 +139,10 @@ class CustomRecyclerAdapter(
         }
 
     }
-    interface OnItemListener{
-        fun  onItemClick(position: Int) {
-            
+
+    interface OnItemListener {
+        fun onItemClick(position: Int) {
+
         }
     }
 

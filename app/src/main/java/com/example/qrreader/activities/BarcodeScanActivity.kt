@@ -30,29 +30,26 @@ class BarcodeScanActivity : AppCompatActivity() {
 
 
     lateinit var code: String
-
-    private lateinit var textureView: PreviewView
-    private lateinit var bitmap: Bitmap
     lateinit var binding: ActivityImageBinding
-    var timer: Timer? = null
+
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
+    var timer: Timer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         code = "не найден"
 
 
-
-
-
-        binding.button.setOnClickListener() {
+        binding.button.setOnClickListener {
 
             if (code!="не найден") {
-                //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
                 val bottomFragment = ImageFragment()
                 val bundle = Bundle()
                 bundle.putString("code", code)
@@ -65,19 +62,16 @@ class BarcodeScanActivity : AppCompatActivity() {
                 val bottomSheetBehaviour =
                     BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
 
-                bottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
-                // button.isClickable = false
+                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
-                //finish()
             }
         }
 
 
-        binding.button2.setOnClickListener() {
+        binding.button2.setOnClickListener {
             finish()
         }
 
-        // Request camera permissions if needed
         if (isCameraPermissionGranted()) {
             startCamera()
         } else {
@@ -114,8 +108,8 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener(Runnable {
-            // CameraProvider
+        cameraProviderFuture.addListener({
+
             cameraProvider = cameraProviderFuture.get()
 
             // Build and bind the camera use cases
@@ -163,8 +157,6 @@ class BarcodeScanActivity : AppCompatActivity() {
 
                         }
 
-                        //setResult(RESULT_OK, prepareIntentBarcodeDetected(result.barcodes.mapNotNull { it.rawValue }))
-                        //  finish()
                     }
                 })
             }

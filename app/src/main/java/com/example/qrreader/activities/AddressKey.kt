@@ -55,11 +55,11 @@ class AddressKey : AppCompatActivity() {
                             .post(requestBody)
                             .build();
 
-                        try {
+                        responseBody = try {
                             val response: Response = client.newCall(request).execute()
-                            responseBody = response.body?.string().toString()
+                            response.body?.string().toString()
                         } catch (e: Exception) {
-                            responseBody = "false"
+                            "false"
                         }
                         if (responseBody != "false") {
 

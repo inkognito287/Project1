@@ -76,10 +76,12 @@ class ImageFragment : Fragment() {
             }
 
         } catch (e: Exception) {
-            numberOfOrder = "Неизвестный документ "
-            documentFormat = ""
+            numberOfOrder = ""
+            documentFormat = "Неизвестный документ"
         }
-
+        if (documentFormat.contains(','))
+            binding.nameOfDocument.text = documentFormat.substring(0, documentFormat.indexOf(","))
+        else binding.nameOfDocument.text = documentFormat
         return binding.root
     }
 
@@ -123,14 +125,14 @@ class ImageFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun createJsonObject(
         photo: String,
-        code: String,
-        date: String,
+        numberOfOrderField: String,
+        documentFormatField: String,
         day: String,
         time: String,
         status: String
     ): String? {
         val jsonNowString = readToFile()
-        Log.d("MyLog", "ReadFile=" + text)
+        Log.d("MyLog", "ReadFile=$text")
 
         val gson = Gson()
         val rootObject = JsonObject()
@@ -140,33 +142,33 @@ class ImageFragment : Fragment() {
             //  Log.d("MyLog", "deserializer =" + deserializer.documents!![0].toString())
 
 
-            for (i in 0..deserializer.documents!!.size - 1) {
+            for (i in deserializer.documents!!.indices) {
 
                 val childObject = JsonObject()
 
                 childObject.addProperty(
-                    "code",
-                    deserializer.documents.get(i)?.code
+                    "numberOfOrderField",
+                    deserializer.documents[i]?.numberOfOrderField
                 )
                 childObject.addProperty(
-                    "date",
-                    deserializer.documents.get(i)?.date
+                    "documentFormatField",
+                    deserializer.documents[i]?.documentFormatField
                 )
                 childObject.addProperty(
                     "photo",
-                    deserializer.documents.get(i)?.photo
+                    deserializer.documents[i]?.photo
                 )
                 childObject.addProperty(
                     "day",
-                    deserializer.documents.get(i)?.day
+                    deserializer.documents[i]?.day
                 )
                 childObject.addProperty(
                     "time",
-                    deserializer.documents.get(i)?.time
+                    deserializer.documents[i]?.time
                 )
                 childObject.addProperty(
                     "status",
-                    deserializer.documents.get(i)?.status
+                    deserializer.documents[i]?.status
                 )
                 arrayObject.add(childObject)
 
@@ -177,8 +179,8 @@ class ImageFragment : Fragment() {
 
         val childObject = JsonObject()
         // записываем текст в поле "message"
-        childObject.addProperty("code", code)
-        childObject.addProperty("date", date)
+        childObject.addProperty("numberOfOrderField", numberOfOrderField)
+        childObject.addProperty("documentFormatField", documentFormatField)
         childObject.addProperty("photo", photo)
         childObject.addProperty("day", day)
         childObject.addProperty("time", time)
@@ -186,20 +188,14 @@ class ImageFragment : Fragment() {
         arrayObject.add(childObject)
 
         rootObject.add("documents", arrayObject)
-//        //rootObject.add("kek",childObject)
-//        arrayObject.add(childObject)
-//        rootObject.add("documents",arrayObject)
-
-        val json = gson.toJson(rootObject)
-
-        // val data="{\"kek\":{\"photo\":\"\",\"code\":\"ES00003885860000000000ASV0201\"}}"
-        //очерний объект в поле "place"
 
 
-        return json  // генерация json строки
+
+
+        return gson.toJson(rootObject)  // генерация json строки
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
         val COMPRESSION_QUALITY = 100
         val encodedImage: String
@@ -209,7 +205,7 @@ class ImageFragment : Fragment() {
             byteArrayBitmapStream
         )
         val b: ByteArray = byteArrayBitmapStream.toByteArray()
-        encodedImage = Base64.getEncoder().encodeToString(b)
+        encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
         return encodedImage
     }
 

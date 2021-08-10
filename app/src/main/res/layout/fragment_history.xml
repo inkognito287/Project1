@@ -93,7 +93,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/ic_group"
-        android:onClick="historBack"
+        android:onClick="historyBack"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toTopOf="@+id/guideline67"
         app:layout_constraintDimensionRatio="1:1"

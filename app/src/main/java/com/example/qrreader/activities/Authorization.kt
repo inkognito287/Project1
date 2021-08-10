@@ -33,7 +33,6 @@ class Authorization : AppCompatActivity() {
         sharedPreferencesAddress = getSharedPreferences("address",Context.MODE_PRIVATE)
 
         url = sharedPreferencesAddress.getString("address", "").toString()
-        //sharedPreferences.getString("url", "").toString()
         if (sharedPreferences.contains("user")) {
             val intent = Intent(this@Authorization, MainActivity::class.java)
             startActivity(intent)
@@ -67,9 +66,8 @@ class Authorization : AppCompatActivity() {
     }
 
 
-    fun request(url: String, password: String, name: String) {
+    private fun request(url: String, password: String, name: String) {
 
-        var string = ""
         var token=sharedPreferencesAddress.getString("token","")
         val fullUrl =
             URL("$url/Account/testService?name=$name&password=$password")
@@ -97,12 +95,12 @@ class Authorization : AppCompatActivity() {
                     .post(requestBody)
                     .build();
 
-                try {
+                responseBody = try {
                     val response: Response = client.newCall(request).execute()
-                    responseBody = response.body?.string().toString()
+                    response.body?.string().toString()
                 } catch (e: Exception) {
 
-                    responseBody = "Сервер не отвечает"
+                    "Сервер не отвечает"
                 }
                 if (responseBody == "correct") {
 
@@ -114,7 +112,7 @@ class Authorization : AppCompatActivity() {
                 }
                 else {
                     runOnUiThread {
-                        //binding.progressBarFirst.visibility = View.GONE
+
                         val alert = CustomDialog()
                         alert.showDialog(this, responseBody)
                     }

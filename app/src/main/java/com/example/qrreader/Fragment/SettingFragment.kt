@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.qrreader.activities.MainActivity
-import com.example.qrreader.Model.SettingData
+import com.example.qrreader.model.SettingData
 
 import com.example.qrreader.databinding.FragmentSettingBinding
 

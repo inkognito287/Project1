@@ -6,7 +6,7 @@
     <data>
         <variable
             name="settingItems"
-            type="com.example.qrreader.Model.SettingItems" />
+            type="com.example.qrreader.model.SettingItems" />
         <variable
             name="activity"
             type="com.example.qrreader.activities.MainActivity" />

@@ -54,7 +54,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                         if (imageRequest(
                                 last.photo.toString(),
                                 last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                last.code!!
+                                last.documentFormatField!!
                             ) == "true"
                         ) {
                             result.documents[x]!!.status = "yes"
@@ -102,7 +102,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             if (imageRequest(
                                     last.photo.toString(),
                                     last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                    last.code!!
+                                    last.documentFormatField!!
                                 ) == "true"
                             ) {
                                 result.documents[x]!!.status = "yes"

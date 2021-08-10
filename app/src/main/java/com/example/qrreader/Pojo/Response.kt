@@ -10,11 +10,11 @@ data class Response(
 
 data class DocumentsItem(
 
-	@field:SerializedName("date")
-	var date: String? = null,
+	@field:SerializedName("numberOfOrderField")
+	var numberOfOrderField: String? = null,
 
-	@field:SerializedName("code")
-	var code: String? = null,
+	@field:SerializedName("documentFormatField")
+	var documentFormatField: String? = null,
 
 	@field:SerializedName("photo")
 	var photo: String? = null,

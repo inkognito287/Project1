@@ -3,32 +3,20 @@ package com.example.qrreader.activities
 
 import android.app.Activity
 import android.app.ActivityManager
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.CustomRecyclerAdapter
-import com.example.qrreader.MyBroadcastReceiver
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
-import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
 import com.example.qrreader.service.MyService
@@ -42,7 +30,6 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.lang.Exception
-import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
@@ -52,19 +39,16 @@ class MainActivity : AppCompatActivity() {
     lateinit var text: String
     lateinit var binding: ActivityMainBinding
 
-    //lateinit var historyFragment: HistoryFragment
+
     lateinit var myFragmentTransaction: MyFragmentTransaction
 
-    //lateinit var updateAdapter:UpdateAdapter
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        if (!isMyServiceRunning(MyService::class.java)) {
-//            stopService(Intent(this,MyService::class.java))
-//        }
+
 
 
         array = ArrayList()
@@ -127,7 +111,6 @@ class MainActivity : AppCompatActivity() {
 
         val builder = AlertDialog.Builder(this)
         builder
-            //.setTitle("Важное сообщение! Пожалуйста, прочитайте его! Очень прошу!")
             .setTitle("Очистка истории")
             .setMessage("Вы уверены, что хотите очистить историю? Неотправленные данные будут удалены")
             .setIcon(R.drawable.clear_history)
@@ -138,17 +121,6 @@ class MainActivity : AppCompatActivity() {
                     myAdapterUpdate?.clear()
 
 
-//                if(isMyServiceRunning(MyService::class.java)){
-//
-//                    Log.d("MyLog", "Service started")
-//                    stopService(Intent(this,MyService::class.java))
-//                }else
-//                {
-//                    Log.d("MyLog", "Service stopped")
-//                    startService(Intent(this,MyService::class.java))
-//
-//                }
-
             }
             .setNegativeButton("Отмена") { dialog, _ ->
                 dialog.dismiss()
@@ -158,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun historBack(v: View) {
+    fun historyBack(v: View) {
         finish()
     }
 
@@ -169,31 +141,6 @@ class MainActivity : AppCompatActivity() {
         else finish()
     }
 
-    //    @RequiresApi(Build.VERSION_CODES.O)
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (resultCode == 1) {
-//            if (data?.getIntExtra("fragment", 1) == 1)
-//                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-//            else if (data?.getIntExtra("fragment", 1) == 2)
-//                myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
-//        }
-//        if (resultCode == 28) {
-//
-//            var zxf = readToFile()
-//            val gson = Gson()
-//            val res = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-//            for (x in 0 until res.documents?.size!!)
-//                array?.add(res.documents[x]!!)
-//            myAdapter?.notifyDataSetChanged()
-//            myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
-//
-//            myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-//            deserialize()
-//
-//        }
-//
-//    }
     @RequiresApi(Build.VERSION_CODES.O)
     var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -241,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                     if (imageRequest(
                             last.photo.toString(),
                             last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.code!!
+                            last.numberOfOrderField!!
                         ) == "true"
                     ) {
                         result.documents[s]!!.status = "yes"
@@ -264,8 +211,9 @@ class MainActivity : AppCompatActivity() {
 
 
             } catch (e: Exception) {
-                Toast.makeText(this, "Не удалось отправить на сервер", Toast.LENGTH_SHORT).show()
-
+                runOnUiThread {
+                    Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
 
         }.start()
@@ -301,16 +249,16 @@ class MainActivity : AppCompatActivity() {
             outputStreamWriter.close()
             println("good")
         } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
+            Log.e("Exception", "File write failed: $e")
         }
     }
 
 
-    fun imageRequest(image: String, name: String, code: String): String? {
+    private fun imageRequest(image: String, name: String, code: String): String? {
         val sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", "")
-        val sharedPreferencesAdress = getSharedPreferences("address", Context.MODE_PRIVATE)
-        val url = sharedPreferencesAdress.getString("address", "")
+        val sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
+        val url = sharedPreferencesAddress.getString("address", "")
 
 
         val client = OkHttpClient()
@@ -336,24 +284,12 @@ class MainActivity : AppCompatActivity() {
 
             // Do something with the response.
         } catch (e: IOException) {
-            Log.d("MyLog", "exception" + e.toString())
+            Log.d("MyLog", "exception$e")
             return null
         }
 
 
     }
-
-
-//    override fun onDestroy() {
-//        //applicationContext.cacheDir.deleteRecursively()
-//
-//        startService(Intent(this, MyService::class.java))
-//
-//
-//        super.onDestroy()
-//
-//    }
-
 
     private fun isMyServiceRunning(mclass: Class<MyService>): Boolean {
 

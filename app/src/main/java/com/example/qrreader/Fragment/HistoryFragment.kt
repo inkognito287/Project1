@@ -2,8 +2,11 @@ package com.example.qrreader.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,18 +27,23 @@ import java.io.OutputStreamWriter
 import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.OnSwipeTouchListener
+import com.example.qrreader.singletones.MySingleton
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.*
+import kotlin.collections.ArrayList
 
 lateinit var array: ArrayList<DocumentsItem>
-  var myAdapter: CustomRecyclerAdapter?=null
-  var myAdapterUpdate:UpdateAdapter?=null
-class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
+var myAdapter: CustomRecyclerAdapter? = null
+var myAdapterUpdate: UpdateAdapter? = null
+
+class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
 
 
     lateinit var binding: FragmentHistoryBinding
-    //lateinit var array: ArrayList<DocumentsItem>
+    lateinit var image:Bitmap
+   // lateinit var array: ArrayList<DocumentsItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,7 +84,7 @@ class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MyLog", "OnViewCreated")
@@ -87,19 +95,19 @@ class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
             val zek = readToFile()
             if (zek != "") {
                 val kek = gson.fromJson(zek, Response::class.java)
-                    array?.clear()
+                array?.clear()
                 for (element in kek.documents!!)
                     array?.add(element!!)
+
                 activity?.runOnUiThread() {
-                    myAdapter = CustomRecyclerAdapter(array!!, requireContext(),this)
+                    myAdapter = CustomRecyclerAdapter(array!!, requireContext(), this)
                     myAdapterUpdate = myAdapter
                     binding.recyclerView.adapter = myAdapter
                     binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
                     myAdapter!!.notifyDataSetChanged()
                     binding.progressBar2.visibility = View.INVISIBLE
                 }
-
-              //  deserialize()
+                //  deserialize()
 
             } else activity?.runOnUiThread() {
                 binding.progressBar2.visibility = View.INVISIBLE
@@ -115,7 +123,6 @@ class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun readToFile(): String {
 
         try {
@@ -132,30 +139,36 @@ class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun deserialize() {
         Thread {
-        val gson = Gson()
+            val gson = Gson()
 
-        var result = gson.fromJson(readToFile(), Response::class.java)
+            var result = gson.fromJson(readToFile(), Response::class.java)
 
-        var s = result.documents!!.size-1
+            var s = result.documents!!.size - 1
 
 
-            var last = result.documents!![s-1]
-            if (last?.status=="no")
-                if(imageRequest(
-                last?.photo.toString(),
-                last?.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                last.code!!
-            )=="true")
-                result.documents!![s]!!.status="yes"
-                 var resultEnd=gson.toJson(result)
-                 writeToFile(resultEnd,context)
+            var last = result.documents!![s - 1]
+            if (last?.status == "no")
+                if (imageRequest(
+                        last?.photo.toString(),
+                        last?.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                        last.documentFormatField!!
+                    ) == "true"
+                )
+                    result.documents!![s]!!.status = "yes"
+            var resultEnd = gson.toJson(result)
+            writeToFile(resultEnd, context)
         }.start()
     }
 
-    private fun writeToFile(jsonData: String? , context: Context?) {
+    private fun getBitmapFromString(stringPicture: String): Bitmap? {
+        val decodedString: ByteArray = android.util.Base64.decode(stringPicture,Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
+
+
+    private fun writeToFile(jsonData: String?, context: Context?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context?.openFileOutput(
@@ -173,49 +186,53 @@ class HistoryFragment : Fragment(),CustomRecyclerAdapter.OnItemListener {
     }
 
 
+    private fun imageRequest(image: String, name: String, code: String): String? {
+
+        var token = "rerere"
+        var sharedPreferencesAddress =
+            activity?.getSharedPreferences("address", Context.MODE_PRIVATE)
+        var url = sharedPreferencesAddress?.getString("address", "")
+        var client = OkHttpClient()
+        var requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("image", image.toString())
+            .addFormDataPart("name", name.toString())
+            .addFormDataPart("code", code.toString())
+            .build();
+
+        var request = Request.Builder()
+            .addHeader("token", token)
+            .url("$url/Home/image")
+            .post(requestBody)
+            .build();
 
 
-    fun imageRequest(image: String, name: String, code: String):String? {
+        try {
+            val response: okhttp3.Response = client.newCall(request).execute()
 
-            var token = "rerere"
-            var sharedPreferencesAddress=activity?.getSharedPreferences("address",Context.MODE_PRIVATE)
-            var url=sharedPreferencesAddress?.getString("address","")
-            var client = OkHttpClient()
-            var requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", image.toString())
-                .addFormDataPart("name", name.toString())
-                .addFormDataPart("code", code.toString())
-                .build();
-
-            var request = Request.Builder()
-                .addHeader("token", token)
-                .url("$url/Home/image")
-                .post(requestBody)
-                .build();
+            return response.body?.string()
 
 
-            try {
-                val response: okhttp3.Response = client.newCall(request).execute()
-
-                return response.body?.string()
-
-
-                // Do something with the response.
-            } catch (e: IOException) {
-                Log.d("MyLog", "exception" + e.toString())
-                return null
-            }
-
+            // Do something with the response.
+        } catch (e: IOException) {
+            Log.d("MyLog", "exception" + e.toString())
+            return null
+        }
 
 
     }
-    override fun onItemClick(position: Int) {
 
-        var bundle= Bundle()
-        bundle.putInt("position",position)
+    override fun onItemClick(position: Int) {
+        MySingleton.text = array[position].numberOfOrderField.toString()
+        print(MySingleton.text)
+        MySingleton.image = getBitmapFromString(
+            array[position].photo.toString())!!
+        MySingleton.title = array[position].documentFormatField.toString()
+        var z=MySingleton.text
+        var bundle = Bundle()
+        bundle.putInt("position", position)
         var fragment = HistoryItem()
-        fragment.arguments=bundle
+        fragment.arguments = bundle
 
         var myFragmentTransaction = MyFragmentTransaction(this.requireContext())
         myFragmentTransaction.fragmentTransactionReplace(fragment)

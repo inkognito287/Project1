@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.databinding.FragmentHistoryItemBinding
+import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.IOException
@@ -41,7 +43,7 @@ class HistoryItem : Fragment() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.progressBarHistoryItem.visibility = View.VISIBLE
@@ -50,7 +52,7 @@ class HistoryItem : Fragment() {
         }.start()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun readToFile(): String {
 
         try {
@@ -66,17 +68,12 @@ class HistoryItem : Fragment() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     fun getImage(json: String, position: Int) {
-        val array = ArrayList<DocumentsItem>()
-        val gson = Gson()
-        val kek = gson.fromJson(readToFile(), Response::class.java)
-        for (element in kek.documents!!)
-            array.add(element!!)
            activity?.runOnUiThread {
-                binding.documentImage.setImageBitmap((getBitmapFromString(array[position].photo!!)!!))
-                binding.documentFormat.text = array[position].date
-                binding.orderNumber.text = array[position].code
+                binding.documentImage.setImageBitmap(MySingleton.image)
+                binding.documentFormat.text = MySingleton.text
+                binding.orderNumber.text = MySingleton.title
                 binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 binding.progressBarHistoryItem.visibility = View.GONE
             }
@@ -84,9 +81,9 @@ class HistoryItem : Fragment() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun getBitmapFromString(stringPicture: String): Bitmap? {
-        val decodedString: ByteArray = Base64.getDecoder().decode(stringPicture)
+        val decodedString: ByteArray = android.util.Base64.decode(stringPicture,Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 

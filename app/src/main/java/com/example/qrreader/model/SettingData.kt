@@ -1,4 +1,4 @@
-package com.example.qrreader.Model
+package com.example.qrreader.model
 
 import com.example.qrreader.R
 
