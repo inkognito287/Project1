@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Interfaces.UpdateAdapter
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
+import com.example.qrreader.fragment.array
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.IOException
@@ -64,11 +65,11 @@ class CustomRecyclerAdapter(
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.documentFormatField?.text = names1[position].documentFormatField .toString()
-        holder.numberOfOrderField?.text = names1[position].numberOfOrderField .toString()
-        holder.day.text = names1[position].day
-        holder.time.text = names1[position].time
-        if (names1[position].status == "no") {
+        holder.documentFormatField?.text = array[position].documentFormatField .toString()
+        holder.numberOfOrderField?.text = array[position].numberOfOrderField .toString()
+        holder.day.text = array[position].day
+        holder.time.text = array[position].time
+        if (array[position].status == "no") {
             holder.status.setImageResource(R.drawable.history_status_no)
 
         } else holder.status.setImageResource(R.drawable.submitted)
@@ -86,7 +87,7 @@ class CustomRecyclerAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateRecyclerView(names1: ArrayList<DocumentsItem>) {
+    fun updateRecyclerView(names1:  ArrayList<DocumentsItem>) {
         this.names1 = names1
         notifyDataSetChanged()
     }
@@ -112,6 +113,7 @@ class CustomRecyclerAdapter(
     }
 
     override fun clear() {
+        //names1.clear()
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context.openFileOutput(
@@ -119,6 +121,7 @@ class CustomRecyclerAdapter(
                     AppCompatActivity.MODE_PRIVATE
                 )
             )
+            outputStreamWriter.write("")
             outputStreamWriter.close()
         } catch (e: Exception) {
         }

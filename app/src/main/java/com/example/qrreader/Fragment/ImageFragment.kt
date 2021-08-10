@@ -13,6 +13,7 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
+import com.example.qrreader.Functions
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
@@ -27,12 +28,13 @@ import java.util.*
 
 class ImageFragment : Fragment() {
     lateinit var imageVew: ImageView
-    lateinit var text: String
+   // lateinit var text: String
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
     lateinit var binding: FragmentImageBinding
     lateinit var numberOfOrder: String
     lateinit var documentFormat: String
+    lateinit var myFunctions: Functions
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,6 +59,7 @@ class ImageFragment : Fragment() {
         Log.d("MyLog", saveCode)
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
+        myFunctions = Functions(requireContext().applicationContext)
 
 
         try {
@@ -95,7 +98,7 @@ class ImageFragment : Fragment() {
     private fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
-                activity?.openFileOutput(
+                context?.openFileOutput(
                     "single.json",
                     AppCompatActivity.MODE_PRIVATE
                 )
@@ -109,18 +112,7 @@ class ImageFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun readToFile(): String {
-        try {
-            val reader = BufferedReader(InputStreamReader(activity?.openFileInput("single.json")))
-            text = reader.readText()
-            reader.close()
-            return text
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
-            return "ERROR"
-        }
-    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createJsonObject(
@@ -131,8 +123,8 @@ class ImageFragment : Fragment() {
         time: String,
         status: String
     ): String? {
-        val jsonNowString = readToFile()
-        Log.d("MyLog", "ReadFile=$text")
+        val jsonNowString = myFunctions.readToFile()
+       // Log.d("MyLog", "ReadFile=$text")
 
         val gson = Gson()
         val rootObject = JsonObject()
@@ -208,13 +200,6 @@ class ImageFragment : Fragment() {
         encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
         return encodedImage
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getBitmapFromString(stringPicture: String): Bitmap? {
-        val decodedString: ByteArray = Base64.getDecoder().decode(stringPicture)
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitImage() {
         binding.progressBar.visibility = View.VISIBLE
@@ -230,7 +215,7 @@ class ImageFragment : Fragment() {
 
 
 
-            writeToFile(
+           myFunctions.writeToFile(
                 createJsonObject(
                     getStringFromBitmap(saveImage)!!,
                     numberOfOrder,

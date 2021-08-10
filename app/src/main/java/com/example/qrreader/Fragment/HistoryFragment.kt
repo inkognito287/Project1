@@ -12,10 +12,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qrreader.CustomRecyclerAdapter
+import com.example.qrreader.Functions
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.databinding.FragmentHistoryBinding
@@ -43,6 +45,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
 
     lateinit var binding: FragmentHistoryBinding
     lateinit var image:Bitmap
+    lateinit var myFunctions: Functions
    // lateinit var array: ArrayList<DocumentsItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,13 +60,28 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        myFunctions= Functions(requireContext().applicationContext)
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
-        binding.historyConstraint.setOnTouchListener(object : OnSwipeTouchListener(activity) {
-            override fun onSwipeDown() {
-                super.onSwipeDown()
-                myAdapter?.notifyDataSetChanged()
-            }
-        })
+//        binding.historyConstraint.setOnTouchListener(object : OnSwipeTouchListener(activity) {
+//            override fun onSwipeDown() {
+//                //super.onSwipeDown()
+//
+//                (context as AppCompatActivity).runOnUiThread {
+//                    val gson = Gson()
+//                    val res =
+//                        gson.fromJson(
+//                            myFunctions.readToFile(),
+//                            com.example.qrreader.Pojo.Response::class.java
+//                        )
+//                    array?.clear()
+//                    for (x in 0 until res.documents?.size!!)
+//                        array.add(res.documents[x]!!)
+//                    myAdapter?.notifyDataSetChanged()
+//                    Toast.makeText(activity, "wewewe", Toast.LENGTH_SHORT).show()
+//
+//                }
+//            }
+//        })
 
 
 
@@ -92,7 +110,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         Thread() {
             val gson = Gson()
             //val kek = gson.fromJson(readToFile(), Response::class.java)
-            val zek = readToFile()
+            val zek = myFunctions.readToFile()
             if (zek != "") {
                 val kek = gson.fromJson(zek, Response::class.java)
                 array?.clear()
@@ -132,7 +150,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
             reader.close()
             return text
         } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
+            Log.e("Exception", "File write failed: $e")
             return "ERROR"
         }
 

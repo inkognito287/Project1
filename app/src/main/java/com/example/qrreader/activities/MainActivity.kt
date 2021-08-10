@@ -1,34 +1,34 @@
 package com.example.qrreader.activities
 
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AbsListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
+import com.example.qrreader.Functions
+import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.service.MyService
 import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.lang.Exception
 
 
@@ -38,20 +38,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myBroadcastReceiver: com.example.qrreader.broadcastReceiver.MyBroadcastReceiver
     lateinit var text: String
     lateinit var binding: ActivityMainBinding
-
+    lateinit var sharedPreferences: SharedPreferences
 
     lateinit var myFragmentTransaction: MyFragmentTransaction
-
+    lateinit var myFunctions: Functions
+    //var kring : List<DocumentsItem?>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
+        sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
+        // kring= List<DocumentsItem>()
 
 
         array = ArrayList()
+        myFunctions = Functions(applicationContext)
         myFragmentTransaction = MyFragmentTransaction(this)
         myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
         val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
@@ -62,18 +64,15 @@ class MainActivity : AppCompatActivity() {
             addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
         }
         this.registerReceiver(myBroadcastReceiver, filter)
-        //fragmentTransactionReplace(historyFragment)
         myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
     }
 
     fun history(v: View) {
-        //fragmentTransactionReplace(historyFragment)
         myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
     }
 
     fun camera(v: View) {
         val intent = Intent(this, BarcodeScanActivity::class.java)
-        //startActivityForResult(intent, 28)
         resultLauncher.launch(intent)
 
     }
@@ -81,7 +80,6 @@ class MainActivity : AppCompatActivity() {
 
     fun setting(v: View) {
 
-        //  fragmentTransactionReplace(SettingFragment())
         myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
     }
 
@@ -114,12 +112,11 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Очистка истории")
             .setMessage("Вы уверены, что хотите очистить историю? Неотправленные данные будут удалены")
             .setIcon(R.drawable.clear_history)
-            .setPositiveButton("Ок") { dialog, id ->
+            .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
                 myAdapterUpdate = myAdapter
                 if (myAdapter != null)
                     myAdapterUpdate?.clear()
-
 
             }
             .setNegativeButton("Отмена") { dialog, _ ->
@@ -141,41 +138,65 @@ class MainActivity : AppCompatActivity() {
         else finish()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    var resultLauncher =
+    private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val data: Intent? = result.data
-                if (data?.getIntExtra("fragment", 1) == 1)
-                    myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-                else if (data?.getIntExtra("fragment", 1) == 2)
-                    myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
-            } else if (result.resultCode == 28) {
-                val data: Intent? = result.data
-                var zxf = readToFile()
-                val gson = Gson()
-                val res =
-                    gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
-                for (x in 0 until res.documents?.size!!)
-                    array?.add(res.documents[x]!!)
-                myAdapter?.notifyDataSetChanged()
-                myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+            if (result.resultCode == 28) {
+                //myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
+                //myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+                Thread() {
+                    val gson = Gson()
+                    val res =
+                        gson.fromJson(
+                            myFunctions.readToFile(),
+                            com.example.qrreader.Pojo.Response::class.java
+                        )
+                    for (x in 0 until res.documents?.size!!)
+                        array.add(res.documents[x]!!)
 
-                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
-                deserialize()
+                    runOnUiThread {
+                        findViewById<RecyclerView>(R.id.recycler_view)?.layoutManager =
+                            LinearLayoutManager(applicationContext)
+                        findViewById<RecyclerView>(R.id.recycler_view)?.adapter = myAdapter
+                        myAdapter?.notifyDataSetChanged()
+                    }
+//                       myAdapterUpdate= myAdapter
+//                       myAdapterUpdate.updateRecyclerView(array)
+//
+//
+//                   }
+
+                    deserialize()
+
+
+                }.start()
 
             }
 
         }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun deserialize() {
+    private fun deserialize() {
+        runOnUiThread {
+            val gson = Gson()
+            val res =
+                gson.fromJson(
+                    myFunctions.readToFile(),
+                    com.example.qrreader.Pojo.Response::class.java
+                )
+            array?.clear()
+            for (x in 0 until res.documents?.size!!)
+                array.add(res.documents[x]!!)
+            myAdapter?.notifyDataSetChanged()
+
+        }
+
         Thread {
             val gson = Gson()
 
-            val result = gson.fromJson(readToFile(), com.example.qrreader.Pojo.Response::class.java)
+            val result = gson.fromJson(
+                myFunctions.readToFile(),
+                com.example.qrreader.Pojo.Response::class.java
+            )
 
             val s = result.documents!!.size - 1
 
@@ -185,26 +206,29 @@ class MainActivity : AppCompatActivity() {
 
 
                 if (last?.status == "no")
-                    if (imageRequest(
+                    if (myFunctions.imageRequest(
                             last.photo.toString(),
                             last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.numberOfOrderField!!
+                            last.numberOfOrderField!!,
+                            sharedPreferences
                         ) == "true"
                     ) {
                         result.documents[s]!!.status = "yes"
                         val resultEnd = gson.toJson(result)
-                        writeToFile(resultEnd, this)
+                        myFunctions.writeToFile(resultEnd)
                         runOnUiThread {
                             val gson = Gson()
                             val res =
                                 gson.fromJson(
-                                    readToFile(),
+                                    myFunctions.readToFile(),
                                     com.example.qrreader.Pojo.Response::class.java
                                 )
                             array?.clear()
                             for (x in 0 until res.documents?.size!!)
-                                array?.add(res.documents[x]!!)
-                            myAdapter?.notifyDataSetChanged()
+                                array.add(res.documents[x]!!)
+                            //myAdapter?.notifyDataSetChanged()
+                            myAdapterUpdate = myAdapter
+                            myAdapterUpdate?.update()
 
                         }
                     }
@@ -219,79 +243,7 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun readToFile(): String {
-
-        try {
-            val reader =
-                BufferedReader(InputStreamReader(openFileInput("single.json")))
-            val text = reader.readText()
-            reader.close()
-            return text
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-            return "ERROR"
-        }
-
-    }
-
-    private fun writeToFile(jsonData: String?, context: Context?) {
-        try {
-            val outputStreamWriter = OutputStreamWriter(
-                context?.openFileOutput(
-                    "single.json",
-                    MODE_PRIVATE
-                )
-            )
-            outputStreamWriter.write(jsonData)
-
-            outputStreamWriter.close()
-            println("good")
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-        }
-    }
-
-
-    private fun imageRequest(image: String, name: String, code: String): String? {
-        val sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
-        val token = sharedPreferences.getString("token", "")
-        val sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
-        val url = sharedPreferencesAddress.getString("address", "")
-
-
-        val client = OkHttpClient()
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("image", image.toString())
-            .addFormDataPart("name", name.toString())
-            .addFormDataPart("code", code.toString())
-            .build();
-
-        val request = Request.Builder()
-            .addHeader("token", token.toString())
-            .url("$url/Account/image")
-            .post(requestBody)
-            .build();
-
-
-        try {
-            val response: Response = client.newCall(request).execute()
-            Log.d("MyLog", "rabotaet")
-            return response.body?.string()
-
-
-            // Do something with the response.
-        } catch (e: IOException) {
-            Log.d("MyLog", "exception$e")
-            return null
-        }
-
-
-    }
-
-    private fun isMyServiceRunning(mclass: Class<MyService>): Boolean {
+    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
 
         val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
@@ -299,7 +251,7 @@ class MainActivity : AppCompatActivity() {
         for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
 
 
-            if (mclass.name.equals(service.service.className)) {
+            if (myClass.name.equals(service.service.className)) {
 
                 return true
 

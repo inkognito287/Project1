@@ -161,12 +161,9 @@ class BarcodeScanActivity : AppCompatActivity() {
                 })
             }
 
-        // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
 
         try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
         } catch (exc: Exception) {
             Log.e("ImageCaptureActivity", "error communicating with camera", exc)
