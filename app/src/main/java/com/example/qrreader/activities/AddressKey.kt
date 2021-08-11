@@ -25,7 +25,7 @@ class AddressKey : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        KetBoardEventListener
+    
 
 
         try {
