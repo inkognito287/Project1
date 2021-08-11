@@ -48,7 +48,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         binding.button.setOnClickListener {
 
-            if (code!="не найден") {
+            if (code != "не найден") {
 
                 val bottomFragment = ImageFragment()
                 val bundle = Bundle()
@@ -63,6 +63,7 @@ class BarcodeScanActivity : AppCompatActivity() {
                     BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
 
                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                code = "не найден"
 
             }
         }
@@ -147,13 +148,13 @@ class BarcodeScanActivity : AppCompatActivity() {
                     if (result.barcodes.isNotEmpty() && !isFinishing) {
                         result.barcodes.forEach {
                             code = it.rawValue.toString()
-                            timer=Timer()
-                            timer!!.schedule(object :TimerTask(){
+                            timer = Timer()
+                            timer!!.schedule(object : TimerTask() {
                                 override fun run() {
                                     code = "не найден"
                                     timer!!.cancel()
                                 }
-                            },4000)
+                            }, 4000)
 
                         }
 

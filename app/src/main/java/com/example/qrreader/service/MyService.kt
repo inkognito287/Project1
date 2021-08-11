@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -29,10 +30,10 @@ import java.lang.Exception
 import java.util.*
 import kotlin.concurrent.timerTask
 
-class MyService: Service() {
+class MyService : Service() {
     lateinit var sharedPreferences: SharedPreferences
-    lateinit var timer:Timer
-    var manager: NotificationManager?=null
+    lateinit var timer: Timer
+    var manager: NotificationManager? = null
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -40,16 +41,18 @@ class MyService: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        sharedPreferences = applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
-        timer=Timer()
-        var timeTask=object :TimerTask() {
+        sharedPreferences =
+            applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
+        timer = Timer()
+        var timeTask = object : TimerTask() {
             override fun run() {
                 try {
                     sendData()
-                }catch (e:Exception){}
+                } catch (e: Exception) {
+                }
             }
         }
-        timer.schedule(timeTask,0,5000)
+        timer.schedule(timeTask, 0, 5000)
 
         createNotificationChannel()
 
@@ -57,60 +60,65 @@ class MyService: Service() {
         //start background
     }
 
-    private fun sendData(){
+    private fun sendData() {
 
-        Thread {try {
-            val gson = Gson()
+        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val wf = cm.activeNetwork
+        if (wf!=null)
 
-            val result = gson.fromJson(readToFile(applicationContext), Response::class.java)
+        Thread {
+            try {
+                val gson = Gson()
 
-            var s = result.documents!!.size
+                val result = gson.fromJson(readToFile(applicationContext), Response::class.java)
 
-            for (x in result.documents.size - 1 downTo 0) {
-                val last = result.documents[x]
-                if (last?.status == "no")
-                    if (imageRequest(
-                            last.photo.toString(),
-                            last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.documentFormatField!!
-                        ) == "true"
-                    ) {
-                        result.documents[x]!!.status = "yes"
 
+
+                for (x in result.documents!!.size - 1 downTo 0) {
+                    val last = result.documents[x]
+                    if (last?.status == "no")
+                        if (imageRequest(
+                                last.photo.toString(),
+                                last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                                last.documentFormatField!!
+                            ) == "true"
+                        ) {
+                            result.documents[x]!!.status = "yes"
+                            myAdapter.names1[x].status = "yes"
+                        }
+                    array?.clear()
+
+                    for (x in 0..result.documents.size - 1)
+                        array!!.add(result.documents[x]!!)
+                    Log.d("MyLog", array.toString())
+                    var s = 0
+                    for (x in 0..result.documents.size - 1)
+                        if (result.documents[x]!!.status == "no")
+                            s++
+                    if (s == 0) {
+                        timer.cancel()
+                        stopService(Intent(this, MyService::class.java))
+                        manager!!.cancel(NOTIFICATION_ID)
+                        if (myAdapter != null) {
+                            myAdapterUpdate = myAdapter
+                            myAdapterUpdate?.update()
+                        }
                     }
-                array?.clear()
 
-                for (x in 0..result.documents.size-1)
-                    array!!.add(result.documents[x]!!)
-                Log.d("MyLog", array.toString())
-                var s=0
-                for ( x in 0..result.documents.size-1)
-                    if( result.documents[x]!!.status=="no")
-                        s++
-                if (s==0){
-                    timer.cancel()
-                    stopService(Intent(this,MyService::class.java))
-                  manager!!.cancel(NOTIFICATION_ID)
-                if (myAdapter!=null){
-                myAdapterUpdate= myAdapter
-                myAdapterUpdate?.update()}}
+                }
+
+                val resultEnd = gson.toJson(result)
+                writeToFile(resultEnd, applicationContext)
+
+                (applicationContext as AppCompatActivity).runOnUiThread {
+                    myAdapter?.update()
+                }
+            } catch (e: Exception) {
+
+                Log.d("MyLog", "wifi exception=$e")
 
             }
-
-            val resultEnd = gson.toJson(result)
-            writeToFile(resultEnd, applicationContext)
-
-            (applicationContext as AppCompatActivity).runOnUiThread {
-                myAdapter?.update()
-            }
-        }catch (e: Exception){
-
-            Log.d("MyLog","wifi exception=$e")
-
-        }
         }.start()
-
-
 
     }
 
@@ -122,9 +130,9 @@ class MyService: Service() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun showNotification(){
-        val notificationIntent= Intent(this,MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0)
+    private fun showNotification() {
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setContentText("Отправка документов")
             .setSmallIcon(R.mipmap.ic_group6)
@@ -135,24 +143,24 @@ class MyService: Service() {
     }
 
 
-    private fun createNotificationChannel(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             var serviceChannel = NotificationChannel(
                 CHANNEL_ID, "My Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT)
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
 
-            manager=getSystemService(NotificationManager::class.java)
-                    manager!!.createNotificationChannel(serviceChannel)
+            manager = getSystemService(NotificationManager::class.java)
+            manager!!.createNotificationChannel(serviceChannel)
 
         }
     }
 
 
-
     fun imageRequest(image: String, name: String, code: String): String? {
 
 
-        val token =sharedPreferences.getString("token", "")
+        val token = sharedPreferences.getString("token", "")
         val url = sharedPreferences.getString("address", "")
         val client = OkHttpClient()
         val requestBody = MultipartBody.Builder()
@@ -198,7 +206,7 @@ class MyService: Service() {
 
     }
 
-    private fun writeToFile(jsonData: String? , context: Context?) {
+    private fun writeToFile(jsonData: String?, context: Context?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context?.openFileOutput(

@@ -68,17 +68,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
 
-   // implementation 'com.google.mlkit:barcode-scanning:16.0.3'
-    //implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.2'
-    //implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
-    def camerax_version = "1.1.0-alpha07"
-//    implementation "androidx.camera:camera-core:${camerax_version}"
-//    implementation "androidx.camera:camera-camera2:${camerax_version}"
-//    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-//    implementation "androidx.camera:camera-view:1.0.0-alpha19"
-//    implementation "androidx.camera:camera-extensions:1.0.0-alpha19"
+
+
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 
@@ -90,7 +83,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
     implementation "com.squareup.okhttp3:logging-interceptor:4.5.0"
 
-
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:LATEST_VERSION'
 
     implementation 'com.google.mlkit:barcode-scanning:16.0.2'
     // CameraX
@@ -98,4 +91,6 @@ dependencies {
     implementation 'androidx.camera:camera-core:1.0.0-beta08'
     implementation 'androidx.camera:camera-lifecycle:1.0.0-beta08'
     implementation 'androidx.camera:camera-view:1.0.0-alpha15'
+
+
 }

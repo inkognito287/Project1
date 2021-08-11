@@ -2,22 +2,18 @@ package com.example.qrreader.activities
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.CustomDialog
-import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
-import com.example.qrreader.fragment.HistoryFragment
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.net.HttpURLConnection
-import java.net.URL
+import java.io.OutputStreamWriter
+
 
 class AddressKey : AppCompatActivity() {
 
@@ -27,6 +23,25 @@ class AddressKey : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddressKeyBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        KetBoardEventListener
+
+
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                openFileOutput(
+                    "single.json",
+                    MODE_PRIVATE
+                )
+            )
+            outputStreamWriter.close()
+        }catch (e:java.lang.Exception){}
+
+
+
+
+
         val sharedPreference = getSharedPreferences("address", Context.MODE_PRIVATE)
         if (sharedPreference.contains("key") && sharedPreference.contains("address")) {
             val intent = Intent(this@AddressKey, Authorization::class.java)
@@ -74,10 +89,10 @@ class AddressKey : AppCompatActivity() {
                             startActivity(intent)
                         } else {
 
-
-                            Log.d("MyLog", "error")
+                            val alert = CustomDialog()
+                            alert.showDialog(this, responseBody)
+                            Log.d("MyLog", responseBody)
                         }
-                        binding.progressBarFirst.visibility = View.GONE
 
 
                     } catch (e: Exception) {

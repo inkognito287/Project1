@@ -115,9 +115,11 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
                 myAdapterUpdate = myAdapter
-                if (myAdapter != null)
-                    myAdapterUpdate?.clear()
+                if (myAdapter != null) {
 
+                    array.clear()
+                    myAdapterUpdate?.clear()
+                }
             }
             .setNegativeButton("Отмена") { dialog, _ ->
                 dialog.dismiss()
@@ -141,8 +143,8 @@ class MainActivity : AppCompatActivity() {
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == 28) {
-                //myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
-                //myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+
+                binding.button.isClickable=false
                 Thread() {
                     val gson = Gson()
                     val res =
@@ -150,13 +152,13 @@ class MainActivity : AppCompatActivity() {
                             myFunctions.readToFile(),
                             com.example.qrreader.Pojo.Response::class.java
                         )
+                    array.clear()
                     for (x in 0 until res.documents?.size!!)
                         array.add(res.documents[x]!!)
 
                     runOnUiThread {
-                        findViewById<RecyclerView>(R.id.recycler_view)?.layoutManager =
-                            LinearLayoutManager(applicationContext)
-                        findViewById<RecyclerView>(R.id.recycler_view)?.adapter = myAdapter
+
+
                         myAdapter?.notifyDataSetChanged()
                     }
 //                       myAdapterUpdate= myAdapter
@@ -176,19 +178,19 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun deserialize() {
-        runOnUiThread {
-            val gson = Gson()
-            val res =
-                gson.fromJson(
-                    myFunctions.readToFile(),
-                    com.example.qrreader.Pojo.Response::class.java
-                )
-            array?.clear()
-            for (x in 0 until res.documents?.size!!)
-                array.add(res.documents[x]!!)
-            myAdapter?.notifyDataSetChanged()
-
-        }
+//        runOnUiThread {
+//            val gson = Gson()
+//            val res =
+//                gson.fromJson(
+//                    myFunctions.readToFile(),
+//                    com.example.qrreader.Pojo.Response::class.java
+//                )
+//            array?.clear()
+//            for (x in 0 until res.documents?.size!!)
+//                array.add(res.documents[x]!!)
+//            myAdapter?.notifyDataSetChanged()
+//
+//        }
 
         Thread {
             val gson = Gson()
@@ -226,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                             array?.clear()
                             for (x in 0 until res.documents?.size!!)
                                 array.add(res.documents[x]!!)
-                            //myAdapter?.notifyDataSetChanged()
+
                             myAdapterUpdate = myAdapter
                             myAdapterUpdate?.update()
 
@@ -239,7 +241,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
-
+            binding.button.isClickable=true
         }.start()
     }
 

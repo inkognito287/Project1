@@ -25,7 +25,9 @@ class CustomRecyclerAdapter(
     var names1: ArrayList<DocumentsItem>, var context: Context, var itemListener: OnItemListener
 ) : UpdateAdapter, RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
+
     private var mItemListener: OnItemListener = itemListener
+    var myFunctions:Functions = Functions(context.applicationContext)
 
     class MyViewHolder(itemView: View, onItemListener: OnItemListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -35,6 +37,7 @@ class CustomRecyclerAdapter(
         var time: TextView
         var day: TextView
         var status: ImageView
+
         var onItemListener: OnItemListener = onItemListener
 
         init {
@@ -65,11 +68,11 @@ class CustomRecyclerAdapter(
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.documentFormatField?.text = array[position].documentFormatField .toString()
-        holder.numberOfOrderField?.text = array[position].numberOfOrderField .toString()
-        holder.day.text = array[position].day
-        holder.time.text = array[position].time
-        if (array[position].status == "no") {
+        holder.documentFormatField?.text = names1[position].documentFormatField .toString()
+        holder.numberOfOrderField?.text = names1[position].numberOfOrderField .toString()
+        holder.day.text = names1[position].day
+        holder.time.text = names1[position].time
+        if (names1[position].status == "no") {
             holder.status.setImageResource(R.drawable.history_status_no)
 
         } else holder.status.setImageResource(R.drawable.submitted)
@@ -82,38 +85,25 @@ class CustomRecyclerAdapter(
         return names1.size
     }
 
-    fun clearRecyclerView() {
-        names1.clear()
-        notifyDataSetChanged()
-    }
-
-    fun updateRecyclerView(names1:  ArrayList<DocumentsItem>) {
-        this.names1 = names1
-        notifyDataSetChanged()
-    }
-
-    fun kek() {
-    }
-
     override fun update() {
-        // Thread(){
 
-        val gson = Gson()
-        val result = gson.fromJson(readToFile(context), Response::class.java)
 
-        names1.clear()
-        for (element in result.documents!!)
-            names1.add(element!!)
-        // (context as AppCompatActivity).runOnUiThread(){
-        notifyDataSetChanged()
-        //}
-        // }
+             val gson = Gson()
+             val result = gson.fromJson(myFunctions.readToFile(), Response::class.java)
+//
+//             names1.clear()
+//             for (element in result.documents!!)
+//                 names1.add(element!!)
+        (context as AppCompatActivity).runOnUiThread { 
+             notifyDataSetChanged()
+        }
+            
 
 
     }
 
     override fun clear() {
-        //names1.clear()
+
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context.openFileOutput(
@@ -121,6 +111,7 @@ class CustomRecyclerAdapter(
                     AppCompatActivity.MODE_PRIVATE
                 )
             )
+            names1.clear()
             outputStreamWriter.write("")
             outputStreamWriter.close()
         } catch (e: Exception) {

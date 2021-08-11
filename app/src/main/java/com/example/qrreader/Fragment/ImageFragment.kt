@@ -28,7 +28,8 @@ import java.util.*
 
 class ImageFragment : Fragment() {
     lateinit var imageVew: ImageView
-   // lateinit var text: String
+
+    // lateinit var text: String
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
     lateinit var binding: FragmentImageBinding
@@ -113,7 +114,6 @@ class ImageFragment : Fragment() {
     }
 
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun createJsonObject(
         photo: String,
@@ -124,7 +124,7 @@ class ImageFragment : Fragment() {
         status: String
     ): String? {
         val jsonNowString = myFunctions.readToFile()
-       // Log.d("MyLog", "ReadFile=$text")
+        // Log.d("MyLog", "ReadFile=$text")
 
         val gson = Gson()
         val rootObject = JsonObject()
@@ -200,8 +200,10 @@ class ImageFragment : Fragment() {
         encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
         return encodedImage
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitImage() {
+        binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE
         Thread() {
             val date = Date()
@@ -212,12 +214,12 @@ class ImageFragment : Fragment() {
             var test = dateFormatTime.parse(date.toString())
             var time = OUTPUT_PATERN_TIME.format(test)
             var day = OUTPUT_PATERN_DAY.format(test)
+            var image = getStringFromBitmap(saveImage)
 
 
-
-           myFunctions.writeToFile(
+            myFunctions.writeToFile(
                 createJsonObject(
-                    getStringFromBitmap(saveImage)!!,
+                    image!!,
                     numberOfOrder,
                     documentFormat,
                     day,
@@ -228,7 +230,9 @@ class ImageFragment : Fragment() {
 
             //readToFile()
             requireActivity().setResult(28)
+
             requireActivity().finish()
+
         }.start()
     }
 

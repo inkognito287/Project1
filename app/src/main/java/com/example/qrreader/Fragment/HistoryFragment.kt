@@ -37,8 +37,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 lateinit var array: ArrayList<DocumentsItem>
-var myAdapter: CustomRecyclerAdapter? = null
-var myAdapterUpdate: UpdateAdapter? = null
+lateinit var myAdapter: CustomRecyclerAdapter
+lateinit var myAdapterUpdate: UpdateAdapter
 
 class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
 
@@ -60,32 +60,12 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        myFunctions= Functions(requireContext().applicationContext)
+        myFunctions = Functions(requireContext().applicationContext)
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
-//        binding.historyConstraint.setOnTouchListener(object : OnSwipeTouchListener(activity) {
-//            override fun onSwipeDown() {
-//                //super.onSwipeDown()
-//
-//                (context as AppCompatActivity).runOnUiThread {
-//                    val gson = Gson()
-//                    val res =
-//                        gson.fromJson(
-//                            myFunctions.readToFile(),
-//                            com.example.qrreader.Pojo.Response::class.java
-//                        )
-//                    array?.clear()
-//                    for (x in 0 until res.documents?.size!!)
-//                        array.add(res.documents[x]!!)
-//                    myAdapter?.notifyDataSetChanged()
-//                    Toast.makeText(activity, "wewewe", Toast.LENGTH_SHORT).show()
-//
-//                }
-//            }
-//        })
 
 
 
-        if (readToFile() == "ERROR") {
+        if (myFunctions.readToFile() == "ERROR") {
             val outputStreamWriter = OutputStreamWriter(
                 activity?.openFileOutput(
                     "single.json",
@@ -107,9 +87,13 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         super.onViewCreated(view, savedInstanceState)
         Log.d("MyLog", "OnViewCreated")
         binding.progressBar2.visibility = View.VISIBLE
+        myAdapter = CustomRecyclerAdapter(array!!, requireContext(), this)
+        myAdapterUpdate = myAdapter
+        binding.recyclerView.adapter = myAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         Thread() {
             val gson = Gson()
-            //val kek = gson.fromJson(readToFile(), Response::class.java)
             val zek = myFunctions.readToFile()
             if (zek != "") {
                 val kek = gson.fromJson(zek, Response::class.java)
@@ -118,10 +102,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
                     array?.add(element!!)
 
                 activity?.runOnUiThread() {
-                    myAdapter = CustomRecyclerAdapter(array!!, requireContext(), this)
-                    myAdapterUpdate = myAdapter
-                    binding.recyclerView.adapter = myAdapter
-                    binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
+
                     myAdapter!!.notifyDataSetChanged()
                     binding.progressBar2.visibility = View.INVISIBLE
                 }
@@ -252,7 +233,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         var fragment = HistoryItem()
         fragment.arguments = bundle
 
-        var myFragmentTransaction = MyFragmentTransaction(this.requireContext())
+        var myFragmentTransaction = MyFragmentTransaction(requireContext())
         myFragmentTransaction.fragmentTransactionReplace(fragment)
     }
 

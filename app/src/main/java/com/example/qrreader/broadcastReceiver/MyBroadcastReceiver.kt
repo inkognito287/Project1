@@ -13,6 +13,7 @@ import com.example.qrreader.Pojo.Response
 import com.example.qrreader.fragment.array
 import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.Functions
+import com.example.qrreader.fragment.myAdapterUpdate
 import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -36,13 +37,13 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         if (wf != null) {
 
 
-           startSendImage(context)
+           startSendImage(context.applicationContext)
 
         } else
             if (activeNetwork == true) {
 
 
-                startSendImage(context)
+                startSendImage(context.applicationContext)
 
             }
     }
@@ -50,12 +51,13 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
     private fun startSendImage(context: Context){
 
-
+        var text = myFunctions.readToFile()
+        if (text!="")
         Thread {
-            try {
+
                 val gson = Gson()
 
-                val result = gson.fromJson(myFunctions.readToFile(), Response::class.java)
+                val result = gson.fromJson(text, Response::class.java)
 
 
 
@@ -69,29 +71,30 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                 sharedPreferencesAddress
                             ) == "true"
                         ) {
-                            result.documents[x]!!.status = "yes"
+                            result.documents[x]?.status ="yes"
+                           // array[x]!!.status = "yes"
 
                         }
-                    array?.clear()
+                    array.clear()
+                    for (x in 0 until result.documents?.size!!)
+                        array.add(result.documents[x]!!)
 
-                    for (element in result.documents)
-                        array!!.add(element!!)
+                    myAdapterUpdate = myAdapter
+                    myAdapterUpdate?.update()
 
-                    Log.d("MyLog", array.toString())
+                    //myAdapter?.update()
+
 
                 }
 
                 val resultEnd = gson.toJson(result)
                 myFunctions.writeToFile(resultEnd)
 
-                (context as AppCompatActivity).runOnUiThread {
-                    myAdapter?.update()
-                }
-            } catch (e: Exception) {
+//                (context.applicationContext as AppCompatActivity).runOnUiThread {
+//                    myAdapterUpdate.update()
+//
+//                }
 
-                Log.d("MyLog", "wifi exception=$e")
-
-            }
         }.start()
     }
 
