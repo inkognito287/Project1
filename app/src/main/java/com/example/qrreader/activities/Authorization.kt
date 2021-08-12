@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.CustomDialog
+import com.example.qrreader.Functions
 
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
@@ -21,6 +22,7 @@ class Authorization : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPreferencesAddress: SharedPreferences
     lateinit var url: String
+    lateinit var myFunction: Functions
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
 
@@ -30,7 +32,9 @@ class Authorization : AppCompatActivity() {
         setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
-        sharedPreferencesAddress = getSharedPreferences("address",Context.MODE_PRIVATE)
+        sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
+
+        myFunction = Functions(this)
 
         url = sharedPreferencesAddress.getString("address", "").toString()
         if (sharedPreferences.contains("user")) {
@@ -42,13 +46,19 @@ class Authorization : AppCompatActivity() {
 
 
         binding.enterButton.setOnClickListener {
-            if (!authorized)
-                request(
-                    url,
-                    binding.editTextPassword.text.toString(),
-                    binding.editTextName.text.toString()
-                )
 
+
+            if (!myFunction.isNetworkAvailable())
+                showError("Проверьте подключение к интернету")
+            else {
+
+                if (!authorized)
+                    request(
+                        url,
+                        binding.editTextPassword.text.toString(),
+                        binding.editTextName.text.toString()
+                    )
+            }
 
         }
     }
@@ -68,10 +78,10 @@ class Authorization : AppCompatActivity() {
 
     private fun request(url: String, password: String, name: String) {
 
-        var token=sharedPreferencesAddress.getString("token","")
+        var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
             URL("$url/Account/testService?name=$name&password=$password")
-        binding.progressBarSecond.visibility=View.VISIBLE
+        binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
             try {
@@ -104,21 +114,21 @@ class Authorization : AppCompatActivity() {
                 }
                 if (responseBody == "correct") {
 
-                    sharedPreferences.edit().putString("user",binding.editTextName.text.toString()).apply()
+                    sharedPreferences.edit().putString("user", binding.editTextName.text.toString())
+                        .apply()
                     val intent = Intent(this@Authorization, MainActivity::class.java)
                     startActivity(intent)
-
                     finish()
-                }
-                else {
+                } else {
                     runOnUiThread {
-
-                        val alert = CustomDialog()
-                        alert.showDialog(this, responseBody)
+                        showError(responseBody)
+                        //val alert = CustomDialog()
+                        //alert.showDialog(this, responseBody)
                     }
 
                 }
             } catch (e: Exception) {
+
                 Log.d("MyLog", e.toString())
 
             }
@@ -127,6 +137,12 @@ class Authorization : AppCompatActivity() {
             }
         }.start()
 
+    }
+
+    fun showError(error: String) {
+        var intent = Intent(this, Error::class.java)
+        intent.putExtra("error", error)
+        startActivity(intent)
     }
 
 

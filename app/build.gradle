@@ -83,7 +83,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
     implementation "com.squareup.okhttp3:logging-interceptor:4.5.0"
 
-    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:LATEST_VERSION'
+
 
     implementation 'com.google.mlkit:barcode-scanning:16.0.2'
     // CameraX

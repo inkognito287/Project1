@@ -83,9 +83,7 @@ class ImageFragment : Fragment() {
             numberOfOrder = ""
             documentFormat = "Неизвестный документ"
         }
-        if (documentFormat.contains(','))
-            binding.nameOfDocument.text = documentFormat.substring(0, documentFormat.indexOf(","))
-        else binding.nameOfDocument.text = documentFormat
+
         return binding.root
     }
 

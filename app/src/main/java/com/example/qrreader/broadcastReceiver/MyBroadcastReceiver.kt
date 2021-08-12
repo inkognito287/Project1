@@ -51,51 +51,54 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
     private fun startSendImage(context: Context){
 
-        var text = myFunctions.readToFile()
+       var text = myFunctions.readToFile()
         if (text!="")
-        Thread {
+            try {
+                Thread {
 
-                val gson = Gson()
+                    val gson = Gson()
 
-                val result = gson.fromJson(text, Response::class.java)
-
-
-
-                for (x in result.documents!!.size - 1 downTo 0) {
-                    val last = result.documents[x]
-                    if (last?.status == "no")
-                        if (myFunctions.imageRequest(
-                                last.photo.toString(),
-                                last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                last.documentFormatField!!,
-                                sharedPreferencesAddress
-                            ) == "true"
-                        ) {
-                            result.documents[x]?.status ="yes"
-                           // array[x]!!.status = "yes"
-
-                        }
-                    array.clear()
-                    for (x in 0 until result.documents?.size!!)
-                        array.add(result.documents[x]!!)
-
-                    myAdapterUpdate = myAdapter
-                    myAdapterUpdate?.update()
-
-                    //myAdapter?.update()
+                    val result = gson.fromJson(text, Response::class.java)
 
 
-                }
 
-                val resultEnd = gson.toJson(result)
-                myFunctions.writeToFile(resultEnd)
+                    for (x in result.documents!!.size - 1 downTo 0) {
+                        val last = result.documents[x]
+                        if (last?.status == "no")
+                            if (myFunctions.imageRequest(
+                                    last.photo.toString(),
+                                    last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                                    last.documentFormatField!!,
+                                    sharedPreferencesAddress
+                                ) == "true"
+                            ) {
+                                result.documents[x]?.status = "yes"
+                                // array[x]!!.status = "yes"
+
+                            }
+                        array.clear()
+                        for (x in 0 until result.documents?.size!!)
+                            array.add(result.documents[x]!!)
+
+                        myAdapterUpdate = myAdapter
+                        myAdapterUpdate?.update()
+
+                        //myAdapter?.update()
+
+
+                    }
+
+                    val resultEnd = gson.toJson(result)
+                    myFunctions.writeToFile(resultEnd)
 
 //                (context.applicationContext as AppCompatActivity).runOnUiThread {
 //                    myAdapterUpdate.update()
 //
 //                }
 
-        }.start()
+                }.start()
+
+            }catch (e:Exception){}
     }
 
 }

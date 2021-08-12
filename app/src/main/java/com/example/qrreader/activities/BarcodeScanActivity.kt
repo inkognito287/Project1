@@ -35,7 +35,7 @@ class BarcodeScanActivity : AppCompatActivity() {
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-
+    private var toast: Toast? = null
     var timer: Timer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +66,13 @@ class BarcodeScanActivity : AppCompatActivity() {
                 code = "не найден"
 
             }
+            else
+               if (toast!=null)
+               toast=null
+            else {
+               toast = Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT)
+               toast!!.show()}
+
         }
 
 
