@@ -38,6 +38,7 @@ class ImageFragment : Fragment() {
     lateinit var numberOfOrder: String
     lateinit var documentFormat: String
     lateinit var myFunctions: Functions
+    lateinit var fullInformation:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,6 +67,7 @@ class ImageFragment : Fragment() {
 
 
         try {
+            fullInformation = saveCode
             if (saveCode.contains("http")) {
                 if (saveCode.contains("http://")) {
                     saveCode = saveCode.removePrefix("http://")
@@ -228,7 +230,7 @@ class ImageFragment : Fragment() {
 //                )
 //            )
 
-            MySingleton.arrayList!!.add(ItemForHistory(documentFormat,numberOfOrder,image!!,saveImage,day,time,"no"))
+            MySingleton.arrayList!!.add(ItemForHistory(documentFormat,numberOfOrder,image!!,saveImage,day,time,"no",fullInformation))
 
             //readToFile()
             requireActivity().setResult(28)

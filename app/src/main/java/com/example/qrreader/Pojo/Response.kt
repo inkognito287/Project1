@@ -26,6 +26,8 @@ data class DocumentsItem(
 	var time: String? = null,
 
 	@field:SerializedName("status")
-	var status: String? = null
+	var status: String? = null,
+	@field:SerializedName("fullInformation")
+	var fullInformation: String? = null
 
 )

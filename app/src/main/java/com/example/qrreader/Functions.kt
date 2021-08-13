@@ -134,6 +134,7 @@ class Functions(var context: Context) {
             childObject.addProperty("day", element.day)
             childObject.addProperty("time", element.time)
             childObject.addProperty("status", element.status)
+            childObject.addProperty("fullInformation",element.fullInformation)
             arrayObject.add(childObject)
             rootObject.add("documents", arrayObject)
 

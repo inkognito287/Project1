@@ -65,7 +65,8 @@ class MainActivity : AppCompatActivity() {
                             myFunctions.getBitmapFromString(element.photo.toString())!!,
                             element.day.toString(),
                             element.time.toString(),
-                            element.status.toString()
+                            element.status.toString(),
+                            element.fullInformation.toString()
                         )
                     )
 
@@ -204,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                 if (myFunctions.imageRequest(
                         last.stringImage,
                         last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                        last.numberOfOrderField!!,
+                        last.fullInformation,
                         sharedPreferences
                     ) == "true"
                 ) {
