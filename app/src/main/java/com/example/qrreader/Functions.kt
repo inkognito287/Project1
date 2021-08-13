@@ -2,11 +2,18 @@ package com.example.qrreader
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.qrreader.singletones.MySingleton
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -32,7 +39,7 @@ class Functions(var context: Context) {
 
     }
 
-     fun writeToFile(jsonData: String?) {
+      fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context?.openFileOutput(
@@ -108,4 +115,30 @@ class Functions(var context: Context) {
         }
         return false
     }
+
+    fun getBitmapFromString(stringPicture: String): Bitmap? {
+        val decodedString: ByteArray = android.util.Base64.decode(stringPicture, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
+    fun saveJson(){
+        val gson = Gson()
+        val rootObject = JsonObject()
+        val arrayObject = JsonArray()
+
+        for (element in MySingleton.arrayList!!) {
+            val childObject = JsonObject()
+            // записываем текст в поле "message"
+            childObject.addProperty("numberOfOrderField", element.numberOfOrderField)
+            childObject.addProperty("documentFormatField", element.documentFormatField)
+            childObject.addProperty("photo", element.stringImage)
+            childObject.addProperty("day", element.day)
+            childObject.addProperty("time", element.time)
+            childObject.addProperty("status", element.status)
+            arrayObject.add(childObject)
+            rootObject.add("documents", arrayObject)
+
+            writeToFile(gson.toJson(rootObject))
+        }
+    }
+
 }

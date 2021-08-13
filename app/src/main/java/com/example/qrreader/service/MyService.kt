@@ -9,16 +9,12 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Constants.CHANNEL_ID
 import com.example.qrreader.Constants.NOTIFICATION_ID
-import com.example.qrreader.Pojo.Response
+import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.activities.MainActivity
-import com.example.qrreader.fragment.array
-import com.example.qrreader.fragment.myAdapter
-import com.example.qrreader.fragment.myAdapterUpdate
-import com.google.gson.Gson
+import com.example.qrreader.singletones.MySingleton
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,13 +22,12 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.lang.Exception
 import java.util.*
-import kotlin.concurrent.timerTask
 
 class MyService : Service() {
     lateinit var sharedPreferences: SharedPreferences
     lateinit var timer: Timer
+    lateinit var  myFunction:Functions
     var manager: NotificationManager? = null
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -40,7 +35,7 @@ class MyService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
+        myFunction = Functions(this.applicationContext)
         sharedPreferences =
             applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
         timer = Timer()
@@ -62,63 +57,52 @@ class MyService : Service() {
 
     private fun sendData() {
 
-        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wf = cm.activeNetwork
-        if (wf!=null)
+        if (wf != null)
 
-        Thread {
-            try {
-                val gson = Gson()
-
-                val result = gson.fromJson(readToFile(applicationContext), Response::class.java)
+            Thread {
+                try {
 
 
+                    for (x in MySingleton.arrayList!!.size - 1 downTo 0) {
+                        val last = MySingleton.arrayList!![x]
+                        if (last.status == "no")
+                            if (imageRequest(
+                                    last.stringImage.toString(),
+                                    last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                                    last.documentFormatField!!
+                                ) == "true"
+                            ) {
+                                MySingleton.arrayList!![x].status = "yes"
 
-                for (x in result.documents!!.size - 1 downTo 0) {
-                    val last = result.documents[x]
-                    if (last?.status == "no")
-                        if (imageRequest(
-                                last.photo.toString(),
-                                last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                last.documentFormatField!!
-                            ) == "true"
-                        ) {
-                            result.documents[x]!!.status = "yes"
-                            myAdapter.names1[x].status = "yes"
-                        }
-                    array?.clear()
-
-                    for (x in 0..result.documents.size - 1)
-                        array!!.add(result.documents[x]!!)
-                    Log.d("MyLog", array.toString())
+                            }
+                    }
                     var s = 0
-                    for (x in 0..result.documents.size - 1)
-                        if (result.documents[x]!!.status == "no")
+                    for (x in 0..MySingleton.arrayList!!.size - 1)
+                        if (MySingleton.arrayList!![x]!!.status == "no")
+
                             s++
+
+                   // myAdapter.notifyDataSetChanged()
+                    myFunction.saveJson()
                     if (s == 0) {
                         timer.cancel()
                         stopService(Intent(this, MyService::class.java))
                         manager!!.cancel(NOTIFICATION_ID)
-                        if (myAdapter != null) {
-                            myAdapterUpdate = myAdapter
-                            myAdapterUpdate?.update()
-                        }
                     }
 
+
+//                val resultEnd = gson.toJson(result)
+//                writeToFile(resultEnd, applicationContext)
+
+                } catch (e: Exception) {
+
+                    Log.d("MyLog", "wifi exception=$e")
+
                 }
-
-                val resultEnd = gson.toJson(result)
-                writeToFile(resultEnd, applicationContext)
-
-                (applicationContext as AppCompatActivity).runOnUiThread {
-                    myAdapter?.update()
-                }
-            } catch (e: Exception) {
-
-                Log.d("MyLog", "wifi exception=$e")
-
-            }
-        }.start()
+            }.start()
 
     }
 

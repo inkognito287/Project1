@@ -30,17 +30,6 @@ class SettingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.settingItems = SettingData().getSettingItems()
         binding.activity = activity as MainActivity?
-//        activity?.findViewById<Button>(R.id.buttonHistory)?.setOnClickListener(){
-//            Navigation.findNavController(this.requireView()).navigate(R.id.action_settingFragment_to_historyFragment)
-//        }
-
 
     }
-
-
-
-
-
-
-
 }

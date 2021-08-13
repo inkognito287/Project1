@@ -65,13 +65,17 @@ class BarcodeScanActivity : AppCompatActivity() {
                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
                 code = "не найден"
 
-            }
-            else
-               if (toast!=null)
-               toast=null
-            else {
-               toast = Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT)
-               toast!!.show()}
+            } else
+                if (toast != null){
+            var timeTask = object : TimerTask() {
+                override fun run() {toast = null}}
+
+                    Timer().schedule( timeTask,2000)}
+
+                else {
+                    toast = Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT)
+                    toast!!.show()
+                }
 
         }
 
@@ -94,6 +98,13 @@ class BarcodeScanActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
+    }
+
+    override fun onBackPressed() {
+        val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
+        if (bottomSheetBehaviour.state==4||bottomSheetBehaviour.state==BottomSheetBehavior.STATE_HIDDEN)
+            super.onBackPressed()
+        else bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     override fun onRequestPermissionsResult(

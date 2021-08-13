@@ -2,7 +2,6 @@ package com.example.qrreader
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,18 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Interfaces.UpdateAdapter
-import com.example.qrreader.Pojo.DocumentsItem
-import com.example.qrreader.Pojo.Response
-import com.example.qrreader.fragment.array
-import com.google.gson.Gson
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import com.example.qrreader.singletones.MySingleton
 import java.io.OutputStreamWriter
-import kotlin.collections.ArrayList
 
 class CustomRecyclerAdapter(
-    var names1: ArrayList<DocumentsItem>, var context: Context, var itemListener: OnItemListener
+    var context: Context, itemListener: OnItemListener
 ) : UpdateAdapter, RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
 
@@ -64,15 +56,14 @@ class CustomRecyclerAdapter(
         return MyViewHolder(itemView, mItemListener)
     }
 
-    //E MMM dd HH:mm:ss z yyyy
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.documentFormatField?.text = names1[position].documentFormatField .toString()
-        holder.numberOfOrderField?.text = names1[position].numberOfOrderField .toString()
-        holder.day.text = names1[position].day
-        holder.time.text = names1[position].time
-        if (names1[position].status == "no") {
+        holder.documentFormatField?.text = MySingleton.arrayList?.get(position)?.documentFormatField.toString()
+        holder.numberOfOrderField?.text = MySingleton.arrayList?.get(position)?.numberOfOrderField.toString()
+        holder.day.text = MySingleton.arrayList?.get(position)!!.day
+        holder.time.text = MySingleton.arrayList!![position].time
+        if (MySingleton.arrayList!![position].status == "no") {
             holder.status.setImageResource(R.drawable.history_status_no)
 
         } else holder.status.setImageResource(R.drawable.submitted)
@@ -82,22 +73,15 @@ class CustomRecyclerAdapter(
 
     override fun getItemCount(): Int {
 
-        return names1.size
+
+        return MySingleton.arrayList!!.size
+
     }
 
     override fun update() {
-
-
-             val gson = Gson()
-             val result = gson.fromJson(myFunctions.readToFile(), Response::class.java)
-//
-//             names1.clear()
-//             for (element in result.documents!!)
-//                 names1.add(element!!)
-        (context as AppCompatActivity).runOnUiThread { 
-             notifyDataSetChanged()
+        (context as AppCompatActivity).runOnUiThread() {
+            notifyDataSetChanged()
         }
-            
 
 
     }
@@ -111,7 +95,7 @@ class CustomRecyclerAdapter(
                     AppCompatActivity.MODE_PRIVATE
                 )
             )
-            names1.clear()
+            MySingleton.arrayList?.clear()
             outputStreamWriter.write("")
             outputStreamWriter.close()
         } catch (e: Exception) {
@@ -119,20 +103,7 @@ class CustomRecyclerAdapter(
 
     }
 
-    private fun readToFile(context: Context?): String {
 
-        return try {
-            val reader =
-                BufferedReader(InputStreamReader(context?.openFileInput("single.json")))
-            val text = reader.readText()
-            reader.close()
-            text
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-            "ERROR"
-        }
-
-    }
 
     interface OnItemListener {
         fun onItemClick(position: Int) {

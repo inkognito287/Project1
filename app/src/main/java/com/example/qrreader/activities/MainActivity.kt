@@ -9,27 +9,19 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AbsListView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
 import com.example.qrreader.Functions
-import com.example.qrreader.Pojo.DocumentsItem
+import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
+import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
-import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity() {
@@ -52,19 +44,52 @@ class MainActivity : AppCompatActivity() {
         // kring= List<DocumentsItem>()
 
 
-        array = ArrayList()
+
         myFunctions = Functions(applicationContext)
-        myFragmentTransaction = MyFragmentTransaction(this)
-        myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
-        val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
+
+        var arrayOfDocumentsItem = ArrayList<ItemForHistory>()
+        binding.progressBarMainActivity.visibility = View.VISIBLE
+        Thread() {
+            MySingleton.arrayList = ArrayList()
+            val gson = Gson()
+            val text = myFunctions.readToFile()
+            if (text != "") {
+                val result = gson.fromJson(text, com.example.qrreader.Pojo.Response::class.java)
+
+                for (element in result.documents!!)
+                    arrayOfDocumentsItem.add(
+                        ItemForHistory(
+                            element!!.documentFormatField.toString(),
+                            element.numberOfOrderField.toString(),
+                            element.photo.toString(),
+                            myFunctions.getBitmapFromString(element.photo.toString())!!,
+                            element.day.toString(),
+                            element.time.toString(),
+                            element.status.toString()
+                        )
+                    )
+
+                MySingleton.arrayList!!.addAll(arrayOfDocumentsItem)
+
+            }
+            myFragmentTransaction = MyFragmentTransaction(this)
+            myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
+            //val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
+            runOnUiThread() {
+                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+                binding.progressBarMainActivity.visibility = View.GONE
+            }
+            val filter = IntentFilter().apply {
+                addAction("android.net.conn.CONNECTIVITY_CHANGE")
+                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            }
+            this.registerReceiver(myBroadcastReceiver, filter)
+        }.start()
+
 
         // request()
-        val filter = IntentFilter().apply {
-            addAction("android.net.conn.CONNECTIVITY_CHANGE")
-            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
-        }
-        this.registerReceiver(myBroadcastReceiver, filter)
-        myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+
+
     }
 
     fun history(v: View) {
@@ -117,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 myAdapterUpdate = myAdapter
                 if (myAdapter != null) {
 
-                    array.clear()
+
                     myAdapterUpdate?.clear()
                 }
             }
@@ -144,28 +169,16 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == 28) {
 
-                binding.button.isClickable=false
+                binding.button.isClickable = false
                 Thread() {
-                    val gson = Gson()
-                    val res =
-                        gson.fromJson(
-                            myFunctions.readToFile(),
-                            com.example.qrreader.Pojo.Response::class.java
-                        )
-                    array.clear()
-                    for (x in 0 until res.documents?.size!!)
-                        array.add(res.documents[x]!!)
+
 
                     runOnUiThread {
 
 
                         myAdapter?.notifyDataSetChanged()
                     }
-//                       myAdapterUpdate= myAdapter
-//                       myAdapterUpdate.updateRecyclerView(array)
-//
-//
-//                   }
+
 
                     deserialize()
 
@@ -178,70 +191,36 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun deserialize() {
-//        runOnUiThread {
-//            val gson = Gson()
-//            val res =
-//                gson.fromJson(
-//                    myFunctions.readToFile(),
-//                    com.example.qrreader.Pojo.Response::class.java
-//                )
-//            array?.clear()
-//            for (x in 0 until res.documents?.size!!)
-//                array.add(res.documents[x]!!)
-//            myAdapter?.notifyDataSetChanged()
-//
-//        }
+
 
         Thread {
-            val gson = Gson()
-
-            val result = gson.fromJson(
-                myFunctions.readToFile(),
-                com.example.qrreader.Pojo.Response::class.java
-            )
-
-            val s = result.documents!!.size - 1
 
 
-            val last = result.documents[s]
-            try {
+            val last = MySingleton.arrayList!![MySingleton.arrayList!!.size - 1]
 
 
-                if (last?.status == "no")
-                    if (myFunctions.imageRequest(
-                            last.photo.toString(),
-                            last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.numberOfOrderField!!,
-                            sharedPreferences
-                        ) == "true"
-                    ) {
-                        result.documents[s]!!.status = "yes"
-                        val resultEnd = gson.toJson(result)
-                        myFunctions.writeToFile(resultEnd)
-                        runOnUiThread {
-                            val gson = Gson()
-                            val res =
-                                gson.fromJson(
-                                    myFunctions.readToFile(),
-                                    com.example.qrreader.Pojo.Response::class.java
-                                )
-                            array?.clear()
-                            for (x in 0 until res.documents?.size!!)
-                                array.add(res.documents[x]!!)
 
-                            myAdapterUpdate = myAdapter
-                            myAdapterUpdate?.update()
+            if (last.status == "no")
+                if (myFunctions.imageRequest(
+                        last.stringImage,
+                        last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
+                        last.numberOfOrderField!!,
+                        sharedPreferences
+                    ) == "true"
+                ) {
 
-                        }
+                    MySingleton.arrayList!![MySingleton.arrayList!!.size - 1].status = "yes"
+
+                    myAdapterUpdate = myAdapter
+                    runOnUiThread() {
+                        myAdapterUpdate.update()
                     }
-
-
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
                 }
-            }
-            binding.button.isClickable=true
+
+
+
+
+            binding.button.isClickable = true
         }.start()
     }
 
@@ -265,16 +244,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkStatus(): Boolean {
 
+        var s = 0
+        if (MySingleton.arrayList != null) {
 
-        if (myAdapter != null) {
-            var s = 0
-            for (x in 0 until myAdapter!!.names1.size)
-                if (myAdapter!!.names1[x].status == "no")
+            for (x in 0 until MySingleton.arrayList!!.size)
+                if (MySingleton.arrayList!![x].status == "no")
                     s++
-            if (s > 0)
-
-                return true
         }
+        if (s > 0)
+
+            return true
+
         return false
 
     }
@@ -287,6 +267,10 @@ class MainActivity : AppCompatActivity() {
                 if (!isMyServiceRunning(MyService::class.java)) {
                     startService(Intent(this, MyService::class.java))
                 }
+
+
+
+            myFunctions.saveJson()
         }.start()
     }
 

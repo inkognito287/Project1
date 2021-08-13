@@ -7,19 +7,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.Pojo.Response
-import com.example.qrreader.fragment.array
-import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.Functions
+import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.fragment.myAdapterUpdate
-import com.google.gson.Gson
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.IOException
-import java.lang.Exception
+import com.example.qrreader.singletones.MySingleton
 
 
 class MyBroadcastReceiver : BroadcastReceiver() {
@@ -51,45 +42,46 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
     private fun startSendImage(context: Context){
 
-       var text = myFunctions.readToFile()
-        if (text!="")
-            try {
+
+
                 Thread {
+//
+//                    val gson = Gson()
+//
+//                    val result = gson.fromJson(text, Response::class.java)
 
-                    val gson = Gson()
-
-                    val result = gson.fromJson(text, Response::class.java)
 
 
-
-                    for (x in result.documents!!.size - 1 downTo 0) {
-                        val last = result.documents[x]
+                    for (x in MySingleton.arrayList?.size!! - 1 downTo 0) {
+                        val last = MySingleton.arrayList!![x]
                         if (last?.status == "no")
                             if (myFunctions.imageRequest(
-                                    last.photo.toString(),
+                                    last.stringImage.toString(),
                                     last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
                                     last.documentFormatField!!,
                                     sharedPreferencesAddress
                                 ) == "true"
                             ) {
-                                result.documents[x]?.status = "yes"
+                                MySingleton.arrayList!![x].status = "yes"
                                 // array[x]!!.status = "yes"
 
                             }
-                        array.clear()
-                        for (x in 0 until result.documents?.size!!)
-                            array.add(result.documents[x]!!)
 
-                        myAdapterUpdate = myAdapter
-                        myAdapterUpdate?.update()
 
                         //myAdapter?.update()
 
 
                     }
+                   try {
 
-                    val resultEnd = gson.toJson(result)
-                    myFunctions.writeToFile(resultEnd)
+
+                    myAdapterUpdate = myAdapter
+
+                            myAdapterUpdate.update()}catch (e:Exception){}
+//                    myAdapter.notifyDataSetChanged()
+
+//                    val resultEnd = gson.toJson(result)
+//                    myFunctions.writeToFile(resultEnd)
 
 //                (context.applicationContext as AppCompatActivity).runOnUiThread {
 //                    myAdapterUpdate.update()
@@ -98,7 +90,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
                 }.start()
 
-            }catch (e:Exception){}
+
     }
 
 }

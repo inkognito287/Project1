@@ -17,6 +17,8 @@ import com.example.qrreader.Functions
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
+import com.example.qrreader.model.ItemForHistory
+import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -215,16 +217,18 @@ class ImageFragment : Fragment() {
             var image = getStringFromBitmap(saveImage)
 
 
-            myFunctions.writeToFile(
-                createJsonObject(
-                    image!!,
-                    numberOfOrder,
-                    documentFormat,
-                    day,
-                    time,
-                    "no"
-                )
-            )
+//            myFunctions.writeToFile(
+//                createJsonObject(
+//                    image!!,
+//                    numberOfOrder,
+//                    documentFormat,
+//                    day,
+//                    time,
+//                    "no"
+//                )
+//            )
+
+            MySingleton.arrayList!!.add(ItemForHistory(documentFormat,numberOfOrder,image!!,saveImage,day,time,"no"))
 
             //readToFile()
             requireActivity().setResult(28)
