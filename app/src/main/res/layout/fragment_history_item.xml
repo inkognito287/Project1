@@ -112,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.82" />
+            app:layout_constraintGuide_percent="0.8" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline61"
@@ -121,7 +121,16 @@
             android:orientation="horizontal"
             android:scaleX="2"
             android:scaleY="2"
-            app:layout_constraintGuide_percent="0.9" />
+            app:layout_constraintGuide_percent="0.86" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline99"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:scaleX="2"
+            android:scaleY="2"
+            app:layout_constraintGuide_percent="0.92" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline57"
@@ -161,6 +170,16 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline61"
             app:layout_constraintStart_toStartOf="@+id/guideline65"
             app:layout_constraintTop_toTopOf="@+id/guideline60" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Статус: отправлен"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline99"
+            app:layout_constraintStart_toStartOf="@+id/guideline65"
+            app:layout_constraintTop_toTopOf="@+id/guideline61" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

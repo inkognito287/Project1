@@ -173,12 +173,16 @@ class MainActivity : AppCompatActivity() {
                 binding.button.isClickable = false
                 Thread() {
 
-
                     runOnUiThread {
 
 
                         myAdapter?.notifyDataSetChanged()
                     }
+
+                    MySingleton.arrayList!![0].stringImage =
+                        myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
+
+
 
 
                     deserialize()
@@ -197,20 +201,20 @@ class MainActivity : AppCompatActivity() {
         Thread {
 
 
-            val last = MySingleton.arrayList!![MySingleton.arrayList!!.size - 1]
+            val first = MySingleton.arrayList!![0]
 
 
 
-            if (last.status == "no")
+            if (first.status == "no")
                 if (myFunctions.imageRequest(
-                        last.stringImage,
-                        last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                        last.fullInformation,
+                        first.stringImage!!,
+                        first.day!! + " " + first.time!![0].toString() + first.time!![1].toString() + "-" + first.time!![3].toString() + first.time!![4].toString(),
+                        first.fullInformation,
                         sharedPreferences
                     ) == "true"
                 ) {
 
-                    MySingleton.arrayList!![MySingleton.arrayList!!.size - 1].status = "yes"
+                    MySingleton.arrayList!![0].status = "yes"
 
                     myAdapterUpdate = myAdapter
                     runOnUiThread() {

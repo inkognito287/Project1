@@ -100,6 +100,7 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
         print(MySingleton.text)
         MySingleton.image = MySingleton.arrayList!![position].image
         MySingleton.title = MySingleton.arrayList!![position].documentFormatField.toString()
+        MySingleton.status = if(MySingleton.arrayList!![position].status=="yes") "Статус: отправлен" else "Статус: ожидает отправки"
         var bundle = Bundle()
         bundle.putInt("position", position)
         var fragment = HistoryItem()

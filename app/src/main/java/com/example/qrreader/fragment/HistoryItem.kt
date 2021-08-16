@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.Pojo.Response
+import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentHistoryItemBinding
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
@@ -28,10 +29,7 @@ import kotlin.collections.ArrayList
 class HistoryItem : Fragment() {
     lateinit var binding: FragmentHistoryItemBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +46,7 @@ class HistoryItem : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.progressBarHistoryItem.visibility = View.VISIBLE
         Thread() {
-            getImage(readToFile(), requireArguments().getInt("position"))
+            getImage()
         }.start()
     }
 
@@ -69,12 +67,17 @@ class HistoryItem : Fragment() {
     }
 
 
-    fun getImage(json: String, position: Int) {
+    fun getImage() {
            activity?.runOnUiThread {
                 binding.documentImage.setImageBitmap(MySingleton.image)
                 binding.documentFormat.text = MySingleton.text
                 binding.orderNumber.text = MySingleton.title
                 binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                binding.status.text = MySingleton.status
+               if (MySingleton.status=="Статус: отправлен")
+                binding.status.setBackgroundResource(R.color.sent)
+               else
+                   binding.status.setBackgroundResource(R.color.waiting)
                 binding.progressBarHistoryItem.visibility = View.GONE
             }
 

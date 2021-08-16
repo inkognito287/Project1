@@ -77,7 +77,7 @@ class ImageFragment : Fragment() {
                 val parts = saveCode.split("/")
                 parts[3]
                 numberOfOrder = "Заказ №${parts[2]}"
-                documentFormat = "Бланк заказа, стр. ${parts[4]}, из ${parts[5]}"
+                documentFormat = "Бланк заказа, стр. ${parts[4]} из ${parts[5]}"
             } else {
                 numberOfOrder = "Неизвестный документ "
                 documentFormat = ""
@@ -190,54 +190,24 @@ class ImageFragment : Fragment() {
     }
 
 
-    private fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
-        val COMPRESSION_QUALITY = 100
-        val encodedImage: String
-        val byteArrayBitmapStream = ByteArrayOutputStream()
-        bitmapPicture.compress(
-            Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
-            byteArrayBitmapStream
-        )
-        val b: ByteArray = byteArrayBitmapStream.toByteArray()
-        encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
-        return encodedImage
-    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitImage() {
         binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE
-        Thread() {
-            val date = Date()
-            var dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
-            var dateFormatDay = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
-            var OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
-            var OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
-            var test = dateFormatTime.parse(date.toString())
-            var time = OUTPUT_PATERN_TIME.format(test)
-            var day = OUTPUT_PATERN_DAY.format(test)
-            var image = getStringFromBitmap(saveImage)
+        val date = Date()
+        var dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
+        var dateFormatDay = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
+        var OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
+        var OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
+        var test = dateFormatTime.parse(date.toString())
+        var time = OUTPUT_PATERN_TIME.format(test)
+        var day = OUTPUT_PATERN_DAY.format(test)
+        MySingleton.arrayList!!.add(0,ItemForHistory(documentFormat,numberOfOrder,null,saveImage,day,time,"no",fullInformation))
+        requireActivity().setResult(28)
 
-
-//            myFunctions.writeToFile(
-//                createJsonObject(
-//                    image!!,
-//                    numberOfOrder,
-//                    documentFormat,
-//                    day,
-//                    time,
-//                    "no"
-//                )
-//            )
-
-            MySingleton.arrayList!!.add(ItemForHistory(documentFormat,numberOfOrder,image!!,saveImage,day,time,"no",fullInformation))
-
-            //readToFile()
-            requireActivity().setResult(28)
-
-            requireActivity().finish()
-
-        }.start()
+        requireActivity().finish()
     }
 
     fun backImage() {

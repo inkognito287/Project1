@@ -17,10 +17,7 @@ import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 
 class Functions(var context: Context) {
 
@@ -140,6 +137,19 @@ class Functions(var context: Context) {
 
             writeToFile(gson.toJson(rootObject))
         }
+    }
+
+     fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
+        val COMPRESSION_QUALITY = 100
+        val encodedImage: String
+        val byteArrayBitmapStream = ByteArrayOutputStream()
+        bitmapPicture.compress(
+            Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
+            byteArrayBitmapStream
+        )
+        val b: ByteArray = byteArrayBitmapStream.toByteArray()
+        encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
+        return encodedImage
     }
 
 }

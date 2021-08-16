@@ -8,6 +8,7 @@ object MySingleton {
     lateinit var image: Bitmap
     lateinit var title: String
     lateinit var text: String
+    lateinit var status: String
     var arrayList: ArrayList<ItemForHistory>?=null
 
 }

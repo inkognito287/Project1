@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline46"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDateDay" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline40"
@@ -64,11 +64,10 @@
         android:id="@+id/imageViewStatus"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/txt_number"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@+id/guideline45"
         app:layout_constraintStart_toStartOf="@+id/guideline46"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/submitted" />
 
     <TextView
@@ -76,18 +75,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="16 июля"
-        app:layout_constraintStart_toStartOf="@+id/guideline40"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/guideline46" />
 
     <TextView
         android:id="@+id/textViewDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="11:20"
-        app:layout_constraintBottom_toTopOf="@+id/txt_name"
-        app:layout_constraintEnd_toStartOf="@+id/guideline45"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewStatus"
         app:layout_constraintStart_toStartOf="@+id/guideline46"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewDateDay" />
 
     <View
         android:id="@+id/view8"
