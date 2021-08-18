@@ -92,6 +92,7 @@ class BarcodeScanActivity : AppCompatActivity() {
             super.onBackPressed()
         else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+
             binding.button.isClickable = true
         }
     }

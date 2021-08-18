@@ -5,16 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DataFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/projectWhite"
         tools:context=".activities.Authorization">
+
         <include
             android:id="@+id/view4"
             layout="@layout/header"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#6363BB"
+            android:background="@color/projectPurple"
             app:layout_constraintBottom_toTopOf="@+id/guideline67"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -55,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Данные"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/projectTextWhite"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline67"
             app:layout_constraintStart_toStartOf="@+id/guideline70"
@@ -94,7 +97,7 @@
             android:id="@+id/view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#E5E5E5"
+            android:background="@color/projectGray"
             app:layout_constraintBottom_toTopOf="@+id/guideline11"
             app:layout_constraintEnd_toStartOf="@+id/guideline9"
             app:layout_constraintStart_toStartOf="@+id/guideline8"

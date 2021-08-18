@@ -74,31 +74,6 @@ class BarcodeBitmapAnalyzer (var context: Context) {
                               bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
 
-//                              var myFunctions = Functions(context)
-//                          val first = MySingleton.arrayList!![0]
-//                          var sharedPreferences = context.applicationContext.getSharedPreferences(
-//                              "address",
-//                              Context.MODE_PRIVATE
-//                          )
-//
-//
-//                          if (first.status == "no")
-//                              if (myFunctions.imageRequest(
-//                                      first.stringImage!!,
-//                                      first.day!! + " " + first.time!![0].toString() + first.time!![1].toString() + "-" + first.time!![3].toString() + first.time!![4].toString(),
-//                                      first.fullInformation,
-//                                      sharedPreferences
-//                                  ) == "true"
-//                              ) {
-//
-//                                  MySingleton.arrayList!![0].status = "yes"
-//
-//                                  myAdapterUpdate = myAdapter
-//                                  (context as AppCompatActivity).runOnUiThread() {
-//                                      myAdapterUpdate.update()
-//                                  }
-//                              }
-
                           }
 
 
@@ -127,11 +102,7 @@ class BarcodeBitmapAnalyzer (var context: Context) {
 
             }
          }.start()
-//         var myFunctions = Functions(context)
-//         myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
     }
-    fun getRes():String{
-        return resOfBitmapScan
-    }
+
 
 }

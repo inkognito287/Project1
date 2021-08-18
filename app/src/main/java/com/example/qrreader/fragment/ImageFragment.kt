@@ -23,6 +23,7 @@ import com.example.qrreader.databinding.FragmentImageBinding
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -64,8 +65,9 @@ class ImageFragment : Fragment() {
             backImage()
         }
 
-
-
+        var bottomSheetBehavior =
+            BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+        bottomSheetBehavior.isDraggable = false
 
 
         saveImage = MySingleton.cameraScreen

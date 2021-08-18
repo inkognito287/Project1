@@ -9,4 +9,16 @@
     <color name="white">#FFFFFFFF</color>
     <color name="sent">#8BC34A</color>
     <color name="waiting">#CDCDCD</color>
+
+
+    <color name="projectPurple">#6363BB</color>
+    <color name="projectWhite">#FFFFFF</color>
+    <color name="projectTextWhite">#FFFFFF</color>
+    <color name="projectGray">#E5E5E5</color>
+    <color name="projectLigthGrayBackground">#F1F1F9</color>
+    <color name="projectOrangeError">#FF9800</color>
+    <color name="projectText">#8A8A8A</color>
+    <color name="projectTextDark">#424252</color>
+    <color name="projectGreen">#72BC22</color>
+
 </resources>

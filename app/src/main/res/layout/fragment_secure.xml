@@ -10,12 +10,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <include
             android:id="@+id/view4"
             layout="@layout/header"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#6363BB"
             app:layout_constraintBottom_toTopOf="@+id/guideline67"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Политика безопасности"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/projectWhite"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline67"
             app:layout_constraintStart_toStartOf="@+id/guideline70"

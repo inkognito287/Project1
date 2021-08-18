@@ -12,6 +12,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:padding="5dp"
+        android:textColor="@color/projectText"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline41"
@@ -26,6 +27,7 @@
         android:layout_marginTop="8dp"
         android:padding="5dp"
         android:singleLine="true"
+        android:textColor="@color/projectText"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline46"
         app:layout_constraintHorizontal_bias="0.0"
@@ -84,6 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="16 июля"
+        android:textColor="@color/projectText"
         app:layout_constraintEnd_toStartOf="@+id/guideline45"
         app:layout_constraintStart_toStartOf="@+id/guideline100" />
 
@@ -92,6 +95,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="11:20"
+        android:textColor="@color/projectText"
         app:layout_constraintBottom_toTopOf="@+id/imageViewStatus"
         app:layout_constraintEnd_toStartOf="@+id/guideline45"
         app:layout_constraintStart_toStartOf="@+id/guideline100"
