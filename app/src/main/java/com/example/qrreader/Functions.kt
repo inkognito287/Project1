@@ -1,6 +1,7 @@
 package com.example.qrreader
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,6 +11,7 @@ import android.os.Build
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.qrreader.activities.Error
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -150,6 +152,13 @@ class Functions(var context: Context) {
         val b: ByteArray = byteArrayBitmapStream.toByteArray()
         encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
         return encodedImage
+    }
+
+
+    fun showError(error: String) {
+        var intent = Intent(context, Error::class.java)
+        intent.putExtra("error", error)
+        (context as AppCompatActivity).startActivity (intent)
     }
 
 }

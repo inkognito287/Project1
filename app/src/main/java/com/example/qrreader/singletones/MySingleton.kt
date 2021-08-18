@@ -9,6 +9,12 @@ object MySingleton {
     lateinit var title: String
     lateinit var text: String
     lateinit var status: String
+    lateinit var cameraScreen: Bitmap
+    var countActivity: Int = 0
+    var flag=true
+    var flag2=true
+
     var arrayList: ArrayList<ItemForHistory>?=null
+
 
 }

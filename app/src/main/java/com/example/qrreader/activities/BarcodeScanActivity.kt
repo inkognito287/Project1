@@ -1,6 +1,9 @@
 package com.example.qrreader.activities
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Bundle
@@ -14,11 +17,15 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.example.qrreader.*
 import com.example.qrreader.fragment.ImageFragment
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
+import com.example.qrreader.service.MyService
+import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.mlkit.vision.common.InputImage
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -44,38 +51,16 @@ class BarcodeScanActivity : AppCompatActivity() {
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         code = "не найден"
-
-
+        MySingleton.flag = false
+        MySingleton.countActivity = 1
         binding.button.setOnClickListener {
+            binding.button.isClickable = false
+            //  if (code != "не найден") {
+            MySingleton.cameraScreen = findViewById<PreviewView>(R.id.preview)?.bitmap!!
 
-            if (code != "не найден") {
+            val barcodeBitmapAnalyzer = BarcodeBitmapAnalyzer(this)
+            barcodeBitmapAnalyzer.scanBarcodes(MySingleton.cameraScreen, code)
 
-                val bottomFragment = ImageFragment()
-                val bundle = Bundle()
-                bundle.putString("code", code)
-                bottomFragment.arguments = bundle
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.containerBottomSheet, bottomFragment)
-                    .commit()
-
-
-                val bottomSheetBehaviour =
-                    BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-
-                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-                code = "не найден"
-
-            } else
-                if (toast != null){
-            var timeTask = object : TimerTask() {
-                override fun run() {toast = null}}
-
-                    Timer().schedule( timeTask,2000)}
-
-                else {
-                    toast = Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT)
-                    toast!!.show()
-                }
 
         }
 
@@ -100,11 +85,15 @@ class BarcodeScanActivity : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 
+
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state==4||bottomSheetBehaviour.state==BottomSheetBehavior.STATE_HIDDEN)
+        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN)
             super.onBackPressed()
-        else bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        else {
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            binding.button.isClickable = true
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -166,13 +155,13 @@ class BarcodeScanActivity : AppCompatActivity() {
                     if (result.barcodes.isNotEmpty() && !isFinishing) {
                         result.barcodes.forEach {
                             code = it.rawValue.toString()
-                            timer = Timer()
-                            timer!!.schedule(object : TimerTask() {
-                                override fun run() {
-                                    code = "не найден"
-                                    timer!!.cancel()
-                                }
-                            }, 4000)
+//                            timer = Timer()
+//                            timer!!.schedule(object : TimerTask() {
+//                                override fun run() {
+//                                    code = "не найден"
+//                                    timer!!.cancel()
+//                                }
+//                            }, 4000)
 
                         }
 
@@ -197,6 +186,67 @@ class BarcodeScanActivity : AppCompatActivity() {
             return AspectRatio.RATIO_4_3
         }
         return AspectRatio.RATIO_16_9
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        Log.d("life", "BarcodeAct Stop MySingleton.flag2 " + MySingleton.flag2.toString())
+        Thread() {
+
+                if (!isMyServiceRunning(MyService::class.java) && MySingleton.flag2 && MySingleton.countActivity == 1) {
+                    startService(Intent(this, MyService::class.java))
+                }
+
+            MySingleton.flag = true
+            MySingleton.countActivity = 1
+            var myFunctions = Functions(applicationContext)
+           // if (MySingleton.flag2 && MySingleton.countActivity == 1)
+             //   myFunctions.saveJson()
+        }.start()
+    }
+
+    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
+
+        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+
+        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
+
+
+            if (myClass.name.equals(service.service.className)) {
+
+                return true
+
+            }
+
+        }
+        return false
+    }
+
+    private fun checkStatus(): Boolean {
+
+        var s = 0
+        if (MySingleton.arrayList != null) {
+
+            for (x in 0 until MySingleton.arrayList!!.size)
+                if (MySingleton.arrayList!![x].status == "no")
+                    s++
+        }
+        if (s > 0)
+
+            return true
+
+        return false
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.button.isClickable = true
+        if (isMyServiceRunning(MyService::class.java)) {
+            stopService(Intent(this, MyService::class.java))
+        }
     }
 
     companion object {

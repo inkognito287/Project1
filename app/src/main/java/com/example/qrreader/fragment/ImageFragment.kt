@@ -9,10 +9,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
+import androidx.core.graphics.drawable.toBitmap
+import com.example.qrreader.BarcodeBitmapAnalyzer
 import com.example.qrreader.Functions
 import com.example.qrreader.Pojo.Response
 import com.example.qrreader.R
@@ -38,7 +41,7 @@ class ImageFragment : Fragment() {
     lateinit var numberOfOrder: String
     lateinit var documentFormat: String
     lateinit var myFunctions: Functions
-    lateinit var fullInformation:String
+    lateinit var fullInformation: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,6 +52,8 @@ class ImageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+
         // Inflate the layout for this fragment
         binding = FragmentImageBinding.inflate(inflater, container, false)
         //binding.imageView7.setImageURI(Uri.parse(arguments?.getString("path")))
@@ -58,12 +63,17 @@ class ImageFragment : Fragment() {
         binding.imageFragmentBack.setOnClickListener() {
             backImage()
         }
-        saveImage = activity?.findViewById<PreviewView>(R.id.preview)?.bitmap!!
+
+
+
+
+
+        saveImage = MySingleton.cameraScreen
         saveCode = arguments?.getString("code")!!
         Log.d("MyLog", saveCode)
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
-        myFunctions = Functions(requireContext().applicationContext)
+        myFunctions = Functions(requireActivity())
 
 
         try {
@@ -95,102 +105,11 @@ class ImageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+//        val barcodeBitmapAnalyzer = BarcodeBitmapAnalyzer(requireActivity())
+//        barcodeBitmapAnalyzer.scanBarcodes(binding.imageView7.drawable.toBitmap(),fullInformation)
+
 
     }
-
-    private fun writeToFile(jsonData: String?) {
-        try {
-            val outputStreamWriter = OutputStreamWriter(
-                context?.openFileOutput(
-                    "single.json",
-                    AppCompatActivity.MODE_PRIVATE
-                )
-            )
-            outputStreamWriter.write(jsonData)
-
-            outputStreamWriter.close()
-            println("good")
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: " + e.toString())
-        }
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createJsonObject(
-        photo: String,
-        numberOfOrderField: String,
-        documentFormatField: String,
-        day: String,
-        time: String,
-        status: String
-    ): String? {
-        val jsonNowString = myFunctions.readToFile()
-        // Log.d("MyLog", "ReadFile=$text")
-
-        val gson = Gson()
-        val rootObject = JsonObject()
-        val arrayObject = JsonArray()
-        try {
-            val deserializer = gson.fromJson(jsonNowString, Response::class.java)
-            //  Log.d("MyLog", "deserializer =" + deserializer.documents!![0].toString())
-
-
-            for (i in deserializer.documents!!.indices) {
-
-                val childObject = JsonObject()
-
-                childObject.addProperty(
-                    "numberOfOrderField",
-                    deserializer.documents[i]?.numberOfOrderField
-                )
-                childObject.addProperty(
-                    "documentFormatField",
-                    deserializer.documents[i]?.documentFormatField
-                )
-                childObject.addProperty(
-                    "photo",
-                    deserializer.documents[i]?.photo
-                )
-                childObject.addProperty(
-                    "day",
-                    deserializer.documents[i]?.day
-                )
-                childObject.addProperty(
-                    "time",
-                    deserializer.documents[i]?.time
-                )
-                childObject.addProperty(
-                    "status",
-                    deserializer.documents[i]?.status
-                )
-                arrayObject.add(childObject)
-
-            }
-        } catch (e: Exception) {
-        }
-        // создаем главный объект
-
-        val childObject = JsonObject()
-        // записываем текст в поле "message"
-        childObject.addProperty("numberOfOrderField", numberOfOrderField)
-        childObject.addProperty("documentFormatField", documentFormatField)
-        childObject.addProperty("photo", photo)
-        childObject.addProperty("day", day)
-        childObject.addProperty("time", time)
-        childObject.addProperty("status", status)
-        arrayObject.add(childObject)
-
-        rootObject.add("documents", arrayObject)
-
-
-
-
-        return gson.toJson(rootObject)  // генерация json строки
-    }
-
-
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun submitImage() {
@@ -204,7 +123,19 @@ class ImageFragment : Fragment() {
         var test = dateFormatTime.parse(date.toString())
         var time = OUTPUT_PATERN_TIME.format(test)
         var day = OUTPUT_PATERN_DAY.format(test)
-        MySingleton.arrayList!!.add(0,ItemForHistory(documentFormat,numberOfOrder,null,saveImage,day,time,"no",fullInformation))
+        MySingleton.arrayList!!.add(
+            0,
+            ItemForHistory(
+                documentFormat,
+                numberOfOrder,
+                null,
+                saveImage,
+                day,
+                time,
+                "no",
+                fullInformation
+            )
+        )
         requireActivity().setResult(28)
 
         requireActivity().finish()
@@ -214,6 +145,8 @@ class ImageFragment : Fragment() {
         val bottomSheetBehaviour =
             BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
         bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        activity?.findViewById<Button>(R.id.button)?.isClickable = true
+
         //activity?.findViewById<Button>(R.id.button)?.isClickable=true
     }
 

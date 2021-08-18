@@ -35,7 +35,9 @@ class MyService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
         myFunction = Functions(this.applicationContext)
+        myFunction.saveJson()
         sharedPreferences =
             applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
         timer = Timer()
@@ -47,7 +49,7 @@ class MyService : Service() {
                 }
             }
         }
-        timer.schedule(timeTask, 0, 5000)
+        timer.schedule(timeTask, 0, 15000)
 
         createNotificationChannel()
 
@@ -190,21 +192,6 @@ class MyService : Service() {
 
     }
 
-    private fun writeToFile(jsonData: String?, context: Context?) {
-        try {
-            val outputStreamWriter = OutputStreamWriter(
-                context?.openFileOutput(
-                    "single.json",
-                    MODE_PRIVATE
-                )
-            )
-            outputStreamWriter.write(jsonData)
 
-            outputStreamWriter.close()
-            println("good")
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-        }
-    }
 
 }

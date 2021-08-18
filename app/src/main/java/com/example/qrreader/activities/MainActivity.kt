@@ -12,6 +12,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.qrreader.BarcodeBitmapAnalyzer
 import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
@@ -22,6 +23,8 @@ import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.mlkit.vision.common.InputImage
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         // kring= List<DocumentsItem>()
 
 
-
+        MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
 
         var arrayOfDocumentsItem = ArrayList<ItemForHistory>()
@@ -98,8 +101,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
+        // MySingleton.flag=false
         val intent = Intent(this, BarcodeScanActivity::class.java)
         resultLauncher.launch(intent)
+
 
     }
 
@@ -168,6 +173,7 @@ class MainActivity : AppCompatActivity() {
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            MySingleton.flag2 = false
             if (result.resultCode == 28) {
 
                 binding.button.isClickable = false
@@ -185,9 +191,14 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
                     deserialize()
 
-
+                    runOnUiThread {
+                        binding.button.isClickable = true
+                    }
                 }.start()
 
             }
@@ -221,10 +232,6 @@ class MainActivity : AppCompatActivity() {
                         myAdapterUpdate.update()
                     }
                 }
-
-
-
-
             binding.button.isClickable = true
         }.start()
     }
@@ -266,16 +273,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d("life", "Stop")
+
+        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.flag.toString())
         Thread() {
-            if (checkStatus())
-                if (!isMyServiceRunning(MyService::class.java)) {
+                if (!isMyServiceRunning(MyService::class.java) && MySingleton.flag && MySingleton.countActivity == 1) {
                     startService(Intent(this, MyService::class.java))
                 }
+            MySingleton.flag2 = true
+          //  if( MySingleton.flag && MySingleton.countActivity == 1)
 
-
-
-            myFunctions.saveJson()
         }.start()
     }
 
