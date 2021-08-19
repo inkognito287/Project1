@@ -73,6 +73,15 @@ class MainActivity : AppCompatActivity() {
 
                 MySingleton.arrayList!!.addAll(arrayOfDocumentsItem)
 
+                    var count = 0
+                    for (element in MySingleton.arrayList!!)
+                        if (element.status=="no")
+                            count++
+runOnUiThread {
+    binding.counterUnsent.textView3.text = count.toString()
+}
+
+
             }
             myFragmentTransaction = MyFragmentTransaction(this)
             myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
