@@ -23,7 +23,7 @@ import java.io.*
 
 class Functions(var context: Context) {
 
-     fun readToFile(): String {
+     fun readFromFile(): String {
 
          return try {
              val reader =
@@ -38,7 +38,7 @@ class Functions(var context: Context) {
 
     }
 
-      fun writeToFile(jsonData: String?) {
+      private fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context?.openFileOutput(
@@ -54,10 +54,10 @@ class Functions(var context: Context) {
             Log.e("Exception", "File write failed: $e")
         }
     }
-    fun imageRequest(image: String, name: String, code: String, sharedPreferencesAddress:SharedPreferences): String? {
+    fun imageRequest(image: String, name: String, code: String, sharedPreferencesAddress:SharedPreferences, sharedPreferencesUser: SharedPreferences): String? {
 
 
-        val token = sharedPreferencesAddress.getString("token", "")
+        val token = sharedPreferencesUser.getString("token", "")
         val url = sharedPreferencesAddress.getString("address", "")
         val client = OkHttpClient()
         val requestBody = MultipartBody.Builder()
@@ -68,7 +68,7 @@ class Functions(var context: Context) {
             .build();
 
         var request = Request.Builder()
-            .addHeader("token", token.toString())
+            .addHeader("Authorization","Bearer "+ token.toString())
             .url("$url/Account/image")
             .post(requestBody)
             .build();

@@ -2,13 +2,14 @@ package com.example.qrreader.activities
 
 import android.content.Context
 import android.content.Intent
+import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.CustomDialog
 import com.example.qrreader.Functions
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
+//import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -47,9 +48,9 @@ class AddressKey : AppCompatActivity() {
 
 
                 if (!myFunctions.isNetworkAvailable())
-                    showError("Проверьте подключение к интернету")
+                    myFunctions.showError("Проверьте подключение к интернету")
                 else if (binding.editTextTextAddress.text.toString()==""||binding.editTextTextKey.text.toString()=="")
-                    showError("Проверьте введённые данные")
+                    myFunctions.showError("Проверьте введённые данные")
                 else {
 
                     binding.progressBarFirst.visibility = View.VISIBLE
@@ -82,7 +83,7 @@ class AddressKey : AppCompatActivity() {
                             runOnUiThread {
                                 Log.d("MyLog", "RESPONCEBODY=" + responseBody)
                             }
-                            if (responseBody != "{\"errorText\":\"false\"}" && responseBody != "") {
+                            if (responseBody == "true") {
 
                                 sharedPreference.edit()
                                     .putString("key", binding.editTextTextKey.text.toString())
@@ -90,20 +91,19 @@ class AddressKey : AppCompatActivity() {
                                         "address",
                                         binding.editTextTextAddress.text.toString()
 
-                                    ).putString("token", responseBody).apply()
+                                    )
                                 val intent = Intent(this@AddressKey, Authorization::class.java)
                                 startActivity(intent)
                                 finish()
-                            } else if (responseBody == "{\"errorText\":\"false\"}") {
+                            } else if (responseBody == "false") {
                                 runOnUiThread {
                                     binding.progressBarFirst.visibility = View.GONE
                                 }
-                                showError("Неправильный пароль")
-                                // alert.showDialog(this, "Неправильный адрес или пароль ")
+                                myFunctions.showError("Неправильный пароль")
                                 Log.d("MyLog", responseBody)
 
                             } else {
-                                showError("Введённый сервер не отвечает")
+                                myFunctions.showError("Введённый сервер не отвечает")
                             }
                             runOnUiThread {
                                 binding.progressBarFirst.visibility = View.GONE
@@ -114,23 +114,13 @@ class AddressKey : AppCompatActivity() {
                             runOnUiThread {
 
                                 binding.progressBarFirst.visibility = View.GONE
-                                showError("Неверный формат адреса, ожидался URL типа 'http' или 'https' ")
+                                myFunctions.showError("Неверный формат адреса, ожидался URL типа 'http' или 'https' ")
                                 Log.d("MyError","Неверный формат адреса, ожидался URL типа 'http' или 'https' ")
-                                //alert.showDialog(this, "Сервер не отвечает")
                             }
-
                         }
                     }.start()
                 }
-
             }
-
         }
-    }
-
-    fun showError(error: String) {
-        var intent = Intent(this, Error::class.java)
-        intent.putExtra("error", error)
-        startActivity(intent)
     }
 }

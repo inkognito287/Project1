@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.Interfaces.UpdateAdapter
+import com.example.qrreader.interfaces.UpdateAdapter
 import com.example.qrreader.singletones.MySingleton
 import java.io.OutputStreamWriter
 
@@ -66,7 +66,7 @@ class CustomRecyclerAdapter(
         if (MySingleton.arrayList!![position].status == "no") {
             holder.status.setImageResource(R.drawable.history_status_no)
 
-        } else holder.status.setImageResource(R.drawable.submitted)
+        } else holder.status.setImageResource(R.drawable.ic_submite)
 
 
     }

@@ -20,5 +20,6 @@
     <color name="projectText">#8A8A8A</color>
     <color name="projectTextDark">#424252</color>
     <color name="projectGreen">#72BC22</color>
+    <color name="projectSelector">#CEEAF7</color>
 
 </resources>

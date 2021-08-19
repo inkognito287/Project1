@@ -26,6 +26,10 @@
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_group_5.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_launcher_background.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_main_icon.xml" value="0.2140625" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_my_logo.xml" value="0.22" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_my_logotype.xml" value="0.2328125" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/selecto_history_item.xml" value="0.3828125" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/selector_history_item.xml" value="0.30925925925925923" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_data.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_exit.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/setting_politicy_secure.xml" value="0.225" />
@@ -51,6 +55,7 @@
         <entry key="..\:/Github/Project1/app/src/main/res/layout/header.xml" value="0.20572916666666666" />
         <entry key="..\:/Github/Project1/app/src/main/res/layout/history_item.xml" value="0.67" />
         <entry key="..\:/Github/Project1/app/src/main/res/layout/setting_button.xml" value="0.36666666666666664" />
+        <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_group6.xml" value="0.25" />
         <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.23802083333333332" />
         <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.23802083333333332" />
         <entry key="..\:/Github/Project1/app/src/main/res/mipmap-anydpi-v26/ic_logo_image.xml" value="0.2140625" />

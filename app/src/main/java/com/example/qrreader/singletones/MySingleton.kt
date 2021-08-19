@@ -1,7 +1,6 @@
 package com.example.qrreader.singletones
 
 import android.graphics.Bitmap
-import com.example.qrreader.Pojo.DocumentsItem
 import com.example.qrreader.model.ItemForHistory
 
 object MySingleton {
@@ -11,10 +10,9 @@ object MySingleton {
     lateinit var status: String
     lateinit var cameraScreen: Bitmap
     var countActivity: Int = 0
-    var flag=true
-    var flag2=true
-
-    var arrayList: ArrayList<ItemForHistory>?=null
+    var mainActivityExistFlag = true
+    var scanActivityExistFlag = true
+    var arrayList: ArrayList<ItemForHistory>? = null
 
 
 }

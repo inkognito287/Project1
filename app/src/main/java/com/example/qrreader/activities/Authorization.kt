@@ -8,11 +8,13 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.CustomDialog
 import com.example.qrreader.Functions
 
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
+import com.example.qrreader.pojo.User
+import com.google.gson.Gson
+//import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import okhttp3.*
 import java.lang.Exception
 import java.net.URL
@@ -22,7 +24,7 @@ class Authorization : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPreferencesAddress: SharedPreferences
     lateinit var url: String
-    lateinit var myFunction: Functions
+    lateinit var myFunctions: Functions
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
 
@@ -34,8 +36,7 @@ class Authorization : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
 
-        myFunction = Functions(this)
-
+        myFunctions = Functions(this)
         url = sharedPreferencesAddress.getString("address", "").toString()
         if (sharedPreferences.contains("user")) {
             val intent = Intent(this@Authorization, MainActivity::class.java)
@@ -43,13 +44,11 @@ class Authorization : AppCompatActivity() {
             authorized = true
             finish()
         }
-
-
         binding.enterButton.setOnClickListener {
 
 
-            if (!myFunction.isNetworkAvailable())
-                showError("Проверьте подключение к интернету")
+            if (!myFunctions.isNetworkAvailable())
+                myFunctions.showError("Проверьте подключение к интернету")
             else {
 
                 if (!authorized)
@@ -80,13 +79,11 @@ class Authorization : AppCompatActivity() {
 
         var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
-            URL("$url/Account/testService?name=$name&password=$password")
+            URL("$url/Account/Token?username=$name&password=$password")
         binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
             try {
-
-
                 var responseBody = ""
                 val name = binding.editTextName.text.toString()
                 val password = binding.editTextPassword.text.toString()
@@ -112,18 +109,18 @@ class Authorization : AppCompatActivity() {
 
                     "Сервер не отвечает"
                 }
-                if (responseBody == "correct") {
-
-                    sharedPreferences.edit().putString("user", binding.editTextName.text.toString())
+                if (responseBody != "") {
+                    var gson = Gson()
+                    var result=gson.fromJson(responseBody,User::class.java)
+                    var token = result.access_token
+                    sharedPreferences.edit().putString("user", binding.editTextName.text.toString()).putString("token",token)
                         .apply()
                     val intent = Intent(this@Authorization, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else {
                     runOnUiThread {
-                        showError(responseBody)
-                        //val alert = CustomDialog()
-                        //alert.showDialog(this, responseBody)
+                        myFunctions.showError(responseBody)
                     }
 
                 }
@@ -138,12 +135,4 @@ class Authorization : AppCompatActivity() {
         }.start()
 
     }
-
-    fun showError(error: String) {
-        var intent = Intent(this, Error::class.java)
-        intent.putExtra("error", error)
-        startActivity(intent)
-    }
-
-
 }

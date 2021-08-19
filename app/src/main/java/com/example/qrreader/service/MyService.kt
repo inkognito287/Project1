@@ -15,19 +15,13 @@ import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.activities.MainActivity
 import com.example.qrreader.singletones.MySingleton
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.util.*
 
 class MyService : Service() {
-    lateinit var sharedPreferences: SharedPreferences
+    lateinit var sharedPreferencesAddress: SharedPreferences
+    lateinit var sharedPreferencesUser: SharedPreferences
     lateinit var timer: Timer
-    lateinit var  myFunction:Functions
+    lateinit var myFunction: Functions
     var manager: NotificationManager? = null
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -38,8 +32,12 @@ class MyService : Service() {
 
         myFunction = Functions(this.applicationContext)
         myFunction.saveJson()
-        sharedPreferences =
+        sharedPreferencesAddress =
             applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
+
+        sharedPreferencesUser =
+            applicationContext.getSharedPreferences("user", Context.MODE_PRIVATE)!!
+
         timer = Timer()
         var timeTask = object : TimerTask() {
             override fun run() {
@@ -49,12 +47,10 @@ class MyService : Service() {
                 }
             }
         }
-        timer.schedule(timeTask, 0, 15000)
+        timer.schedule(timeTask, 10000, 15000)
 
         createNotificationChannel()
 
-
-        //start background
     }
 
     private fun sendData() {
@@ -69,35 +65,30 @@ class MyService : Service() {
 
 
                     for (x in MySingleton.arrayList!!.size - 1 downTo 0) {
-                        val last = MySingleton.arrayList!![x]
-                        if (last.status == "no")
-                            if (imageRequest(
-                                    last.stringImage.toString(),
-                                    last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                    last.documentFormatField!!
+                        val element = MySingleton.arrayList!![x]
+                        if (element.status == "no")
+                            if (myFunction.imageRequest(
+                                    element.stringImage.toString(),
+                                    element.day!! + " " + element.time!![0].toString() + element.time!![1].toString() + "-" + element.time!![3].toString() + element.time!![4].toString(),
+                                    element.documentFormatField!!,
+                                    sharedPreferencesAddress,
+                                    sharedPreferencesUser
                                 ) == "true"
                             ) {
                                 MySingleton.arrayList!![x].status = "yes"
 
                             }
                     }
-                    var s = 0
-                    for (x in 0..MySingleton.arrayList!!.size - 1)
+                    var unsentItems = 0
+                    for (x in 0 until MySingleton.arrayList!!.size)
                         if (MySingleton.arrayList!![x]!!.status == "no")
+                            unsentItems++
 
-                            s++
-
-                   // myAdapter.notifyDataSetChanged()
-                    myFunction.saveJson()
-                    if (s == 0) {
+                    if (unsentItems == 0) {
                         timer.cancel()
                         stopService(Intent(this, MyService::class.java))
                         manager!!.cancel(NOTIFICATION_ID)
                     }
-
-
-//                val resultEnd = gson.toJson(result)
-//                writeToFile(resultEnd, applicationContext)
 
                 } catch (e: Exception) {
 
@@ -141,57 +132,4 @@ class MyService : Service() {
 
         }
     }
-
-
-    fun imageRequest(image: String, name: String, code: String): String? {
-
-
-        val token = sharedPreferences.getString("token", "")
-        val url = sharedPreferences.getString("address", "")
-        val client = OkHttpClient()
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("image", image)
-            .addFormDataPart("name", name)
-            .addFormDataPart("code", code)
-            .build();
-
-        var request = Request.Builder()
-            .addHeader("token", token.toString())
-            .url("$url/Account/image")
-            .post(requestBody)
-            .build();
-
-
-        try {
-            val response: okhttp3.Response = client.newCall(request).execute()
-
-            return response.body?.string()
-        } catch (e: IOException) {
-            Log.d("MyLog", "exception$e")
-
-        }
-
-
-        return null
-
-    }
-
-    private fun readToFile(context: Context?): String {
-
-        return try {
-            val reader =
-                BufferedReader(InputStreamReader(context?.openFileInput("single.json")))
-            val text = reader.readText()
-            reader.close()
-            text
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-            "ERROR"
-        }
-
-    }
-
-
-
 }

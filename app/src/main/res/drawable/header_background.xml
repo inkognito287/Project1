@@ -12,7 +12,7 @@
         android:bottom="2dp"
         android:left="2dp"
         android:right="2dp">
-        <shape android:drawable="@drawable/ic_group_1">
+        <shape android:drawable="@drawable/ic_logo_line">
             <solid android:color="@color/projectWhite" />
         </shape>
     </item>

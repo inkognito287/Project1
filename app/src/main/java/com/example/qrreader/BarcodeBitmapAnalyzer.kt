@@ -18,12 +18,8 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 
 class BarcodeBitmapAnalyzer (var context: Context) {
-    var resOfBitmapScan:String
-    init{
-       resOfBitmapScan=""
-    }
 
-     fun scanBarcodes(bitmap: Bitmap,information:String)  {
+    fun scanBarcodes(bitmap: Bitmap,information:String)  {
 
 
          val rotationDegrees = 0

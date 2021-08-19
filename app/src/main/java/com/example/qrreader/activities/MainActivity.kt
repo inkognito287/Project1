@@ -12,7 +12,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.BarcodeBitmapAnalyzer
 import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
@@ -23,8 +22,6 @@ import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.mlkit.vision.common.InputImage
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,7 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myBroadcastReceiver: com.example.qrreader.broadcastReceiver.MyBroadcastReceiver
     lateinit var text: String
     lateinit var binding: ActivityMainBinding
-    lateinit var sharedPreferences: SharedPreferences
+    lateinit var sharedPreferencesAddress: SharedPreferences
+    lateinit var sharedPreferencesUser: SharedPreferences
 
     lateinit var myFragmentTransaction: MyFragmentTransaction
     lateinit var myFunctions: Functions
@@ -43,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
-        // kring= List<DocumentsItem>()
+        sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
+        sharedPreferencesUser = getSharedPreferences("user",Context.MODE_PRIVATE)
 
 
         MySingleton.countActivity = 1
@@ -55,9 +53,9 @@ class MainActivity : AppCompatActivity() {
         Thread() {
             MySingleton.arrayList = ArrayList()
             val gson = Gson()
-            val text = myFunctions.readToFile()
+            val text = myFunctions.readFromFile()
             if (text != "") {
-                val result = gson.fromJson(text, com.example.qrreader.Pojo.Response::class.java)
+                val result = gson.fromJson(text, com.example.qrreader.pojo.Response::class.java)
 
                 for (element in result.documents!!)
                     arrayOfDocumentsItem.add(
@@ -127,9 +125,7 @@ class MainActivity : AppCompatActivity() {
         onBackPressed()
     }
 
-    fun secure(v: View) {
-        myFragmentTransaction.fragmentTransactionReplace(SecureFragment())
-    }
+
 
     fun data(v: View) {
         val data = DataFragment()
@@ -173,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            MySingleton.flag2 = false
+            MySingleton.scanActivityExistFlag = false
             if (result.resultCode == 28) {
 
                 binding.button.isClickable = false
@@ -221,7 +217,8 @@ class MainActivity : AppCompatActivity() {
                         first.stringImage!!,
                         first.day!! + " " + first.time!![0].toString() + first.time!![1].toString() + "-" + first.time!![3].toString() + first.time!![4].toString(),
                         first.fullInformation,
-                        sharedPreferences
+                        sharedPreferencesAddress,
+                        sharedPreferencesUser
                     ) == "true"
                 ) {
 
@@ -232,6 +229,7 @@ class MainActivity : AppCompatActivity() {
                         myAdapterUpdate.update()
                     }
                 }
+            myFunctions.saveJson()
             binding.button.isClickable = true
         }.start()
     }
@@ -274,13 +272,13 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.flag.toString())
+        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
         Thread() {
-                if (!isMyServiceRunning(MyService::class.java) && MySingleton.flag && MySingleton.countActivity == 1) {
-                    startService(Intent(this, MyService::class.java))
-                }
-            MySingleton.flag2 = true
-          //  if( MySingleton.flag && MySingleton.countActivity == 1)
+            if (!isMyServiceRunning(MyService::class.java) && MySingleton.mainActivityExistFlag && MySingleton.countActivity == 1) {
+                startService(Intent(this, MyService::class.java))
+            }
+            MySingleton.scanActivityExistFlag = true
+            //  if( MySingleton.flag && MySingleton.countActivity == 1)
 
         }.start()
     }
@@ -290,7 +288,7 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("life", "resume")
         if (isMyServiceRunning(MyService::class.java)) {
-            stopService(Intent(this, MyService::class.java))
+           // stopService(Intent(this, MyService::class.java))
         }
     }
 

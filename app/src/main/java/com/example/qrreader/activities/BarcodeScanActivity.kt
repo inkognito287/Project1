@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.*
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -17,16 +16,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.example.qrreader.*
-import com.example.qrreader.fragment.ImageFragment
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.mlkit.vision.common.InputImage
-import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -42,8 +37,6 @@ class BarcodeScanActivity : AppCompatActivity() {
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private var toast: Toast? = null
-    var timer: Timer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -51,7 +44,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         code = "не найден"
-        MySingleton.flag = false
+        MySingleton.mainActivityExistFlag = false
         MySingleton.countActivity = 1
         binding.button.setOnClickListener {
             binding.button.isClickable = false
@@ -156,14 +149,6 @@ class BarcodeScanActivity : AppCompatActivity() {
                     if (result.barcodes.isNotEmpty() && !isFinishing) {
                         result.barcodes.forEach {
                             code = it.rawValue.toString()
-//                            timer = Timer()
-//                            timer!!.schedule(object : TimerTask() {
-//                                override fun run() {
-//                                    code = "не найден"
-//                                    timer!!.cancel()
-//                                }
-//                            }, 4000)
-
                         }
 
                     }
@@ -192,18 +177,15 @@ class BarcodeScanActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        Log.d("life", "BarcodeAct Stop MySingleton.flag2 " + MySingleton.flag2.toString())
+        Log.d("life", "BarcodeAct Stop MySingleton.flag2 " + MySingleton.scanActivityExistFlag.toString())
         Thread() {
 
-                if (!isMyServiceRunning(MyService::class.java) && MySingleton.flag2 && MySingleton.countActivity == 1) {
+                if (!isMyServiceRunning(MyService::class.java) && MySingleton.scanActivityExistFlag && MySingleton.countActivity == 1) {
                     startService(Intent(this, MyService::class.java))
                 }
 
-            MySingleton.flag = true
+            MySingleton.mainActivityExistFlag = true
             MySingleton.countActivity = 1
-            var myFunctions = Functions(applicationContext)
-           // if (MySingleton.flag2 && MySingleton.countActivity == 1)
-             //   myFunctions.saveJson()
         }.start()
     }
 

@@ -11,11 +11,8 @@ import com.example.qrreader.model.SettingData
 import com.example.qrreader.databinding.FragmentSettingBinding
 
 class SettingFragment : Fragment() {
-    lateinit var binding:FragmentSettingBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
+    lateinit var binding:FragmentSettingBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

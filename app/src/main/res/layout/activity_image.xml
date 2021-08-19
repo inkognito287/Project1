@@ -71,7 +71,7 @@
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/shape"
+            android:background="@drawable/ic_take_photo_button"
             app:layout_constraintBottom_toTopOf="@+id/guideline73"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toStartOf="@+id/guideline81"
