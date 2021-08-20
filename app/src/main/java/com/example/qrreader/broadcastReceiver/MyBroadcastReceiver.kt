@@ -56,8 +56,12 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             sharedPreferencesAddress, sharedPreferencesUser
                         ) == "true"
                     ) {
-                        MySingleton.arrayList!![x].status = "yes"
-
+                        if (MySingleton.arrayList!![x].status == "no") {
+                            MySingleton.arrayList!![x].status = "yes"
+                            MySingleton.countUnsent.set(
+                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                            )
+                        }
                     }
 
 

@@ -12,6 +12,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.ObservableField
 import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
 import com.example.qrreader.MyFragmentTransaction
@@ -22,6 +23,7 @@ import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
         sharedPreferencesUser = getSharedPreferences("user",Context.MODE_PRIVATE)
 
+        MySingleton.countUnsent = ObservableField()
+        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
         MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
@@ -77,8 +81,14 @@ class MainActivity : AppCompatActivity() {
                     for (element in MySingleton.arrayList!!)
                         if (element.status=="no")
                             count++
+
+                if (count!=0)
+                    runOnUiThread {
+                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                    }
+                MySingleton.countUnsent.set(count.toString())
 runOnUiThread {
-    binding.counterUnsent.textView3.text = count.toString()
+    binding.count = MySingleton.countUnsent
 }
 
 
@@ -183,7 +193,7 @@ runOnUiThread {
 
                 binding.button.isClickable = false
                 Thread() {
-
+                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()+1).toString())
                     runOnUiThread {
 
 
@@ -192,13 +202,9 @@ runOnUiThread {
 
                     MySingleton.arrayList!![0].stringImage =
                         myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
-
-
-
-
-
-
-
+                    runOnUiThread {
+                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                    }
                     deserialize()
 
                     runOnUiThread {
@@ -230,7 +236,12 @@ runOnUiThread {
                         sharedPreferencesUser
                     ) == "true"
                 ) {
-
+                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
+                    if(MySingleton.countUnsent.get()=="0")
+                        runOnUiThread {
+                            //(binding.counterUnsent as View).visibility =View.GONE
+                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                        }
                     MySingleton.arrayList!![0].status = "yes"
 
                     myAdapterUpdate = myAdapter
@@ -238,8 +249,10 @@ runOnUiThread {
                         myAdapterUpdate.update()
                     }
                 }
-            myFunctions.saveJson()
+           try{ myFunctions.saveJson()}catch (e:Exception){}
             binding.button.isClickable = true
+
+
         }.start()
     }
 
@@ -294,7 +307,8 @@ runOnUiThread {
 
     override fun onResume() {
         super.onResume()
-
+        if(MySingleton.countUnsent.get()=="0")
+        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
         Log.d("life", "resume")
         if (isMyServiceRunning(MyService::class.java)) {
            // stopService(Intent(this, MyService::class.java))

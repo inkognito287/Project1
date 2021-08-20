@@ -17,87 +17,111 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 
-class BarcodeBitmapAnalyzer (var context: Context) {
+class BarcodeBitmapAnalyzer(var context: Context) {
 
-    fun scanBarcodes(bitmap: Bitmap,information:String)  {
+    fun scanBarcodes(bitmap: Bitmap, information: String) {
 
 
-         val rotationDegrees = 0
+        val rotationDegrees = 0
 
-         val image = InputImage.fromBitmap(bitmap, 0)
+        val image = InputImage.fromBitmap(bitmap, 0)
 
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(
                 Barcode.FORMAT_QR_CODE,
-                Barcode.FORMAT_AZTEC)
+                Barcode.FORMAT_AZTEC
+            )
             .build()
-
 
 
         val scanner = BarcodeScanning.getClient()
 
 
-         Thread {
-        val result = scanner.process(image)
-            .addOnSuccessListener { barcodes ->
-                if (barcodes.size==0){
-                    var myFunctions = Functions(context)
-                    myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
-                }
-                for (barcode in barcodes) {
+        Thread {
+            val result = scanner.process(image)
+                .addOnSuccessListener { barcodes ->
+                    if (barcodes.size == 0) {
+                        var myFunctions = Functions(context)
+                        myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
+                    }
+                    for (barcode in barcodes) {
 
-                    val bounds = barcode.boundingBox
-                    val corners = barcode.cornerPoints
+                        val bounds = barcode.boundingBox
+                        val corners = barcode.cornerPoints
 
-                    val rawValue = barcode.rawValue
+                        val rawValue = barcode.rawValue
 
-                    val valueType = barcode.valueType
-
-
-                          if(information == barcode.rawValue.toString()) {
-
-                              val bottomFragment = ImageFragment()
-                              val bundle = Bundle()
-                              bundle.putString("code", information)
-                              bottomFragment.arguments = bundle
-                              (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-                                  .replace(R.id.containerBottomSheet, bottomFragment)
-                                  .commit()
-
-                              val bottomSheetBehaviour =
-                                  BottomSheetBehavior.from((context as AppCompatActivity).findViewById(R.id.containerBottomSheet))
-
-                              bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                        val valueType = barcode.valueType
 
 
-                          }
+                        if (information == barcode.rawValue.toString()) {
+
+                            var numberOfPages = information
+                            var allNumberOfPages = ""
+                            if (numberOfPages.contains("http")) {
+
+                                if (numberOfPages.contains("http://")) {
+                                    numberOfPages =
+                                        numberOfPages.removePrefix("http://static.giprint.ru/doc/0713/OS/")
+                                } else if (numberOfPages.contains("https://")) {
+                                    numberOfPages =
+                                        numberOfPages.removePrefix("https://static.giprint.ru/doc/0713/OS/")
+                                }
+                                allNumberOfPages = numberOfPages.split("/")[1]
+                                numberOfPages = numberOfPages.split("/")[0]
+
+                            }
+
+                            val bottomFragment = ImageFragment()
+                            val bundle = Bundle()
+
+                            bundle.putString("code", information)
+                            bundle.putString("allNumberOfPages", "4")
+                            bundle.putString("numberOfPages", numberOfPages)
+
+                            bottomFragment.arguments = bundle
+                            (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                                .replace(R.id.containerBottomSheet, bottomFragment)
+                                .commit()
+
+                            val bottomSheetBehaviour =
+                                BottomSheetBehavior.from(
+                                    (context as AppCompatActivity).findViewById(
+                                        R.id.containerBottomSheet
+                                    )
+                                )
+
+                            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
 
-
-
-
-                    when (valueType) {
-
-                        Barcode.TYPE_WIFI -> {
-                            val ssid = barcode.wifi!!.ssid
-                            val password = barcode.wifi!!.password
-                            val type = barcode.wifi!!.encryptionType
                         }
-                        Barcode.TYPE_URL -> {
-                            val title = barcode.url!!.title
-                            val url = barcode.url!!.url
+
+
+
+
+
+                        when (valueType) {
+
+                            Barcode.TYPE_WIFI -> {
+                                val ssid = barcode.wifi!!.ssid
+                                val password = barcode.wifi!!.password
+                                val type = barcode.wifi!!.encryptionType
+                            }
+                            Barcode.TYPE_URL -> {
+                                val title = barcode.url!!.title
+                                val url = barcode.url!!.url
+                            }
                         }
                     }
+
                 }
+                .addOnFailureListener {
 
-            }
-            .addOnFailureListener {
+                    var myFunctions = Functions(context)
+                    myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
 
-                var myFunctions = Functions(context)
-                myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
-
-            }
-         }.start()
+                }
+        }.start()
     }
 
 

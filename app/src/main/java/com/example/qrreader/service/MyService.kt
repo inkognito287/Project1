@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Constants.CHANNEL_ID
 import com.example.qrreader.Constants.NOTIFICATION_ID
 import com.example.qrreader.Functions
@@ -74,8 +75,14 @@ class MyService : Service() {
                                     sharedPreferencesAddress,
                                     sharedPreferencesUser
                                 ) == "true"
-                            ) {
+                            ) { if (MySingleton.arrayList!![x].status == "no") {
                                 MySingleton.arrayList!![x].status = "yes"
+                                MySingleton.countUnsent.set(
+                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString())
+
+
+
+                            }
 
                             }
                     }

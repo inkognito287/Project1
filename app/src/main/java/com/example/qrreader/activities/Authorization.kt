@@ -109,7 +109,7 @@ class Authorization : AppCompatActivity() {
 
                     "Сервер не отвечает"
                 }
-                if (responseBody != "") {
+                if (responseBody != "{\"errorText\":\"Invalid username or password.\"}") {
                     var gson = Gson()
                     var result=gson.fromJson(responseBody,User::class.java)
                     var token = result.access_token

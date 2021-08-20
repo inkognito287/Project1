@@ -11,17 +11,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.example.qrreader.model.ItemForHistory
+import com.example.qrreader.recyclerImageResultAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ImageFragment : Fragment() {
+class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
     lateinit var imageVew: ImageView
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
@@ -30,6 +33,8 @@ class ImageFragment : Fragment() {
     lateinit var documentFormat: String
     lateinit var myFunctions: Functions
     lateinit var fullInformation: String
+    lateinit var allNumberOfPages: String
+    lateinit var numberOfPages: String
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -44,11 +49,24 @@ class ImageFragment : Fragment() {
             backImage()
         }
 
+        numberOfPages = arguments?.getString("numberOfPages")!!
+        allNumberOfPages = arguments?.getString("allNumberOfPages")!!
+
+        var pageAdapter = recyclerImageResultAdapter( allNumberOfPages.toInt(),this)
+        binding.pageNumbers.adapter = pageAdapter
+        binding.pageNumbers.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+
+
+
+
         var bottomSheetBehavior =
             BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
         bottomSheetBehavior.isDraggable = false
         saveImage = MySingleton.cameraScreen
+
         saveCode = arguments?.getString("code")!!
+
+
         Log.d("MyLog", saveCode)
         imageVew = binding.imageView7
         imageVew.setImageBitmap(saveImage)
@@ -79,8 +97,6 @@ class ImageFragment : Fragment() {
 
         return binding.root
     }
-
-
 
 
     private fun submitImage() {
@@ -117,5 +133,11 @@ class ImageFragment : Fragment() {
         activity?.findViewById<Button>(R.id.button)?.isClickable = true
     }
 
+    override fun onItemClick(position: Int) {
+        val bottomSheetBehaviour =
+            BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        activity?.findViewById<Button>(R.id.button)?.isClickable = true
 
+    }
 }
