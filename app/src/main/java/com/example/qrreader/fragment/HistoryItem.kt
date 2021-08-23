@@ -1,18 +1,24 @@
 package com.example.qrreader.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentHistoryItemBinding
+import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.singletones.MySingleton
+import com.synnapps.carouselview.CarouselView
+import com.synnapps.carouselview.ImageListener
 
 
 class HistoryItem : Fragment() {
     lateinit var binding: FragmentHistoryItemBinding
+    lateinit var item: ItemForHistory
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -24,21 +30,46 @@ class HistoryItem : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        var myFunctions = Functions(requireContext())
+
         binding.progressBarHistoryItem.visibility = View.VISIBLE
-        Thread() {
-            getImage()
-        }.start()
+        var arg = arguments?.getInt("position")
+        Log.d("MyLog", MySingleton.arrayList!![arg!!].stringImage!!.size.toString())
+         item = MySingleton.arrayList!![arg!!]
+
+        var imageListener: ImageListener = object : ImageListener {
+            override fun setImageForPosition(position: Int, imageView: ImageView) {
+                // You can use Glide or Picasso here
+                imageView.setImageBitmap(item.image[position])
+            }
+
+        }
+        var carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
+        carousel?.setImageListener(imageListener)
+
+
+
+
+        carousel?.pageCount = item.image!!.size
+
+
+        binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].documentFormatField[0]
+        binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].numberOfOrderField[0]
+        binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].status[0]
+
     }
 
     private fun getImage() {
-           activity?.runOnUiThread {
-                binding.documentImage.setImageBitmap(MySingleton.image)
-                binding.documentFormat.text = MySingleton.text
-                binding.orderNumber.text = MySingleton.title
-                binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                binding.status.text = MySingleton.status
-                binding.progressBarHistoryItem.visibility = View.GONE
-            }
+
+//           activity?.runOnUiThread {
+//                binding.documentImage.setImageBitmap(MySingleton.image)
+//                binding.documentFormat.text = MySingleton.text
+//                binding.orderNumber.text = MySingleton.title
+//                binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
+//                binding.status.text = MySingleton.status
+//                binding.progressBarHistoryItem.visibility = View.GONE
+//            }
 
 
     }

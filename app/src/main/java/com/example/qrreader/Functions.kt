@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.Error
 import com.example.qrreader.singletones.MySingleton
+import com.example.qrreader.singletones.MySingleton.gson
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -119,26 +120,39 @@ class Functions(var context: Context) {
         val decodedString: ByteArray = android.util.Base64.decode(stringPicture, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
-    fun saveJson(){
-        val gson = Gson()
-        val rootObject = JsonObject()
-        val arrayObject = JsonArray()
 
-        for (element in MySingleton.arrayList!!) {
-            val childObject = JsonObject()
-            // записываем текст в поле "message"
-            childObject.addProperty("numberOfOrderField", element.numberOfOrderField)
-            childObject.addProperty("documentFormatField", element.documentFormatField)
-            childObject.addProperty("photo", element.stringImage)
-            childObject.addProperty("day", element.day)
-            childObject.addProperty("time", element.time)
-            childObject.addProperty("status", element.status)
-            childObject.addProperty("fullInformation",element.fullInformation)
-            arrayObject.add(childObject)
-            rootObject.add("documents", arrayObject)
 
-            writeToFile(gson.toJson(rootObject))
+    fun getBitmapFromString(stringPictures: ArrayList<String>): ArrayList<Bitmap> {
+        var arrayListBitmap = ArrayList<Bitmap>()
+        var decodedString: ByteArray? = null
+        for (element in stringPictures) {
+             decodedString = android.util.Base64.decode(element, Base64.DEFAULT)
+            arrayListBitmap.add(BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size))
         }
+
+        return arrayListBitmap
+    }
+
+
+    fun saveJson(){
+
+//
+//
+//            val childObject = JsonObject()
+////             записываем текст в поле "message"
+////            childObject.addProperty("numberOfOrderField", element.numberOfOrderField)
+////            childObject.addProperty("documentFormatField", element.documentFormatField)
+////            childObject.addProperty("photo", element.stringImage)
+////            childObject.addProperty("day", element.day)
+////            childObject.addProperty("time", element.time)
+////            childObject.addProperty("status", element.status)
+////            childObject.addProperty("fullInformation",element.fullInformation)
+
+//            rootObject.add("documents", arrayObject)
+
+      var str = "{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
+            writeToFile(str)
+            Log.d("MyLog ","savecompleted + str" )
     }
 
      fun getStringFromBitmap(bitmapPicture: Bitmap): String? {

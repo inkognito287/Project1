@@ -22,7 +22,7 @@
         android:fullBackupContent="@xml/backup_descriptor"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="ЦТ Документы"
+
         android:roundIcon="@mipmap/ic_group6"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRReader.NoActionBar"

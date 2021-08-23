@@ -6,9 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +23,7 @@ import com.example.qrreader.databinding.ActivityMainBinding
 import com.example.qrreader.Functions
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
+//import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.lang.Exception
@@ -44,8 +47,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
-        sharedPreferencesUser = getSharedPreferences("user",Context.MODE_PRIVATE)
+        sharedPreferencesUser = getSharedPreferences("user", Context.MODE_PRIVATE)
 
+        MySingleton.arrayList = ArrayList()
         MySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
@@ -57,39 +61,70 @@ class MainActivity : AppCompatActivity() {
         Thread() {
             MySingleton.arrayList = ArrayList()
             val gson = Gson()
-            val text = myFunctions.readFromFile()
+            var text = myFunctions.readFromFile()
             if (text != "") {
-                val result = gson.fromJson(text, com.example.qrreader.pojo.Response::class.java)
 
-                for (element in result.documents!!)
-                    arrayOfDocumentsItem.add(
+                // text=text.substring(1)
+                Log.d("MyLog", text)
+                //   try {
+
+
+                val result = gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+                for (element in result.response2!!)
+                    MySingleton.arrayList!!.add(
                         ItemForHistory(
-                            element!!.documentFormatField.toString(),
-                            element.numberOfOrderField.toString(),
-                            element.photo.toString(),
-                            myFunctions.getBitmapFromString(element.photo.toString())!!,
-                            element.day.toString(),
-                            element.time.toString(),
-                            element.status.toString(),
-                            element.fullInformation.toString()
+                            element!!.documentFormatField as ArrayList<String>,
+                            element.numberOfOrderField as ArrayList<String>,
+                            element.stringImage as ArrayList<String>,
+                            myFunctions.getBitmapFromString(element.stringImage),
+                            element.day as ArrayList<String>,
+                            element.time as ArrayList<String>,
+                            element.status as ArrayList<String>,
+                            element.fullInformation as ArrayList<String>
                         )
                     )
+                runOnUiThread {
+                    Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
 
-                MySingleton.arrayList!!.addAll(arrayOfDocumentsItem)
+                    //}
+//                catch (e:Exception){
+//                    runOnUiThread {
+//                        Toast.makeText(this, e.stackTraceToString(), Toast.LENGTH_LONG).show()
+//                    }
+//                    e.stackTrace
+//                }
 
+//                for (element in result.documents!!)
+//                    arrayOfDocumentsItem.add(
+//                        ItemForHistory(
+//                            element!!.documentFormatField.toString(),
+//                            element.numberOfOrderField.toString(),
+//                            element.photo.toString(),
+//                            myFunctions.getBitmapFromString(element.photo.toString())!!,
+//                            element.day.toString(),
+//                            element.time.toString(),
+//                            element.status.toString(),
+//                            element.fullInformation.toString()
+//                        )
+//                    )
+
+//                MySingleton.arrayList!!.addAll(arrayOfDocumentsItem)
+//
                     var count = 0
                     for (element in MySingleton.arrayList!!)
-                        if (element.status=="no")
+                        if (element.status[0]=="no")
                             count++
-
-                if (count!=0)
-                    runOnUiThread {
-                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                    }
-                MySingleton.countUnsent.set(count.toString())
-runOnUiThread {
-    binding.count = MySingleton.countUnsent
-}
+//
+//                if (count!=0)
+//                    runOnUiThread {
+//
+//                    }
+               MySingleton.countUnsent.set(count.toString())
+//runOnUiThread {
+                    findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                    binding.count = MySingleton.countUnsent
+                }
+                //}
 
 
             }
@@ -104,7 +139,7 @@ runOnUiThread {
                 addAction("android.net.conn.CONNECTIVITY_CHANGE")
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
             }
-            this.registerReceiver(myBroadcastReceiver, filter)
+             this.registerReceiver(myBroadcastReceiver, filter)
         }.start()
 
 
@@ -143,7 +178,6 @@ runOnUiThread {
     fun back(v: View) {
         onBackPressed()
     }
-
 
 
     fun data(v: View) {
@@ -193,23 +227,45 @@ runOnUiThread {
 
                 binding.button.isClickable = false
                 Thread() {
-                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()+1).toString())
+
+
+                  //  MySingleton.itemForHistory = null
+
+
+                      MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()+1).toString())
                     runOnUiThread {
 
-
-                        myAdapter?.notifyDataSetChanged()
+//                        myAdapterUpdate=myAdapter
+//                        myAdapterUpdate.update()
                     }
 
-                    MySingleton.arrayList!![0].stringImage =
-                        myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
+
+                    // try {
+                    MySingleton.arrayList!![0].stringImage = ArrayList()
+                    for (x in 0..MySingleton.arrayList!![0].day.size - 1)
+                        MySingleton.arrayList!![0].stringImage!!.add(
+                            myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image[x])!!
+                        )
+
+
+                    //   }
+//                    catch (e:Exception){
+//                        runOnUiThread {
+//
+//                        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()}
+//                    }
+
+                    //  MySingleton.arrayList!![0].stringImage =
+                    // myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
                     runOnUiThread {
-                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                    }
+                     findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                  }
                     deserialize()
 
                     runOnUiThread {
                         binding.button.isClickable = true
                     }
+
                 }.start()
 
             }
@@ -223,33 +279,47 @@ runOnUiThread {
         Thread {
 
 
-            val first = MySingleton.arrayList!![0]
+            val item = MySingleton.arrayList!![0]
 
 
-
-            if (first.status == "no")
-                if (myFunctions.imageRequest(
-                        first.stringImage!!,
-                        first.day!! + " " + first.time!![0].toString() + first.time!![1].toString() + "-" + first.time!![3].toString() + first.time!![4].toString(),
-                        first.fullInformation,
-                        sharedPreferencesAddress,
-                        sharedPreferencesUser
-                    ) == "true"
-                ) {
+            for (x in 0..item.status.size - 1)
+                if (item.status[x] == "no")
+                    if (myFunctions.imageRequest(
+                            item.stringImage!![x],
+                            item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
+                            item.fullInformation[x],
+                            sharedPreferencesAddress,
+                            sharedPreferencesUser
+                        ) == "true"
+                    ) {
                     MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
                     if(MySingleton.countUnsent.get()=="0")
                         runOnUiThread {
-                            //(binding.counterUnsent as View).visibility =View.GONE
+                          (binding.counterUnsent as View).visibility =View.GONE
                             findViewById<View>(R.id.counter_unsent).visibility = View.GONE
                         }
-                    MySingleton.arrayList!![0].status = "yes"
+                        MySingleton.arrayList!![0].status[x] = "yes"
 
-                    myAdapterUpdate = myAdapter
-                    runOnUiThread() {
-                        myAdapterUpdate.update()
+
                     }
+            var countOfYesStatus = 0
+            for (x in 0..item.status.size - 1)
+                if (MySingleton.arrayList!![0].status[x] == "yes")
+                    countOfYesStatus++
+            if (countOfYesStatus == item.status.size)
+                runOnUiThread {
+                    Toast.makeText(this, "All sended", Toast.LENGTH_SHORT).show()
                 }
-           try{ myFunctions.saveJson()}catch (e:Exception){}
+            myAdapterUpdate = myAdapter
+            runOnUiThread() {
+                myAdapterUpdate.update()
+            }
+            try {
+               myFunctions.saveJson()
+            } catch (e: Exception) {
+                Log.d("MyLog", e.toString())
+            }
+
             binding.button.isClickable = true
 
 
@@ -274,45 +344,45 @@ runOnUiThread {
         return false
     }
 
-    private fun checkStatus(): Boolean {
-
-        var s = 0
-        if (MySingleton.arrayList != null) {
-
-            for (x in 0 until MySingleton.arrayList!!.size)
-                if (MySingleton.arrayList!![x].status == "no")
-                    s++
-        }
-        if (s > 0)
-
-            return true
-
-        return false
-
-    }
+//    private fun checkStatus(): Boolean {
+//
+//        var s = 0
+//        if (MySingleton.arrayList != null) {
+//
+//            for (x in 0 until MySingleton.arrayList!!.size)
+//                if (MySingleton.arrayList!![x].status == "no")
+//                    s++
+//        }
+//        if (s > 0)
+//
+//            return true
+//
+//        return false
+//
+//    }
 
     override fun onStop() {
         super.onStop()
 
-        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
-        Thread() {
-            if (!isMyServiceRunning(MyService::class.java) && MySingleton.mainActivityExistFlag && MySingleton.countActivity == 1) {
-                startService(Intent(this, MyService::class.java))
-            }
-            MySingleton.scanActivityExistFlag = true
-            //  if( MySingleton.flag && MySingleton.countActivity == 1)
-
-        }.start()
+//        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
+//        Thread() {
+//            if (!isMyServiceRunning(MyService::class.java) && MySingleton.mainActivityExistFlag && MySingleton.countActivity == 1) {
+          startService(Intent(this, MyService::class.java))
+//            }
+//            MySingleton.scanActivityExistFlag = true
+//            //  if( MySingleton.flag && MySingleton.countActivity == 1)
+//
+//        }.start()
     }
 
     override fun onResume() {
         super.onResume()
-        if(MySingleton.countUnsent.get()=="0")
-        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-        Log.d("life", "resume")
+//        if(MySingleton.countUnsent.get()=="0")
+//        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+//        Log.d("life", "resume")
         if (isMyServiceRunning(MyService::class.java)) {
-           // stopService(Intent(this, MyService::class.java))
-        }
+           stopService(Intent(this, MyService::class.java))
+    }
     }
 
 

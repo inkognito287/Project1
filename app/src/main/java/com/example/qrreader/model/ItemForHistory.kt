@@ -3,13 +3,12 @@ package com.example.qrreader.model
 import android.graphics.Bitmap
 
 class ItemForHistory(
-    var documentFormatField: String,
-    var numberOfOrderField: String,
-    var stringImage: String?,
-    var image: Bitmap,
-    var day: String,
-    var time: String,
-    var status: String,
-    var fullInformation: String
-) {
-}
+    var documentFormatField: ArrayList<String>,
+    var numberOfOrderField: ArrayList<String>,
+    var stringImage: ArrayList<String>?,
+    var image: ArrayList<Bitmap>,
+    var day: ArrayList<String>,
+    var time: ArrayList<String>,
+    var status: ArrayList<String>,
+    var fullInformation: ArrayList<String>
+)

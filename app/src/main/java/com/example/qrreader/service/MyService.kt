@@ -65,31 +65,29 @@ class MyService : Service() {
                 try {
 
 
-                    for (x in MySingleton.arrayList!!.size - 1 downTo 0) {
-                        val element = MySingleton.arrayList!![x]
-                        if (element.status == "no")
-                            if (myFunction.imageRequest(
-                                    element.stringImage.toString(),
-                                    element.day!! + " " + element.time!![0].toString() + element.time!![1].toString() + "-" + element.time!![3].toString() + element.time!![4].toString(),
-                                    element.documentFormatField!!,
-                                    sharedPreferencesAddress,
-                                    sharedPreferencesUser
-                                ) == "true"
-                            ) { if (MySingleton.arrayList!![x].status == "no") {
-                                MySingleton.arrayList!![x].status = "yes"
-                                MySingleton.countUnsent.set(
-                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString())
+                    for (y in 0..MySingleton.arrayList!!.size - 1) {
+                        val item = MySingleton.arrayList!![y]
 
 
+                        for (x in 0..item.status.size - 1)
+                            if (item.status[x] == "no")
+                                if (myFunction.imageRequest(
+                                        item.stringImage!![x],
+                                        item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
+                                        item.fullInformation[x],
+                                        sharedPreferencesAddress,
+                                        sharedPreferencesUser
+                                    ) == "true"
+                                ) {
+                                    item.status[x] = "yes"
 
-                            }
 
-                            }
+                                }
                     }
                     var unsentItems = 0
-                    for (x in 0 until MySingleton.arrayList!!.size)
-                        if (MySingleton.arrayList!![x]!!.status == "no")
-                            unsentItems++
+//                    for (x in 0 until MySingleton.arrayList!!.size)
+//                        if (MySingleton.arrayList!![x]!!.status == "no")
+//                            unsentItems++
 
                     if (unsentItems == 0) {
                         timer.cancel()

@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.qrreader.Functions
 import com.example.qrreader.fragment.myAdapter
+//import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.fragment.myAdapterUpdate
 import com.example.qrreader.singletones.MySingleton
 
@@ -46,26 +47,40 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 
         Thread {
-            for (x in MySingleton.arrayList?.size!! - 1 downTo 0) {
-                val last = MySingleton.arrayList!![x]
-                if (last?.status == "no")
-                    if (myFunctions.imageRequest(
-                            last.stringImage.toString(),
-                            last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.documentFormatField!!,
-                            sharedPreferencesAddress, sharedPreferencesUser
-                        ) == "true"
-                    ) {
-                        if (MySingleton.arrayList!![x].status == "no") {
-                            MySingleton.arrayList!![x].status = "yes"
-                            MySingleton.countUnsent.set(
-                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                            )
+            for (y in MySingleton.arrayList?.size!! - 1 downTo 0) {
+                val item = MySingleton.arrayList!![y]
+
+
+                for (x in 0..item.stringImage!!.size - 1)
+                    if (item.status[x] == "no")
+                        if (myFunctions.imageRequest(
+                                item.stringImage!![x],
+                                item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
+                                item.fullInformation[x],
+                                sharedPreferencesAddress,
+                                sharedPreferencesUser
+                            ) == "true"
+                        ) {
+//                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
+//                    if(MySingleton.countUnsent.get()=="0")
+//                        runOnUiThread {
+//                            //(binding.counterUnsent as View).visibility =View.GONE
+//                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+//                        }
+                           item.status[x] = "yes"
+
+
                         }
-                    }
+                     //   if (MySingleton.arrayList!![x].status == "no") {
+                      //      MySingleton.arrayList!![x].status = "yes"
+//                            MySingleton.countUnsent.set(
+//                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+//                            )
+                        }
 
 
-            }
+
+
             try {
 
 

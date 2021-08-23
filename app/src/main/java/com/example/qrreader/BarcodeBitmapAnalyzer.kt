@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.MainActivity
 import com.example.qrreader.fragment.ImageFragment
-import com.example.qrreader.fragment.myAdapter
+//import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.fragment.myAdapterUpdate
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -62,13 +62,14 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                                 if (numberOfPages.contains("http://")) {
                                     numberOfPages =
-                                        numberOfPages.removePrefix("http://static.giprint.ru/doc/0713/OS/")
+                                        numberOfPages.removePrefix("http://static.giprint.ru/doc/")
+                                    //0713/OS/1/1
                                 } else if (numberOfPages.contains("https://")) {
                                     numberOfPages =
-                                        numberOfPages.removePrefix("https://static.giprint.ru/doc/0713/OS/")
+                                        numberOfPages.removePrefix("https://static.giprint.ru/doc/")
                                 }
-                                allNumberOfPages = numberOfPages.split("/")[1]
-                                numberOfPages = numberOfPages.split("/")[0]
+                                allNumberOfPages = numberOfPages.split("/")[3]
+                                numberOfPages = numberOfPages.split("/")[2]
 
                             }
 

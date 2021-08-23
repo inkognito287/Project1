@@ -8,11 +8,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qrreader.CustomRecyclerAdapter
+//import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 import com.example.qrreader.interfaces.UpdateAdapter
 import com.example.qrreader.MyFragmentTransaction
@@ -23,7 +25,9 @@ import java.io.OutputStreamWriter
 lateinit var myAdapter: CustomRecyclerAdapter
 lateinit var myAdapterUpdate: UpdateAdapter
 
-class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
+class HistoryFragment : Fragment()
+    ,CustomRecyclerAdapter.OnItemListener
+{
 
 
     lateinit var binding: FragmentHistoryBinding
@@ -96,13 +100,14 @@ class HistoryFragment : Fragment(), CustomRecyclerAdapter.OnItemListener {
 
 
     override fun onItemClick(position: Int) {
-        MySingleton.text = MySingleton.arrayList!![position].numberOfOrderField.toString()
-        print(MySingleton.text)
-        MySingleton.image = MySingleton.arrayList!![position].image
-        MySingleton.title = MySingleton.arrayList!![position].documentFormatField.toString()
-        MySingleton.status = if(MySingleton.arrayList!![position].status=="yes") "Статус: отправлен" else "Статус: ожидает отправки"
+        Toast.makeText(context, "not implemented", Toast.LENGTH_SHORT).show()
+//        MySingleton.text = MySingleton.arrayList!![position].numberOfOrderField.toString()
+//        print(MySingleton.text)
+//        MySingleton.image = MySingleton.arrayList!![position].image
+//        MySingleton.title = MySingleton.arrayList!![position].documentFormatField.toString()
+//        MySingleton.status = if(MySingleton.arrayList!![position].status=="yes") "Статус: отправлен" else "Статус: ожидает отправки"
         var bundle = Bundle()
-        bundle.putInt("position", position)
+       bundle.putInt("position", position)
         var fragment = HistoryItem()
         fragment.arguments = bundle
         var myFragmentTransaction = MyFragmentTransaction(requireContext())

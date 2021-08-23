@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import com.example.qrreader.*
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
-import com.example.qrreader.service.MyService
+//import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.util.concurrent.Executors
@@ -49,14 +49,21 @@ class BarcodeScanActivity : AppCompatActivity() {
         binding.button.setOnClickListener {
             binding.button.isClickable = false
             //  if (code != "не найден") {
-            MySingleton.cameraScreen = findViewById<PreviewView>(R.id.preview)?.bitmap!!
+            MySingleton.temporaryImage = findViewById<PreviewView>(R.id.preview)?.bitmap!!
 
             val barcodeBitmapAnalyzer = BarcodeBitmapAnalyzer(this)
-            barcodeBitmapAnalyzer.scanBarcodes(MySingleton.cameraScreen, code)
+            barcodeBitmapAnalyzer.scanBarcodes(MySingleton.temporaryImage, code)
+
+
 
 
         }
-
+        MySingleton.image.clear()
+        MySingleton.title.clear()
+        MySingleton.text.clear()
+        MySingleton.status.clear()
+        MySingleton.day.clear()
+        MySingleton.time.clear()
 
         binding.button2.setOnClickListener {
             finish()
@@ -180,32 +187,32 @@ class BarcodeScanActivity : AppCompatActivity() {
         Log.d("life", "BarcodeAct Stop MySingleton.flag2 " + MySingleton.scanActivityExistFlag.toString())
         Thread() {
 
-                if (!isMyServiceRunning(MyService::class.java) && MySingleton.scanActivityExistFlag && MySingleton.countActivity == 1) {
-                    startService(Intent(this, MyService::class.java))
-                }
+//                if (!isMyServiceRunning(MyService::class.java) && MySingleton.scanActivityExistFlag && MySingleton.countActivity == 1) {
+//                    startService(Intent(this, MyService::class.java))
+//                }
 
             MySingleton.mainActivityExistFlag = true
             MySingleton.countActivity = 1
         }.start()
     }
 
-    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
-
-        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-
-
-        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
-
-
-            if (myClass.name.equals(service.service.className)) {
-
-                return true
-
-            }
-
-        }
-        return false
-    }
+//    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
+//
+//        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//
+//
+//        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
+//
+//
+//            if (myClass.name.equals(service.service.className)) {
+//
+//                return true
+//
+//            }
+//
+//        }
+//        return false
+//    }
 
     private fun checkStatus(): Boolean {
 
@@ -213,7 +220,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         if (MySingleton.arrayList != null) {
 
             for (x in 0 until MySingleton.arrayList!!.size)
-                if (MySingleton.arrayList!![x].status == "no")
+                if (MySingleton.arrayList!![x].status[0] == "no")
                     s++
         }
         if (s > 0)
@@ -226,10 +233,10 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        binding.button.isClickable = true
-        if (isMyServiceRunning(MyService::class.java)) {
-            stopService(Intent(this, MyService::class.java))
-        }
+//        binding.button.isClickable = true
+//        if (isMyServiceRunning(MyService::class.java)) {
+//            stopService(Intent(this, MyService::class.java))
+//        }
     }
 
     companion object {

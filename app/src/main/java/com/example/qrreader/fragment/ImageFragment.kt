@@ -12,11 +12,12 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.qrreader.CustomRecyclerAdapter
+//import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.example.qrreader.model.ItemForHistory
+import com.example.qrreader.model.SingleItem
 import com.example.qrreader.recyclerImageResultAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
+class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     lateinit var imageVew: ImageView
     lateinit var saveCode: String
     lateinit var saveImage: Bitmap
@@ -41,6 +42,8 @@ class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+
         binding = FragmentImageBinding.inflate(inflater, container, false)
         binding.imageFragmentSubmit.setOnClickListener() {
             submitImage()
@@ -52,26 +55,29 @@ class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
         numberOfPages = arguments?.getString("numberOfPages")!!
         allNumberOfPages = arguments?.getString("allNumberOfPages")!!
 
-        var pageAdapter = recyclerImageResultAdapter( allNumberOfPages.toInt(),this)
+
+
+        var pageAdapter = recyclerImageResultAdapter(allNumberOfPages.toInt(), this)
         binding.pageNumbers.adapter = pageAdapter
-        binding.pageNumbers.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
-
-
+        binding.pageNumbers.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 
         var bottomSheetBehavior =
             BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
         bottomSheetBehavior.isDraggable = false
-        saveImage = MySingleton.cameraScreen
 
+
+        saveImage = MySingleton.temporaryImage
         saveCode = arguments?.getString("code")!!
 
-
-        Log.d("MyLog", saveCode)
-        imageVew = binding.imageView7
-        imageVew.setImageBitmap(saveImage)
-        myFunctions = Functions(requireActivity())
-
+        val date = Date()
+        val dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
+        val OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
+        val OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
+        val test = dateFormatTime.parse(date.toString())
+        val time = OUTPUT_PATERN_TIME.format(test)
+        val day = OUTPUT_PATERN_DAY.format(test)
 
         try {
             fullInformation = saveCode
@@ -95,6 +101,26 @@ class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
             documentFormat = "Неизвестный документ"
         }
 
+
+
+
+        MySingleton.image.add(saveImage)
+        MySingleton.title.add(documentFormat)
+        MySingleton.text.add(numberOfOrder)
+        MySingleton.status.add("no")
+        MySingleton.day.add(day)
+        MySingleton.time.add(time)
+
+
+
+        Log.d("MyLog", saveCode)
+        imageVew = binding.imageView7
+        imageVew.setImageBitmap(saveImage)
+        myFunctions = Functions(requireActivity())
+
+
+
+
         return binding.root
     }
 
@@ -102,26 +128,30 @@ class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
     private fun submitImage() {
         binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE
-        val date = Date()
-        val dateFormatTime = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.US);
-        val OUTPUT_PATERN_DAY = SimpleDateFormat("dd MMMM");
-        val OUTPUT_PATERN_TIME = SimpleDateFormat("HH:mm");
-        val test = dateFormatTime.parse(date.toString())
-        val time = OUTPUT_PATERN_TIME.format(test)
-        val day = OUTPUT_PATERN_DAY.format(test)
-        MySingleton.arrayList!!.add(
-            0,
-            ItemForHistory(
-                documentFormat,
-                numberOfOrder,
-                null,
-                saveImage,
-                day,
-                time,
-                "no",
-                fullInformation
-            )
+
+
+//        MySingleton.singleItem = SingleItem(
+//            documentFormat,
+//            numberOfOrder,
+//            null,
+//            saveImage,
+//            day,
+//            time,
+//            "no",
+//            fullInformation
+//        )
+//
+        MySingleton.itemForHistory = ItemForHistory(
+            MySingleton.title,
+            MySingleton.text,
+            null,
+            MySingleton.image,
+            MySingleton.day,
+            MySingleton.time,
+            MySingleton.status,
+            MySingleton.text
         )
+        MySingleton.arrayList?.add(0, MySingleton.itemForHistory!!)
         requireActivity().setResult(28)
         requireActivity().finish()
     }
@@ -134,6 +164,7 @@ class ImageFragment : Fragment(),recyclerImageResultAdapter.OnItemListener {
     }
 
     override fun onItemClick(position: Int) {
+
         val bottomSheetBehaviour =
             BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
         bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
