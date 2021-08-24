@@ -21,9 +21,8 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
     fun scanBarcodes(bitmap: Bitmap, information: String) {
 
-
         val rotationDegrees = 0
-
+        var myFunctions: Functions = Functions(context)
         val image = InputImage.fromBitmap(bitmap, 0)
 
         val options = BarcodeScannerOptions.Builder()
@@ -43,6 +42,9 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                     if (barcodes.size == 0) {
                         var myFunctions = Functions(context)
                         myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
+
+                        (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                            true
                     }
                     for (barcode in barcodes) {
 
@@ -72,29 +74,33 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                 numberOfPages = numberOfPages.split("/")[2]
 
                             }
+                            if (numberOfPages.toInt() != MySingleton.pageclick + 1) {
+                                myFunctions.showError("Номер отсканированной страницы не совпадает с ожидаемым ")
+                                (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                                    true
+                            } else {
+                                val bottomFragment = ImageFragment()
+                                val bundle = Bundle()
 
-                            val bottomFragment = ImageFragment()
-                            val bundle = Bundle()
+                                bundle.putString("code", information)
+                                bundle.putString("allNumberOfPages", allNumberOfPages)
+                                bundle.putString("numberOfPages", numberOfPages)
 
-                            bundle.putString("code", information)
-                            bundle.putString("allNumberOfPages", "4")
-                            bundle.putString("numberOfPages", numberOfPages)
+                                bottomFragment.arguments = bundle
+                                (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                                    .replace(R.id.containerBottomSheet, bottomFragment)
+                                    .commit()
 
-                            bottomFragment.arguments = bundle
-                            (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-                                .replace(R.id.containerBottomSheet, bottomFragment)
-                                .commit()
-
-                            val bottomSheetBehaviour =
-                                BottomSheetBehavior.from(
-                                    (context as AppCompatActivity).findViewById(
-                                        R.id.containerBottomSheet
+                                val bottomSheetBehaviour =
+                                    BottomSheetBehavior.from(
+                                        (context as AppCompatActivity).findViewById(
+                                            R.id.containerBottomSheet
+                                        )
                                     )
-                                )
 
-                            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
-
+                            }
                         }
 
 
@@ -118,9 +124,10 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                 }
                 .addOnFailureListener {
 
-                    var myFunctions = Functions(context)
-                    myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
 
+                    myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
+                    (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                        true
                 }
         }.start()
     }

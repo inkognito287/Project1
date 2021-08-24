@@ -96,7 +96,7 @@ class CustomRecyclerAdapter(
                 )
             )
             MySingleton.arrayList?.clear()
-            outputStreamWriter.write("")
+            //outputStreamWriter.write()
             outputStreamWriter.close()
         } catch (e: Exception) {
         }

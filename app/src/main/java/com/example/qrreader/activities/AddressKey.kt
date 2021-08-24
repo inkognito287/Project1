@@ -91,7 +91,7 @@ class AddressKey : AppCompatActivity() {
                                         "address",
                                         binding.editTextTextAddress.text.toString()
 
-                                    )
+                                    ).apply()
                                 val intent = Intent(this@AddressKey, Authorization::class.java)
                                 startActivity(intent)
                                 finish()

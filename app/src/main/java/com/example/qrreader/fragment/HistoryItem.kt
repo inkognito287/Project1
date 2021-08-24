@@ -1,6 +1,8 @@
 package com.example.qrreader.fragment
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,13 +37,15 @@ class HistoryItem : Fragment() {
 
         binding.progressBarHistoryItem.visibility = View.VISIBLE
         var arg = arguments?.getInt("position")
-        Log.d("MyLog", MySingleton.arrayList!![arg!!].stringImage!!.size.toString())
+        Log.d("MyLog",MySingleton.arrayList!![arg!!].numberOfOrderField[0].split("№")[1]+"-"+(1).toString())
+        //Log.d("MyLog", MySingleton.arrayList!![arg!!].stringImage!!.size.toString())
          item = MySingleton.arrayList!![arg!!]
 
         var imageListener: ImageListener = object : ImageListener {
             override fun setImageForPosition(position: Int, imageView: ImageView) {
                 // You can use Glide or Picasso here
-                imageView.setImageBitmap(item.image[position])
+
+               imageView.setImageBitmap(BitmapFactory.decodeFile( Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+MySingleton.arrayList!![arg].numberOfOrderField[0].split("№")[1]+"page"+(position+1).toString()+".png"))
             }
 
         }
@@ -51,7 +55,7 @@ class HistoryItem : Fragment() {
 
 
 
-        carousel?.pageCount = item.image!!.size
+        carousel?.pageCount = item.status!!.size
 
 
         binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].documentFormatField[0]

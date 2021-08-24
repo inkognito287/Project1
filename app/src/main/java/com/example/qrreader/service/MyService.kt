@@ -4,8 +4,10 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.os.Build
+import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -32,7 +34,11 @@ class MyService : Service() {
         super.onCreate()
 
         myFunction = Functions(this.applicationContext)
-        myFunction.saveJson()
+        try {
+            myFunction.saveJson()
+        } catch (e: java.lang.Exception) {
+            Log.d("MyLog", e.toString())
+        }
         sharedPreferencesAddress =
             applicationContext.getSharedPreferences("address", Context.MODE_PRIVATE)!!
 
@@ -72,7 +78,11 @@ class MyService : Service() {
                         for (x in 0..item.status.size - 1)
                             if (item.status[x] == "no")
                                 if (myFunction.imageRequest(
-                                        item.stringImage!![x],
+                                        myFunction.getStringFromBitmap(
+                                            BitmapFactory.decodeFile(
+                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y].numberOfOrderField[0].split(
+                                                    "№"
+                                                )[1] + "page" + (x + 1).toString() + ".png"))!!,
                                         item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
                                         item.fullInformation[x],
                                         sharedPreferencesAddress,
@@ -85,9 +95,9 @@ class MyService : Service() {
                                 }
                     }
                     var unsentItems = 0
-//                    for (x in 0 until MySingleton.arrayList!!.size)
-//                        if (MySingleton.arrayList!![x]!!.status == "no")
-//                            unsentItems++
+                    for (x in 0 until MySingleton.arrayList!!.size)
+                        if (MySingleton.arrayList!![x]!!.status[0] == "no")
+                            unsentItems++
 
                     if (unsentItems == 0) {
                         timer.cancel()

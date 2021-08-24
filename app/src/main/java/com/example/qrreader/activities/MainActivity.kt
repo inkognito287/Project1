@@ -1,11 +1,13 @@
 package com.example.qrreader.activities
 
 
+import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +16,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.ObservableField
 import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
@@ -53,30 +57,60 @@ class MainActivity : AppCompatActivity() {
         MySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
+        fun isExternalPermissionGranted(): Boolean {
+            return (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED)
+        }
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            1
+        )
+//        override fun onRequestPermissionsResult(
+//            requestCode: Int,
+//            permissions: Array<String>,
+//            grantResults: IntArray
+//        ) {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//            if( isExternalPermissionGranted()){}
+//
+//        }
+
+
+
+
+
+
         MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
-
+        MySingleton.countUnsent.set(0.toString())
         var arrayOfDocumentsItem = ArrayList<ItemForHistory>()
         binding.progressBarMainActivity.visibility = View.VISIBLE
         Thread() {
             MySingleton.arrayList = ArrayList()
             val gson = Gson()
-            var text = myFunctions.readFromFile()
-            if (text != "") {
+
+                var text = myFunctions.readFromFile()
+
+            if (text != ""&&text!="ERROR") {
 
                 // text=text.substring(1)
                 Log.d("MyLog", text)
-                //   try {
 
 
-                val result = gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+
+                       val result =
+                           gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+//                       Log.d("MyLog", result.response2!![0]!!.documentFormatField!![0].toString())
+
                 for (element in result.response2!!)
                     MySingleton.arrayList!!.add(
                         ItemForHistory(
                             element!!.documentFormatField as ArrayList<String>,
                             element.numberOfOrderField as ArrayList<String>,
-                            element.stringImage as ArrayList<String>,
-                            myFunctions.getBitmapFromString(element.stringImage),
+                            null,
                             element.day as ArrayList<String>,
                             element.time as ArrayList<String>,
                             element.status as ArrayList<String>,
@@ -140,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
             }
              this.registerReceiver(myBroadcastReceiver, filter)
+
         }.start()
 
 
@@ -224,7 +259,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             MySingleton.scanActivityExistFlag = false
             if (result.resultCode == 28) {
-
+                MySingleton.pageclick=0
                 binding.button.isClickable = false
                 Thread() {
 
@@ -241,11 +276,11 @@ class MainActivity : AppCompatActivity() {
 
 
                     // try {
-                    MySingleton.arrayList!![0].stringImage = ArrayList()
-                    for (x in 0..MySingleton.arrayList!![0].day.size - 1)
-                        MySingleton.arrayList!![0].stringImage!!.add(
-                            myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image[x])!!
-                        )
+//                    MySingleton.arrayList!![0].stringImage = ArrayList()
+//                    for (x in 0..MySingleton.arrayList!![0].day.size - 1)
+//                        MySingleton.arrayList!![0].stringImage!!.add(
+//                            myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image[x])!!
+//                        )
 
 
                     //   }
@@ -285,7 +320,8 @@ class MainActivity : AppCompatActivity() {
             for (x in 0..item.status.size - 1)
                 if (item.status[x] == "no")
                     if (myFunctions.imageRequest(
-                            item.stringImage!![x],
+                            myFunctions.getStringFromBitmap(
+                                item.image!![x])!!,
                             item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
                             item.fullInformation[x],
                             sharedPreferencesAddress,
@@ -295,7 +331,7 @@ class MainActivity : AppCompatActivity() {
                     MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
                     if(MySingleton.countUnsent.get()=="0")
                         runOnUiThread {
-                          (binding.counterUnsent as View).visibility =View.GONE
+
                             findViewById<View>(R.id.counter_unsent).visibility = View.GONE
                         }
                         MySingleton.arrayList!![0].status[x] = "yes"

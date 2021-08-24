@@ -55,7 +55,9 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         numberOfPages = arguments?.getString("numberOfPages")!!
         allNumberOfPages = arguments?.getString("allNumberOfPages")!!
 
-
+        if (numberOfPages == allNumberOfPages)
+            binding.imageFragmentSubmit.visibility = View.VISIBLE
+        else binding.imageFragmentSubmit.visibility = View.GONE
 
         var pageAdapter = recyclerImageResultAdapter(allNumberOfPages.toInt(), this)
         binding.pageNumbers.adapter = pageAdapter
@@ -144,7 +146,6 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         MySingleton.itemForHistory = ItemForHistory(
             MySingleton.title,
             MySingleton.text,
-            null,
             MySingleton.image,
             MySingleton.day,
             MySingleton.time,
@@ -152,6 +153,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
             MySingleton.text
         )
         MySingleton.arrayList?.add(0, MySingleton.itemForHistory!!)
+        myFunctions.saveBitmap(MySingleton.itemForHistory!!.image!!, MySingleton.itemForHistory!!.numberOfOrderField[0])
         requireActivity().setResult(28)
         requireActivity().finish()
     }
@@ -164,6 +166,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     }
 
     override fun onItemClick(position: Int) {
+        MySingleton.pageclick = position
 
         val bottomSheetBehaviour =
             BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)

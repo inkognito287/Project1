@@ -1,6 +1,8 @@
 package com.example.qrreader
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.Context.MODE_WORLD_WRITEABLE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -8,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -21,25 +24,32 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.*
+import android.graphics.Bitmap.CompressFormat
+
+
+
 
 class Functions(var context: Context) {
 
-     fun readFromFile(): String {
+    fun readFromFile(): String {
 
-         return try {
-             val reader =
-                 BufferedReader(InputStreamReader(context.openFileInput("single.json")))
-             val text = reader.readText()
-             reader.close()
-             text
-         } catch (e: IOException) {
-             Log.e("Exception", "File write failed: $e")
-             "ERROR"
-         }
+         try {
+            val reader =
+                BufferedReader(InputStreamReader(context.openFileInput("single.json")))
+            val text = reader.readLine()
+            reader.close()
+             if(text==null){
+                 return "ERROR"
+             }
+             return text
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+             return "ERROR"
+        }
 
     }
 
-      private fun writeToFile(jsonData: String?) {
+    private fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
                 context?.openFileOutput(
@@ -55,7 +65,47 @@ class Functions(var context: Context) {
             Log.e("Exception", "File write failed: $e")
         }
     }
-    fun imageRequest(image: String, name: String, code: String, sharedPreferencesAddress:SharedPreferences, sharedPreferencesUser: SharedPreferences): String? {
+
+    private fun writeToFileEnd(jsonData: String?) {
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                context?.openFileOutput(
+                    "single.json",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+            )
+            outputStreamWriter.write(jsonData)
+
+            outputStreamWriter.close()
+            println("good")
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
+    fun saveBitmap(bmp: ArrayList<Bitmap>, numberOfOrder: String) {
+
+        var numb = numberOfOrder.split("№")[1]
+        var page=1
+        for (element in bmp) {
+            Log.d("MyLog",Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+"${numb}page${page}"+".png")
+            val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
+
+            element.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
+
+            page++
+            stream.close()
+        }
+
+    }
+
+    fun imageRequest(
+        image: String,
+        name: String,
+        code: String,
+        sharedPreferencesAddress: SharedPreferences,
+        sharedPreferencesUser: SharedPreferences
+    ): String? {
 
 
         val token = sharedPreferencesUser.getString("token", "")
@@ -69,7 +119,7 @@ class Functions(var context: Context) {
             .build();
 
         var request = Request.Builder()
-            .addHeader("Authorization","Bearer "+ token.toString())
+            .addHeader("Authorization", "Bearer " + token.toString())
             .url("$url/Account/image")
             .post(requestBody)
             .build();
@@ -91,9 +141,11 @@ class Functions(var context: Context) {
 
     fun isNetworkAvailable(): Boolean {
         if (context == null) return false
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
             if (capabilities != null) {
                 when {
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
@@ -126,7 +178,7 @@ class Functions(var context: Context) {
         var arrayListBitmap = ArrayList<Bitmap>()
         var decodedString: ByteArray? = null
         for (element in stringPictures) {
-             decodedString = android.util.Base64.decode(element, Base64.DEFAULT)
+            decodedString = android.util.Base64.decode(element, Base64.DEFAULT)
             arrayListBitmap.add(BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size))
         }
 
@@ -134,7 +186,7 @@ class Functions(var context: Context) {
     }
 
 
-    fun saveJson(){
+    fun saveJson() {
 
 //
 //
@@ -150,12 +202,13 @@ class Functions(var context: Context) {
 
 //            rootObject.add("documents", arrayObject)
 
-      var str = "{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
-            writeToFile(str)
-            Log.d("MyLog ","savecompleted + str" )
+        //var str = "{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
+        var str ="{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
+        writeToFile(str)
+        Log.d("MyLog ","savecompleted "+str )
     }
 
-     fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
+    fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
         val COMPRESSION_QUALITY = 100
         val encodedImage: String
         val byteArrayBitmapStream = ByteArrayOutputStream()
@@ -172,7 +225,7 @@ class Functions(var context: Context) {
     fun showError(error: String) {
         var intent = Intent(context, Error::class.java)
         intent.putExtra("error", error)
-        (context as AppCompatActivity).startActivity (intent)
+        (context as AppCompatActivity).startActivity(intent)
     }
 
 }

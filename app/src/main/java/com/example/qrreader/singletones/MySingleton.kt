@@ -24,6 +24,7 @@ object MySingleton {
     var mainActivityExistFlag = true
     var scanActivityExistFlag = true
     var arrayList: ArrayList<ItemForHistory>? = null
+    var pageclick = 0
 
 
 }
