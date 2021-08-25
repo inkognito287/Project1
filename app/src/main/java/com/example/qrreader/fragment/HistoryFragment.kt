@@ -74,7 +74,7 @@ class HistoryFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
         Log.d("MyLog", "OnViewCreated")
         //binding.progressBar2.visibility = View.VISIBLE
-        myAdapter = CustomRecyclerAdapter( requireContext(), this)
+        myAdapter = CustomRecyclerAdapter(requireContext(), this)
         myAdapterUpdate = myAdapter
         binding.recyclerView.adapter = myAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -83,7 +83,7 @@ class HistoryFragment : Fragment()
 
                 activity?.runOnUiThread() {
 
-                    myAdapter!!.notifyDataSetChanged()
+                   // myAdapter!!.notifyDataSetChanged()
                 }
 
 

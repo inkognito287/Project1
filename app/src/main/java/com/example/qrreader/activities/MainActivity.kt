@@ -57,9 +57,24 @@ class MainActivity : AppCompatActivity() {
         MySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
+        MySingleton.image= java.util.ArrayList()
+        MySingleton.title= java.util.ArrayList()
+        MySingleton.text= java.util.ArrayList()
+        MySingleton.image= java.util.ArrayList()
+        MySingleton.day= java.util.ArrayList()
+        MySingleton.time= java.util.ArrayList()
+        MySingleton.status= java.util.ArrayList()
+        MySingleton.text= java.util.ArrayList()
+
         fun isExternalPermissionGranted(): Boolean {
-            return (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            return (ContextCompat.checkSelfPermission(
+                baseContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) ==
+                    PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                baseContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) ==
                     PackageManager.PERMISSION_GRANTED)
         }
 
@@ -79,10 +94,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-
-
-
-
         MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
         MySingleton.countUnsent.set(0.toString())
@@ -92,17 +103,16 @@ class MainActivity : AppCompatActivity() {
             MySingleton.arrayList = ArrayList()
             val gson = Gson()
 
-                var text = myFunctions.readFromFile()
+            var text = myFunctions.readFromFile()
 
-            if (text != ""&&text!="ERROR") {
+            if (text != "" && text != "ERROR") {
 
                 // text=text.substring(1)
                 Log.d("MyLog", text)
 
 
-
-                       val result =
-                           gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+                val result =
+                    gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
 //                       Log.d("MyLog", result.response2!![0]!!.documentFormatField!![0].toString())
 
                 for (element in result.response2!!)
@@ -119,43 +129,22 @@ class MainActivity : AppCompatActivity() {
                     )
                 runOnUiThread {
                     Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
-
-                    //}
-//                catch (e:Exception){
-//                    runOnUiThread {
-//                        Toast.makeText(this, e.stackTraceToString(), Toast.LENGTH_LONG).show()
-//                    }
-//                    e.stackTrace
-//                }
-
-//                for (element in result.documents!!)
-//                    arrayOfDocumentsItem.add(
-//                        ItemForHistory(
-//                            element!!.documentFormatField.toString(),
-//                            element.numberOfOrderField.toString(),
-//                            element.photo.toString(),
-//                            myFunctions.getBitmapFromString(element.photo.toString())!!,
-//                            element.day.toString(),
-//                            element.time.toString(),
-//                            element.status.toString(),
-//                            element.fullInformation.toString()
-//                        )
-//                    )
-
-//                MySingleton.arrayList!!.addAll(arrayOfDocumentsItem)
-//
                     var count = 0
-                    for (element in MySingleton.arrayList!!)
-                        if (element.status[0]=="no")
-                            count++
-//
-//                if (count!=0)
-//                    runOnUiThread {
-//
-//                    }
-               MySingleton.countUnsent.set(count.toString())
+                    try {
+
+
+                        for (element in MySingleton.arrayList!!)
+                            if (element.status[0] == "no")
+                                count++
+                    } catch (e: Exception) {
+                    }
+                    if (count != 0)
+                        runOnUiThread {
+                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                        }
+                    MySingleton.countUnsent.set(count.toString())
 //runOnUiThread {
-                    findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                    //  findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
                     binding.count = MySingleton.countUnsent
                 }
                 //}
@@ -167,13 +156,15 @@ class MainActivity : AppCompatActivity() {
             //val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
             runOnUiThread() {
                 myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+
                 binding.progressBarMainActivity.visibility = View.GONE
             }
+
             val filter = IntentFilter().apply {
                 addAction("android.net.conn.CONNECTIVITY_CHANGE")
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
             }
-             this.registerReceiver(myBroadcastReceiver, filter)
+            //this.registerReceiver(myBroadcastReceiver, filter)
 
         }.start()
 
@@ -234,6 +225,7 @@ class MainActivity : AppCompatActivity() {
 
 
                     myAdapterUpdate?.clear()
+
                 }
             }
             .setNegativeButton("Отмена") { dialog, _ ->
@@ -259,19 +251,22 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             MySingleton.scanActivityExistFlag = false
             if (result.resultCode == 28) {
-                MySingleton.pageclick=0
+                MySingleton.pageclick = 0
                 binding.button.isClickable = false
                 Thread() {
 
 
-                  //  MySingleton.itemForHistory = null
+
+                    //  MySingleton.itemForHistory = null
 
 
-                      MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()+1).toString())
+                    MySingleton.countUnsent.set(
+                        (MySingleton.countUnsent.get()!!.toInt() + 1).toString()
+                    )
                     runOnUiThread {
 
-//                        myAdapterUpdate=myAdapter
-//                        myAdapterUpdate.update()
+                        //myAdapter.notifyDataSetChanged()
+                       // myAdapterUpdate.
                     }
 
 
@@ -293,12 +288,12 @@ class MainActivity : AppCompatActivity() {
                     //  MySingleton.arrayList!![0].stringImage =
                     // myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
                     runOnUiThread {
-                     findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                  }
+                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                    }
                     deserialize()
 
                     runOnUiThread {
-                        binding.button.isClickable = true
+
                     }
 
                 }.start()
@@ -317,27 +312,38 @@ class MainActivity : AppCompatActivity() {
             val item = MySingleton.arrayList!![0]
 
 
-            for (x in 0..item.status.size - 1)
+            for (x in 0..item.status.size - 1) {
                 if (item.status[x] == "no")
                     if (myFunctions.imageRequest(
                             myFunctions.getStringFromBitmap(
-                                item.image!![x])!!,
+                                item.image!![x]
+                            )!!,
                             item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
                             item.fullInformation[x],
                             sharedPreferencesAddress,
                             sharedPreferencesUser
                         ) == "true"
                     ) {
-                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
-                    if(MySingleton.countUnsent.get()=="0")
-                        runOnUiThread {
+                        item.status[x] = "yes"
+                        if (MySingleton.countUnsent.get()!!.toInt() - 1 == 0) {
+                            MySingleton.countUnsent.set(
+                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                            )
+                            runOnUiThread {
 
-                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-                        }
-                        MySingleton.arrayList!![0].status[x] = "yes"
+                                findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                            }
 
+                        } else (MySingleton.countUnsent.set(
+                            (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                        ))
 
                     }
+            }
+            myAdapterUpdate = myAdapter
+            runOnUiThread {
+
+                myAdapterUpdate.update() }
             var countOfYesStatus = 0
             for (x in 0..item.status.size - 1)
                 if (MySingleton.arrayList!![0].status[x] == "yes")
@@ -346,17 +352,17 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this, "All sended", Toast.LENGTH_SHORT).show()
                 }
-            myAdapterUpdate = myAdapter
+            //myAdapterUpdate = myAdapter
             runOnUiThread() {
-                myAdapterUpdate.update()
+
+                binding.button.isClickable = true
             }
+
             try {
-               myFunctions.saveJson()
+                myFunctions.saveJson()
             } catch (e: Exception) {
                 Log.d("MyLog", e.toString())
             }
-
-            binding.button.isClickable = true
 
 
         }.start()
@@ -403,7 +409,7 @@ class MainActivity : AppCompatActivity() {
 //        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
 //        Thread() {
 //            if (!isMyServiceRunning(MyService::class.java) && MySingleton.mainActivityExistFlag && MySingleton.countActivity == 1) {
-          startService(Intent(this, MyService::class.java))
+        //startService(Intent(this, MyService::class.java))
 //            }
 //            MySingleton.scanActivityExistFlag = true
 //            //  if( MySingleton.flag && MySingleton.countActivity == 1)
@@ -417,8 +423,8 @@ class MainActivity : AppCompatActivity() {
 //        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 //        Log.d("life", "resume")
         if (isMyServiceRunning(MyService::class.java)) {
-           stopService(Intent(this, MyService::class.java))
-    }
+            stopService(Intent(this, MyService::class.java))
+        }
     }
 
 

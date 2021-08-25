@@ -58,9 +58,9 @@ class HistoryItem : Fragment() {
         carousel?.pageCount = item.status!!.size
 
 
-        binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].documentFormatField[0]
-        binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].numberOfOrderField[0]
-        binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",0)].status[0]
+        binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].documentFormatField[0]
+        binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].numberOfOrderField[0]
+        binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].status[0]
 
     }
 

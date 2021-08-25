@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.interfaces.UpdateAdapter
+import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.singletones.MySingleton
 import java.io.OutputStreamWriter
 
@@ -59,14 +60,17 @@ class CustomRecyclerAdapter(
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.documentFormatField?.text = MySingleton.arrayList!![position].documentFormatField[0].toString()
-        holder.numberOfOrderField?.text = MySingleton.arrayList!![position].numberOfOrderField[0].toString()
-        holder.day.text = MySingleton.arrayList!![position].day[0]
-        holder.time.text = MySingleton.arrayList!![position].time[0]
-        if (MySingleton.arrayList!![position].status[0] == "no") {
-            holder.status.setImageResource(R.drawable.history_status_no)
+                holder.documentFormatField?.text =
+                    MySingleton.arrayList!![position].documentFormatField[0].toString()
 
-        } else holder.status.setImageResource(R.drawable.ic_submite)
+                holder.numberOfOrderField?.text =
+                    MySingleton.arrayList!![position].numberOfOrderField[0].toString()
+                holder.day.text = MySingleton.arrayList!![position].day[0]
+                holder.time.text = MySingleton.arrayList!![position].time[0]
+                if (MySingleton.arrayList!![position].status[0] == "no") {
+                    holder.status.setImageResource(R.drawable.history_status_no)
+
+                } else holder.status.setImageResource(R.drawable.ic_submite)
 
 
     }
@@ -81,6 +85,7 @@ class CustomRecyclerAdapter(
     override fun update() {
         (context as AppCompatActivity).runOnUiThread() {
           notifyDataSetChanged()
+
         }
 
 
@@ -96,8 +101,9 @@ class CustomRecyclerAdapter(
                 )
             )
             MySingleton.arrayList?.clear()
-            //outputStreamWriter.write()
+            outputStreamWriter.write("")
             outputStreamWriter.close()
+            notifyDataSetChanged()
         } catch (e: Exception) {
         }
 

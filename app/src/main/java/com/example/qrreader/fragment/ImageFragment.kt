@@ -106,6 +106,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
 
 
+
         MySingleton.image.add(saveImage)
         MySingleton.title.add(documentFormat)
         MySingleton.text.add(numberOfOrder)
@@ -143,17 +144,45 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //            fullInformation
 //        )
 //
-        MySingleton.itemForHistory = ItemForHistory(
+//
+//        val itemForHistory=ItemForHistory(
+//        MySingleton.title,
+//        MySingleton.text,
+//        MySingleton.image,
+//        MySingleton.day,
+//        MySingleton.time,
+//        MySingleton.status,
+//        MySingleton.text
+//        )
+       // MySingleton.itemForHistory = itemForHistory
+       // var zpp = itemForHistory
+
+
+        MySingleton.arrayList?.add(0, ItemForHistory(
             MySingleton.title,
-            MySingleton.text,
-            MySingleton.image,
-            MySingleton.day,
-            MySingleton.time,
-            MySingleton.status,
-            MySingleton.text
-        )
-        MySingleton.arrayList?.add(0, MySingleton.itemForHistory!!)
-        myFunctions.saveBitmap(MySingleton.itemForHistory!!.image!!, MySingleton.itemForHistory!!.numberOfOrderField[0])
+        MySingleton.text,
+        MySingleton.image,
+        MySingleton.day,
+        MySingleton.time,
+        MySingleton.status,
+        MySingleton.text))
+        myFunctions.saveBitmap(MySingleton.image, MySingleton.text[0])
+//        MySingleton.title.clear()
+//        MySingleton.text.clear()
+//        MySingleton.image.clear()
+//        MySingleton.day.clear()
+//        MySingleton.time.clear()
+//        MySingleton.status.clear()
+//        MySingleton.text.clear()
+        MySingleton.image=ArrayList()
+        MySingleton.title=ArrayList()
+        MySingleton.text=ArrayList()
+        MySingleton.image=ArrayList()
+        MySingleton.day=ArrayList()
+        MySingleton.time=ArrayList()
+        MySingleton.status=ArrayList()
+        MySingleton.text=ArrayList()
+
         requireActivity().setResult(28)
         requireActivity().finish()
     }

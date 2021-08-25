@@ -58,12 +58,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
 
         }
-        MySingleton.image.clear()
-        MySingleton.title.clear()
-        MySingleton.text.clear()
-        MySingleton.status.clear()
-        MySingleton.day.clear()
-        MySingleton.time.clear()
+
 
         binding.button2.setOnClickListener {
             finish()

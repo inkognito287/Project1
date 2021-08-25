@@ -8,12 +8,12 @@ import com.example.qrreader.model.SingleItem
 import com.google.gson.Gson
 
 object MySingleton {
-    var image: ArrayList<Bitmap> = ArrayList()
-    var title: ArrayList<String> = ArrayList()
-    var text: ArrayList<String> = ArrayList()
-    var status: ArrayList<String> = ArrayList()
-    var day: ArrayList<String> = ArrayList()
-    var time: ArrayList<String> = ArrayList()
+    lateinit var image: ArrayList<Bitmap>
+    lateinit var title: ArrayList<String>
+    lateinit var text: ArrayList<String>
+    lateinit var status: ArrayList<String>
+    lateinit var day: ArrayList<String>
+    lateinit var time: ArrayList<String>
     var cameraScreen: ArrayList<Bitmap> = ArrayList()
     lateinit var countUnsent: ObservableField<String>
     lateinit var singleItem: SingleItem
