@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -121,13 +120,13 @@ class MainActivity : AppCompatActivity() {
                 for (element in result.response2!!)
                     MySingleton.arrayList!!.add(
                         ItemForHistory(
-                            element!!.documentFormatField as ArrayList<String>,
-                            element.numberOfOrderField as ArrayList<String>,
+                            element!!.documentFormatField as ArrayList<String?>,
+                            element.numberOfOrderField as ArrayList<String?>,
                             null,
-                            element.day as ArrayList<String>,
-                            element.time as ArrayList<String>,
-                            element.status as ArrayList<String>,
-                            element.fullInformation as ArrayList<String>
+                            element.day as ArrayList<String?>,
+                            element.time as ArrayList<String?>,
+                            element.status as ArrayList<String?>,
+                            element.fullInformation as ArrayList<String?>
                         )
                     )
                 runOnUiThread {
@@ -137,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
 
                         for (element in MySingleton.arrayList!!)
-                            if (element.status[0] == "no")
+                            if (element!!.status[0] == "no")
                                 count++
 
                     } catch (e: Exception) {
@@ -298,71 +297,67 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-    private fun deserialize() {
+    private fun deserialize() = Thread {
 
 
-        Thread {
+        val item = MySingleton.arrayList!![0]
 
 
-            val item = MySingleton.arrayList!![0]
-
-
-            for (x in 0..item.status.size - 1) {
-                if (item.status[x] == "no")
-                    if (myFunctions.imageRequest(
-                            myFunctions.getStringFromBitmap(
-                                item.image!![x]
-                            )!!,
-                            item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
-                            item.fullInformation[x],
-                            sharedPreferencesAddress,
-                            sharedPreferencesUser
-                        ) == "true"
-                    ) {
-                        item.status[x] = "yes"
-                        if (MySingleton.countUnsent.get()!!.toInt() - 1 == 0) {
-                            MySingleton.countUnsent.set(
-                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                            )
-                            runOnUiThread {
-
-                                findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-                            }
-
-                        } else (MySingleton.countUnsent.set(
+        for (x in 0..item!!.status.size - 1) {
+            if (item.status[x] == "no")
+                if (myFunctions.imageRequest(
+                        myFunctions.getStringFromBitmap(
+                            item!!.image!![x]!!
+                        )!!,
+                        item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
+                        item.fullInformation[x]!!,
+                        sharedPreferencesAddress,
+                        sharedPreferencesUser
+                    ) == "true"
+                ) {
+                    item.status[x] = "yes"
+                    if (MySingleton.countUnsent.get()!!.toInt() - 1 == 0) {
+                        MySingleton.countUnsent.set(
                             (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                        ))
+                        )
+                        runOnUiThread {
 
-                    }
-            }
-            myAdapterUpdate = myAdapter
-            runOnUiThread {
+                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                        }
 
-                myAdapterUpdate.update()
-            }
-            var countOfYesStatus = 0
-            for (x in 0..item.status.size - 1)
-                if (MySingleton.arrayList!![0].status[x] == "yes")
-                    countOfYesStatus++
-            if (countOfYesStatus == item.status.size)
-                runOnUiThread {
-                    Toast.makeText(this, "All sended", Toast.LENGTH_SHORT).show()
+                    } else (MySingleton.countUnsent.set(
+                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                    ))
+
                 }
-            //myAdapterUpdate = myAdapter
-            runOnUiThread() {
+        }
+        myAdapterUpdate = myAdapter
+        runOnUiThread {
 
-                binding.button.isClickable = true
+            myAdapterUpdate.update()
+        }
+        var countOfYesStatus = 0
+        for (x in 0..item!!.status.size - 1)
+            if (MySingleton.arrayList!![0]!!.status[x] == "yes")
+                countOfYesStatus++
+        if (countOfYesStatus == item.status.size)
+            runOnUiThread {
+                Toast.makeText(this, "All sended", Toast.LENGTH_SHORT).show()
             }
+        //myAdapterUpdate = myAdapter
+        runOnUiThread() {
 
-            try {
-                myFunctions.saveJson()
-            } catch (e: Exception) {
-                Log.d("MyLog", e.toString())
-            }
+            binding.button.isClickable = true
+        }
+
+        try {
+            myFunctions.saveJson()
+        } catch (e: Exception) {
+            Log.d("MyLog", e.toString())
+        }
 
 
-        }.start()
-    }
+    }.start()
 
     private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
 

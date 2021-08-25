@@ -74,11 +74,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                 numberOfPages = numberOfPages.split("/")[2]
 
                             }
-                            if (numberOfPages.toInt()-1 != MySingleton.pageclick ) {
-                                myFunctions.showError("Номер отсканированной страницы не совпадает с ожидаемым ")
-                                (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
-                                    true
-                            } else {
+
                                 val bottomFragment = ImageFragment()
                                 val bundle = Bundle()
 
@@ -100,7 +96,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
-                            }
+
                         }
 
 

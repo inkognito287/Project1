@@ -23,6 +23,7 @@ import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
@@ -45,21 +46,44 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
 
         binding = FragmentImageBinding.inflate(inflater, container, false)
-        binding.imageFragmentSubmit.setOnClickListener() {
-            submitImage()
-        }
+
         binding.imageFragmentBack.setOnClickListener() {
             backImage()
         }
 
         numberOfPages = arguments?.getString("numberOfPages")!!
         allNumberOfPages = arguments?.getString("allNumberOfPages")!!
+        if (MySingleton.completedPages.size == 0)
+            for (i in 0 until allNumberOfPages.toInt()) {
+                MySingleton.completedPages.add(i, false)
+                MySingleton.image.add(i, null)
+                MySingleton.title.add(i, null)
+                MySingleton.text.add(i, null)
+                MySingleton.status.add(i, null)
+                MySingleton.day.add(i, null)
+                MySingleton.time.add(i, null)
+            }
+        MySingleton.completedPages[numberOfPages.toInt() - 1] = true
 
-        if (numberOfPages == allNumberOfPages)
-            binding.imageFragmentSubmit.visibility = View.VISIBLE
-        else binding.imageFragmentSubmit.visibility = View.GONE
+        if (numberOfPages == allNumberOfPages) {
+            binding.imageFragmentSubmit.text = "Подтвердить"
+            binding.imageFragmentSubmit.setOnClickListener() {
+                submitImage()
+            }
+        } else {
+            binding.imageFragmentSubmit.setOnClickListener() {
+                //MySingleton.pageclick = position
 
-        var pageAdapter = recyclerImageResultAdapter(allNumberOfPages.toInt(),numberOfPages.toInt(), this)
+                val bottomSheetBehaviour =
+                    BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+                activity?.findViewById<Button>(R.id.button)?.isClickable = true
+            }
+            binding.imageFragmentSubmit.text = "Продолжить"
+        }
+
+        var pageAdapter =
+            recyclerImageResultAdapter(allNumberOfPages.toInt(), numberOfPages.toInt(), this)
         binding.pageNumbers.adapter = pageAdapter
         binding.pageNumbers.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -104,16 +128,22 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         }
 
 
-
-
-
-        MySingleton.image.add(saveImage)
-        MySingleton.title.add(documentFormat)
-        MySingleton.text.add(numberOfOrder)
-        MySingleton.status.add("no")
-        MySingleton.day.add(day)
-        MySingleton.time.add(time)
-
+//      if (MySingleton.image.size>= numberOfPages.toInt() - 1) {
+        MySingleton.image[numberOfPages.toInt() - 1] = saveImage
+        MySingleton.title[numberOfPages.toInt() - 1] = documentFormat
+        MySingleton.text[numberOfPages.toInt() - 1] = numberOfOrder
+        MySingleton.status[numberOfPages.toInt() - 1] = "no"
+        MySingleton.day[numberOfPages.toInt() - 1] = day
+        MySingleton.time[numberOfPages.toInt() - 1] = time
+//
+//        } else {
+//            MySingleton.image.add(numberOfPages.toInt(),saveImage)
+//            MySingleton.title.add(numberOfPages.toInt(),documentFormat)
+//            MySingleton.text.add(numberOfPages.toInt(),numberOfOrder)
+//            MySingleton.status.add(numberOfPages.toInt(),"no")
+//            MySingleton.day.add(numberOfPages.toInt(),day)
+//            MySingleton.time.add(numberOfPages.toInt(),time)
+        //}
 
 
         Log.d("MyLog", saveCode)
@@ -154,18 +184,21 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //        MySingleton.status,
 //        MySingleton.text
 //        )
-       // MySingleton.itemForHistory = itemForHistory
-       // var zpp = itemForHistory
+        // MySingleton.itemForHistory = itemForHistory
+        // var zpp = itemForHistory
 
 
-        MySingleton.arrayList?.add(0, ItemForHistory(
-            MySingleton.title,
-        MySingleton.text,
-        MySingleton.image,
-        MySingleton.day,
-        MySingleton.time,
-        MySingleton.status,
-        MySingleton.text))
+        MySingleton.arrayList?.add(
+            0, ItemForHistory(
+                MySingleton.title,
+                MySingleton.text,
+                MySingleton.image,
+                MySingleton.day,
+                MySingleton.time,
+                MySingleton.status,
+                MySingleton.text
+            )
+        )
 
 
         requireActivity().setResult(28)
@@ -180,13 +213,13 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     }
 
     override fun onItemClick(position: Int) {
-        if (position==numberOfPages.toInt()) {
-            MySingleton.pageclick = position
-
-            val bottomSheetBehaviour =
-                BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
-            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
-            activity?.findViewById<Button>(R.id.button)?.isClickable = true
-        }
+//        if (position==numberOfPages.toInt()) {
+//            MySingleton.pageclick = position
+//
+//            val bottomSheetBehaviour =
+//                BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+//            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+//            activity?.findViewById<Button>(R.id.button)?.isClickable = true
+//        }
     }
 }

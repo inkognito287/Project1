@@ -75,16 +75,16 @@ class MyService : Service() {
                         val item = MySingleton.arrayList!![y]
 
 
-                        for (x in 0..item.status.size - 1)
-                            if (item.status[x] == "no")
+                        for (x in 0..item!!.status.size - 1)
+                            if (item!!.status[x] == "no")
                                 if (myFunction.imageRequest(
                                         myFunction.getStringFromBitmap(
                                             BitmapFactory.decodeFile(
-                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y].numberOfOrderField[0].split(
+                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField[0]!!.split(
                                                     "№"
                                                 )[1] + "page" + (x + 1).toString() + ".png"))!!,
-                                        item.day[x]!! + " " + item.time!![x][0].toString() + item.time!![x][1].toString() + "-" + item.time!![x][3].toString() + item.time!![x][4].toString(),
-                                        item.fullInformation[x],
+                                        item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
+                                        item.fullInformation[x]!!,
                                         sharedPreferencesAddress,
                                         sharedPreferencesUser
                                     ) == "true"

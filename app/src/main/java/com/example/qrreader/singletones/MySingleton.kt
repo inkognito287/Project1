@@ -8,12 +8,12 @@ import com.example.qrreader.model.SingleItem
 import com.google.gson.Gson
 
 object MySingleton {
-    lateinit var image: ArrayList<Bitmap>
-    lateinit var title: ArrayList<String>
-    lateinit var text: ArrayList<String>
-    lateinit var status: ArrayList<String>
-    lateinit var day: ArrayList<String>
-    lateinit var time: ArrayList<String>
+    lateinit var image: ArrayList<Bitmap?>
+    lateinit var title: ArrayList<String?>
+    lateinit var text: ArrayList<String?>
+    lateinit var status: ArrayList<String?>
+    lateinit var day: ArrayList<String?>
+    lateinit var time: ArrayList<String?>
     var cameraScreen: ArrayList<Bitmap> = ArrayList()
     lateinit var countUnsent: ObservableField<String>
 
@@ -24,8 +24,9 @@ object MySingleton {
     var countActivity: Int = 0
     var mainActivityExistFlag = true
     var scanActivityExistFlag = true
-    var arrayList: ArrayList<ItemForHistory>? = null
+    var arrayList: ArrayList<ItemForHistory?>? = null
     var pageclick = 0
+    var completedPages:ArrayList<Boolean> = ArrayList()
 
 
 }

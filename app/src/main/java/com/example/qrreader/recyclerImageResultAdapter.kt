@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.singletones.MySingleton
 
 class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener: OnItemListener): RecyclerView.Adapter<recyclerImageResultAdapter.MyViewHolder>() {
 
@@ -36,9 +37,13 @@ class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.numberOfPageTextView?.text = (position+1).toString()
-        if (currentPage==position+1)
-            holder.background?.setBackgroundResource(R.color.projectOrangeError)
+
+        if (MySingleton.completedPages[position]){
+            holder.background?.setBackgroundResource(R.drawable.ic_submite)
+            holder.numberOfPageTextView?.text=""
+        }
+        else
+            holder.numberOfPageTextView?.text = (position+1).toString()
 
     }
 

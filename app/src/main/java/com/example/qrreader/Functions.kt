@@ -1,8 +1,6 @@
 package com.example.qrreader
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.Context.MODE_WORLD_WRITEABLE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -17,9 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.Error
 import com.example.qrreader.singletones.MySingleton
 import com.example.qrreader.singletones.MySingleton.gson
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -83,15 +78,15 @@ class Functions(var context: Context) {
         }
     }
 
-    fun saveBitmap(bmp: ArrayList<Bitmap>, numberOfOrder: String) {
+    fun saveBitmap(bmp: ArrayList<Bitmap?>, numberOfOrder: String?) {
 
-        var numb = numberOfOrder.split("№")[1]
+        var numb = numberOfOrder!!.split("№")[1]
         var page=1
         for (element in bmp) {
             Log.d("MyLog",Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+"${numb}page${page}"+".png")
             val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
 
-            element.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
+            element!!.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
 
             page++
             stream.close()

@@ -225,7 +225,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         if (MySingleton.arrayList != null) {
 
             for (x in 0 until MySingleton.arrayList!!.size)
-                if (MySingleton.arrayList!![x].status[0] == "no")
+                if (MySingleton.arrayList!![x]!!.status[0] == "no")
                     s++
         }
         if (s > 0)
