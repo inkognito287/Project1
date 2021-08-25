@@ -16,6 +16,7 @@ object MySingleton {
     lateinit var time: ArrayList<String>
     var cameraScreen: ArrayList<Bitmap> = ArrayList()
     lateinit var countUnsent: ObservableField<String>
+
     lateinit var singleItem: SingleItem
     var itemForHistory: ItemForHistory? =null
     val gson = Gson()

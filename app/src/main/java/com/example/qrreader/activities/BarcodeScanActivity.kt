@@ -55,8 +55,6 @@ class BarcodeScanActivity : AppCompatActivity() {
             barcodeBitmapAnalyzer.scanBarcodes(MySingleton.temporaryImage, code)
 
 
-
-
         }
 
 
@@ -83,9 +81,18 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN)
+        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
+            MySingleton.pageclick = 0
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.title = java.util.ArrayList()
+            MySingleton.text = java.util.ArrayList()
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.day = java.util.ArrayList()
+            MySingleton.time = java.util.ArrayList()
+            MySingleton.status = java.util.ArrayList()
+            MySingleton.text = java.util.ArrayList()
             super.onBackPressed()
-        else {
+        } else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
 
             binding.button.isClickable = true
@@ -179,7 +186,10 @@ class BarcodeScanActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        Log.d("life", "BarcodeAct Stop MySingleton.flag2 " + MySingleton.scanActivityExistFlag.toString())
+        Log.d(
+            "life",
+            "BarcodeAct Stop MySingleton.flag2 " + MySingleton.scanActivityExistFlag.toString()
+        )
         Thread() {
 
 //                if (!isMyServiceRunning(MyService::class.java) && MySingleton.scanActivityExistFlag && MySingleton.countActivity == 1) {

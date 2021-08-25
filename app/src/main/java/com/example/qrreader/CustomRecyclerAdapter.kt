@@ -61,7 +61,7 @@ class CustomRecyclerAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
                 holder.documentFormatField?.text =
-                    MySingleton.arrayList!![position].documentFormatField[0].toString()
+                    MySingleton.arrayList!![position].documentFormatField[MySingleton.arrayList!![position].documentFormatField.size-1].toString()
 
                 holder.numberOfOrderField?.text =
                     MySingleton.arrayList!![position].numberOfOrderField[0].toString()

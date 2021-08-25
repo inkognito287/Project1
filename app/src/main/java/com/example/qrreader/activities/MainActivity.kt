@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.fragment.*
@@ -57,15 +58,17 @@ class MainActivity : AppCompatActivity() {
         MySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
-        MySingleton.image= java.util.ArrayList()
-        MySingleton.title= java.util.ArrayList()
-        MySingleton.text= java.util.ArrayList()
-        MySingleton.image= java.util.ArrayList()
-        MySingleton.day= java.util.ArrayList()
-        MySingleton.time= java.util.ArrayList()
-        MySingleton.status= java.util.ArrayList()
-        MySingleton.text= java.util.ArrayList()
+        MySingleton.image = java.util.ArrayList()
+        MySingleton.title = java.util.ArrayList()
+        MySingleton.text = java.util.ArrayList()
+        MySingleton.image = java.util.ArrayList()
+        MySingleton.day = java.util.ArrayList()
+        MySingleton.time = java.util.ArrayList()
+        MySingleton.status = java.util.ArrayList()
+        MySingleton.text = java.util.ArrayList()
 
+
+        MySingleton.countUnsent.addOnPropertyChangedCallback(snackbarCallback)
         fun isExternalPermissionGranted(): Boolean {
             return (ContextCompat.checkSelfPermission(
                 baseContext,
@@ -136,11 +139,12 @@ class MainActivity : AppCompatActivity() {
                         for (element in MySingleton.arrayList!!)
                             if (element.status[0] == "no")
                                 count++
+
                     } catch (e: Exception) {
                     }
                     if (count != 0)
                         runOnUiThread {
-                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                            findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
                         }
                     MySingleton.countUnsent.set(count.toString())
 //runOnUiThread {
@@ -164,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 addAction("android.net.conn.CONNECTIVITY_CHANGE")
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
             }
-            //this.registerReceiver(myBroadcastReceiver, filter)
+            this.registerReceiver(myBroadcastReceiver, filter)
 
         }.start()
 
@@ -255,7 +259,15 @@ class MainActivity : AppCompatActivity() {
                 binding.button.isClickable = false
                 Thread() {
 
-
+                    myFunctions.saveBitmap(MySingleton.image, MySingleton.text[0])
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.title = java.util.ArrayList()
+                    MySingleton.text = java.util.ArrayList()
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.day = java.util.ArrayList()
+                    MySingleton.time = java.util.ArrayList()
+                    MySingleton.status = java.util.ArrayList()
+                    MySingleton.text = java.util.ArrayList()
 
                     //  MySingleton.itemForHistory = null
 
@@ -266,27 +278,10 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
 
                         //myAdapter.notifyDataSetChanged()
-                       // myAdapterUpdate.
+                      myAdapterUpdate.update()
                     }
 
 
-                    // try {
-//                    MySingleton.arrayList!![0].stringImage = ArrayList()
-//                    for (x in 0..MySingleton.arrayList!![0].day.size - 1)
-//                        MySingleton.arrayList!![0].stringImage!!.add(
-//                            myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image[x])!!
-//                        )
-
-
-                    //   }
-//                    catch (e:Exception){
-//                        runOnUiThread {
-//
-//                        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()}
-//                    }
-
-                    //  MySingleton.arrayList!![0].stringImage =
-                    // myFunctions.getStringFromBitmap(MySingleton.arrayList!![0].image).toString()
                     runOnUiThread {
                         findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
                     }
@@ -343,7 +338,8 @@ class MainActivity : AppCompatActivity() {
             myAdapterUpdate = myAdapter
             runOnUiThread {
 
-                myAdapterUpdate.update() }
+                myAdapterUpdate.update()
+            }
             var countOfYesStatus = 0
             for (x in 0..item.status.size - 1)
                 if (MySingleton.arrayList!![0].status[x] == "yes")
@@ -402,19 +398,32 @@ class MainActivity : AppCompatActivity() {
 //        return false
 //
 //    }
+   var snackbarCallback = object : Observable.OnPropertyChangedCallback() {
+
+        override fun onPropertyChanged(observable: Observable, i: Int) {
+            Log.d("MyLog",observable.toString()+" "+i)
+            if (MySingleton.countUnsent.get()=="0")
+runOnUiThread {
+    findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+}
+        }
+    }
 
     override fun onStop() {
-        super.onStop()
+
 
 //        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
-//        Thread() {
-//            if (!isMyServiceRunning(MyService::class.java) && MySingleton.mainActivityExistFlag && MySingleton.countActivity == 1) {
-        //startService(Intent(this, MyService::class.java))
-//            }
+       Thread() {
+           //&& MySingleton.mainActivityExistFlag
+            if (!isMyServiceRunning(MyService::class.java)  && MySingleton.countActivity == 1) {
+        startService(Intent(this, MyService::class.java))
+            }
 //            MySingleton.scanActivityExistFlag = true
 //            //  if( MySingleton.flag && MySingleton.countActivity == 1)
 //
 //        }.start()
+    }.start()
+        super.onStop()
     }
 
     override fun onResume() {
@@ -426,6 +435,7 @@ class MainActivity : AppCompatActivity() {
             stopService(Intent(this, MyService::class.java))
         }
     }
+
 
 
 }

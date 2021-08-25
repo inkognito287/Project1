@@ -117,7 +117,10 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
             }
 
+            try {
 
+
+                myFunctions.saveJson()}catch (e:Exception){}
         }.start()
 
 

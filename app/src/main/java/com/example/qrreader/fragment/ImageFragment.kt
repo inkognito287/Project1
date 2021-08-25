@@ -59,7 +59,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
             binding.imageFragmentSubmit.visibility = View.VISIBLE
         else binding.imageFragmentSubmit.visibility = View.GONE
 
-        var pageAdapter = recyclerImageResultAdapter(allNumberOfPages.toInt(), this)
+        var pageAdapter = recyclerImageResultAdapter(allNumberOfPages.toInt(),numberOfPages.toInt(), this)
         binding.pageNumbers.adapter = pageAdapter
         binding.pageNumbers.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -166,22 +166,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         MySingleton.time,
         MySingleton.status,
         MySingleton.text))
-        myFunctions.saveBitmap(MySingleton.image, MySingleton.text[0])
-//        MySingleton.title.clear()
-//        MySingleton.text.clear()
-//        MySingleton.image.clear()
-//        MySingleton.day.clear()
-//        MySingleton.time.clear()
-//        MySingleton.status.clear()
-//        MySingleton.text.clear()
-        MySingleton.image=ArrayList()
-        MySingleton.title=ArrayList()
-        MySingleton.text=ArrayList()
-        MySingleton.image=ArrayList()
-        MySingleton.day=ArrayList()
-        MySingleton.time=ArrayList()
-        MySingleton.status=ArrayList()
-        MySingleton.text=ArrayList()
+
 
         requireActivity().setResult(28)
         requireActivity().finish()
@@ -195,12 +180,13 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     }
 
     override fun onItemClick(position: Int) {
-        MySingleton.pageclick = position
+        if (position==numberOfPages.toInt()) {
+            MySingleton.pageclick = position
 
-        val bottomSheetBehaviour =
-            BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
-        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
-        activity?.findViewById<Button>(R.id.button)?.isClickable = true
-
+            val bottomSheetBehaviour =
+                BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            activity?.findViewById<Button>(R.id.button)?.isClickable = true
+        }
     }
 }

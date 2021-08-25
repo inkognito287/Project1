@@ -54,7 +54,7 @@ class MyService : Service() {
                 }
             }
         }
-        timer.schedule(timeTask, 10000, 15000)
+        timer.schedule(timeTask, 10000, 30000)
 
         createNotificationChannel()
 
@@ -110,7 +110,12 @@ class MyService : Service() {
                     Log.d("MyLog", "wifi exception=$e")
 
                 }
+                try {
+
+
+                myFunction.saveJson()}catch (e:Exception){}
             }.start()
+
 
     }
 

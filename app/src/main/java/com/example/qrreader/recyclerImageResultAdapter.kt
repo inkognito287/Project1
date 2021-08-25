@@ -4,18 +4,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
-class recyclerImageResultAdapter(var Number:Int,itemListener: OnItemListener): RecyclerView.Adapter<recyclerImageResultAdapter.MyViewHolder>() {
+class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener: OnItemListener): RecyclerView.Adapter<recyclerImageResultAdapter.MyViewHolder>() {
 
     private var mItemListener: OnItemListener = itemListener
     class  MyViewHolder(itemView: View,onItemListener: OnItemListener): RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var numberOfPageTextView: TextView? = null
         var onItemListener: OnItemListener = onItemListener
+        var background:View? = null
 
     init {
         itemView.setOnClickListener(this)
         numberOfPageTextView   =   itemView.findViewById(R.id.numberOfPageTextView)
+        background = itemView.findViewById(R.id.view12)
     }
 
         override fun onClick(p0: View?) {
@@ -34,6 +37,8 @@ class recyclerImageResultAdapter(var Number:Int,itemListener: OnItemListener): R
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.numberOfPageTextView?.text = (position+1).toString()
+        if (currentPage==position+1)
+            holder.background?.setBackgroundResource(R.color.projectOrangeError)
 
     }
 

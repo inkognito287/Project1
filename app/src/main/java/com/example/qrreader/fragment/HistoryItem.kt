@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentHistoryItemBinding
@@ -48,9 +49,35 @@ class HistoryItem : Fragment() {
                imageView.setImageBitmap(BitmapFactory.decodeFile( Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+MySingleton.arrayList!![arg].numberOfOrderField[0].split("№")[1]+"page"+(position+1).toString()+".png"))
             }
 
+
         }
+
         var carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
         carousel?.setImageListener(imageListener)
+        var listener:ViewPager.OnPageChangeListener = object :ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+                binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].documentFormatField[position]
+                binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].numberOfOrderField[position]
+                binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",44)].status[position]
+            }
+
+            override fun onPageSelected(position: Int) {
+
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+
+        }
+        carousel?.addOnPageChangeListener(listener)
+
 
 
 
