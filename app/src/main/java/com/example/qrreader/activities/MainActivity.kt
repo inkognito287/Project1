@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -112,23 +113,26 @@ class MainActivity : AppCompatActivity() {
                 // text=text.substring(1)
                 Log.d("MyLog", text)
 
-
-                val result =
-                    gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+                try {
+                    val result =
+                        gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
 //                       Log.d("MyLog", result.response2!![0]!!.documentFormatField!![0].toString())
 
-                for (element in result.response2!!)
-                    MySingleton.arrayList!!.add(
-                        ItemForHistory(
-                            element!!.documentFormatField as ArrayList<String?>,
-                            element.numberOfOrderField as ArrayList<String?>,
-                            null,
-                            element.day as ArrayList<String?>,
-                            element.time as ArrayList<String?>,
-                            element.status as ArrayList<String?>,
-                            element.fullInformation as ArrayList<String?>
+                    for (element in result.response2!!)
+                        MySingleton.arrayList!!.add(
+                            ItemForHistory(
+                                element!!.documentFormatField as ArrayList<String?>,
+                                element.numberOfOrderField as ArrayList<String?>,
+                                null,
+                                element.day as ArrayList<String?>,
+                                element.time as ArrayList<String?>,
+                                element.status as ArrayList<String?>,
+                                element.fullInformation as ArrayList<String?>
+                            )
                         )
-                    )
+                }catch (e:Exception){
+
+                }
                 runOnUiThread {
                     Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
                     var count = 0
@@ -252,13 +256,37 @@ class MainActivity : AppCompatActivity() {
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            MySingleton.scanActivityExistFlag = false
+
+            if (result.resultCode == 3)
+            {
+                MySingleton.completedPages.clear()
+                binding.button.isClickable = true
+                for(i in 0 until MySingleton.arrayList!![0]!!.status.size)
+                    MySingleton.arrayList!![0]!!.status[i]="uncompleted"
+                MySingleton.image = java.util.ArrayList()
+                MySingleton.title = java.util.ArrayList()
+                MySingleton.text = java.util.ArrayList()
+                MySingleton.image = java.util.ArrayList()
+                MySingleton.day = java.util.ArrayList()
+                MySingleton.time = java.util.ArrayList()
+                MySingleton.status = java.util.ArrayList()
+                MySingleton.text = java.util.ArrayList()
+                myAdapterUpdate = myAdapter
+                myAdapterUpdate.update()
+                try {
+                    myFunctions.saveJson()
+                } catch (e: Exception) {
+                    Log.d("MyLog", e.toString())
+                }
+
+            }
             if (result.resultCode == 28) {
                 MySingleton.pageclick = 0
                 binding.button.isClickable = false
+                findViewById<ProgressBar>(R.id.progressBar2).visibility=View.VISIBLE
                 Thread() {
 
-                    myFunctions.saveBitmap(MySingleton.image, MySingleton.text[0])
+                   // myFunctions.saveBitmaps(MySingleton.arrayList!![0]!!.image!!, MySingleton.arrayList!![0]!!.numberOfOrderField)
                     MySingleton.image = java.util.ArrayList()
                     MySingleton.title = java.util.ArrayList()
                     MySingleton.text = java.util.ArrayList()
@@ -278,6 +306,8 @@ class MainActivity : AppCompatActivity() {
 
                         //myAdapter.notifyDataSetChanged()
                       myAdapterUpdate.update()
+                        binding.button.isClickable = true
+                        findViewById<ProgressBar>(R.id.progressBar2).visibility=View.GONE
                     }
 
 
@@ -336,18 +366,10 @@ class MainActivity : AppCompatActivity() {
 
             myAdapterUpdate.update()
         }
-        var countOfYesStatus = 0
-        for (x in 0..item!!.status.size - 1)
-            if (MySingleton.arrayList!![0]!!.status[x] == "yes")
-                countOfYesStatus++
-        if (countOfYesStatus == item.status.size)
-            runOnUiThread {
-                Toast.makeText(this, "All sended", Toast.LENGTH_SHORT).show()
-            }
         //myAdapterUpdate = myAdapter
         runOnUiThread() {
 
-            binding.button.isClickable = true
+            //binding.button.isClickable = true
         }
 
         try {
@@ -377,22 +399,6 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-//    private fun checkStatus(): Boolean {
-//
-//        var s = 0
-//        if (MySingleton.arrayList != null) {
-//
-//            for (x in 0 until MySingleton.arrayList!!.size)
-//                if (MySingleton.arrayList!![x].status == "no")
-//                    s++
-//        }
-//        if (s > 0)
-//
-//            return true
-//
-//        return false
-//
-//    }
    var snackbarCallback = object : Observable.OnPropertyChangedCallback() {
 
         override fun onPropertyChanged(observable: Observable, i: Int) {
@@ -406,26 +412,27 @@ runOnUiThread {
 
     override fun onStop() {
 
-
-//        Log.d("life", "Main act Stop MySingleton.flag" + MySingleton.mainActivityExistFlag.toString())
        Thread() {
-           //&& MySingleton.mainActivityExistFlag
-            if (!isMyServiceRunning(MyService::class.java)  && MySingleton.countActivity == 1) {
+
+            if (!isMyServiceRunning(MyService::class.java)  && !MySingleton.applicationIsActive) {
         startService(Intent(this, MyService::class.java))
             }
-//            MySingleton.scanActivityExistFlag = true
-//            //  if( MySingleton.flag && MySingleton.countActivity == 1)
-//
-//        }.start()
+
     }.start()
         super.onStop()
     }
 
+    override fun onPause() {
+        super.onPause()
+        MySingleton.applicationIsActive = false
+        Log.d("MyLog","Main is active="+MySingleton.applicationIsActive)
+    }
+
     override fun onResume() {
         super.onResume()
-//        if(MySingleton.countUnsent.get()=="0")
-//        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-//        Log.d("life", "resume")
+        myAdapterUpdate.update()
+        MySingleton.applicationIsActive = true
+        Log.d("MyLog","Main is active="+MySingleton.applicationIsActive)
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }

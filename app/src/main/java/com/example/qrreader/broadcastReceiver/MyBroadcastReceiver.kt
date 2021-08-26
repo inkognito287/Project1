@@ -62,7 +62,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                         if (myFunctions.imageRequest(
                                 myFunctions.getStringFromBitmap(
                                     BitmapFactory.decodeFile(
-                                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField[0]!!.split(
+                                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField[x]!!.split(
                                             "№"
                                         )[1] + "page" + (x + 1).toString() + ".png"
                                     )

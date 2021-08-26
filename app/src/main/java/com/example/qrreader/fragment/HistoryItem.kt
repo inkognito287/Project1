@@ -36,34 +36,45 @@ class HistoryItem : Fragment() {
 
         var myFunctions = Functions(requireContext())
 
-        binding.progressBarHistoryItem.visibility = View.VISIBLE
         var arg = arguments?.getInt("position")
-        Log.d("MyLog",MySingleton.arrayList!![arg!!]!!.numberOfOrderField[0]!!.split("№")[1]+"-"+(1).toString())
+//        Log.d("MyLog",MySingleton.arrayList!![arg!!]!!.numberOfOrderField[0]!!.split("№")[1]+"-"+(1).toString())
         //Log.d("MyLog", MySingleton.arrayList!![arg!!].stringImage!!.size.toString())
-         item = MySingleton.arrayList!![arg!!]!!
+        item = MySingleton.arrayList!![arg!!]!!
 
-        var imageListener: ImageListener = object : ImageListener {
-            override fun setImageForPosition(position: Int, imageView: ImageView) {
-                // You can use Glide or Picasso here
-
-               imageView.setImageBitmap(BitmapFactory.decodeFile( Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+MySingleton.arrayList!![arg]!!.numberOfOrderField[0]!!.split("№")[1]+"page"+(position+1).toString()+".png"))
+        var imageListener: ImageListener =
+            ImageListener { position, imageView -> // You can use Glide or Picasso here
+                if (MySingleton.arrayList!![arg]?.numberOfOrderField!![position] != null)
+                    imageView.setImageBitmap(
+                        BitmapFactory.decodeFile(
+                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![arg]!!.numberOfOrderField[position]!!.split(
+                                "№"
+                            )[1] + "page" + (position + 1).toString() + ".png"
+                        )
+                    )
+                else imageView.setImageResource(R.drawable.broken_image)
             }
-
-
-        }
 
         var carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
         carousel?.setImageListener(imageListener)
-        var listener:ViewPager.OnPageChangeListener = object :ViewPager.OnPageChangeListener {
+        var listener: ViewPager.OnPageChangeListener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-
-                binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.documentFormatField[position]
-                binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.numberOfOrderField[position]
-                binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.status[position]
+                if (MySingleton.arrayList!![arg]!!.documentFormatField[position] == null) {
+                    binding.documentFormat.text = "Не отсканирован"
+                    binding.orderNumber.text = ""
+                    binding.status.text = ""
+                } else {
+                    binding.documentFormat.text =
+                        MySingleton.arrayList!![arg]!!.documentFormatField[position]
+                    binding.orderNumber.text =
+                        MySingleton.arrayList!![arg]!!.numberOfOrderField[position]
+                    binding.status.text =
+                        if (MySingleton.arrayList!![arg]!!.status[position] == "no") "не отправлен" else if(MySingleton.arrayList!![arg]!!.status[position] == "yes") "отправлен"
+                    else "не укомплектован"
+                }
             }
 
             override fun onPageSelected(position: Int) {
@@ -84,11 +95,13 @@ class HistoryItem : Fragment() {
 
         carousel?.pageCount = item.status!!.size
 
-
-        binding.documentFormat.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.documentFormatField[0]
-        binding.orderNumber.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.numberOfOrderField[0]
-        binding.status.text = MySingleton.arrayList!![requireArguments().getInt("position",44)]!!.status[0]
-
+        if (MySingleton.arrayList!![arg]!!.documentFormatField[0] != null) {
+            binding.documentFormat.text = MySingleton.arrayList!![arg]!!.documentFormatField[0]
+            binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField[0]
+            binding.status.text =  if (MySingleton.arrayList!![arg]!!.status[0] == "no") "не отправлен" else if(MySingleton.arrayList!![arg]!!.status[0] == "yes") "отправлен"
+            else "не укомплектован"
+        } else
+            binding.documentFormat.text = "Не отсканирован"
     }
 
     private fun getImage() {

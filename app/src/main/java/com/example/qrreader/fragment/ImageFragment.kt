@@ -17,13 +17,11 @@ import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.example.qrreader.model.ItemForHistory
-import com.example.qrreader.model.SingleItem
 import com.example.qrreader.recyclerImageResultAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
@@ -53,7 +51,15 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
         numberOfPages = arguments?.getString("numberOfPages")!!
         allNumberOfPages = arguments?.getString("allNumberOfPages")!!
-        if (MySingleton.completedPages.size == 0)
+        MySingleton.currentPage = numberOfPages.toInt()
+        if (MySingleton.completedPages.size == 0) {
+//            MySingleton.image.clear()
+//            MySingleton.title.clear()
+//            MySingleton.text.clear()
+//            MySingleton.status.clear()
+//            MySingleton.day.clear()
+//            MySingleton.time.clear()
+
             for (i in 0 until allNumberOfPages.toInt()) {
                 MySingleton.completedPages.add(i, false)
                 MySingleton.image.add(i, null)
@@ -63,14 +69,21 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                 MySingleton.day.add(i, null)
                 MySingleton.time.add(i, null)
             }
+        }
         MySingleton.completedPages[numberOfPages.toInt() - 1] = true
-
-        if (numberOfPages == allNumberOfPages) {
+        var count = 0
+        for (element in MySingleton.completedPages)
+            if (element)
+                count++
+        if (count == allNumberOfPages.toInt()) {
+            //нужно придумать другое решение
             binding.imageFragmentSubmit.text = "Подтвердить"
             binding.imageFragmentSubmit.setOnClickListener() {
                 submitImage()
             }
         } else {
+
+            binding.imageFragmentSubmit.text = "Продолжить"
             binding.imageFragmentSubmit.setOnClickListener() {
                 //MySingleton.pageclick = position
 
@@ -78,8 +91,34 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
                 activity?.findViewById<Button>(R.id.button)?.isClickable = true
+
+
+                if (MySingleton.newSession)
+                    MySingleton.arrayList?.add(
+                        0,
+                        ItemForHistory(
+                            MySingleton.title,
+                            MySingleton.text,
+                            MySingleton.image,
+                            MySingleton.day,
+                            MySingleton.time,
+                            MySingleton.status,
+                            MySingleton.text
+                        )
+                    )
+                else MySingleton.arrayList!![0] = ItemForHistory(
+                    MySingleton.title,
+                    MySingleton.text,
+                    MySingleton.image,
+                    MySingleton.day,
+                    MySingleton.time,
+                    MySingleton.status,
+                    MySingleton.text
+                )
+                myFunctions.saveBitmap(MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage-1]!!,
+                    MySingleton.arrayList!![0]!!.numberOfOrderField[MySingleton.currentPage-1]!!,MySingleton.currentPage-1
+                )
             }
-            binding.imageFragmentSubmit.text = "Продолжить"
         }
 
         var pageAdapter =
@@ -161,46 +200,21 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     private fun submitImage() {
         binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE
-
-
-//        MySingleton.singleItem = SingleItem(
-//            documentFormat,
-//            numberOfOrder,
-//            null,
-//            saveImage,
-//            day,
-//            time,
-//            "no",
-//            fullInformation
+        myFunctions.saveBitmap(MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage]!!,
+            MySingleton.arrayList!![0]!!.numberOfOrderField[MySingleton.currentPage]!!,MySingleton.currentPage)
+//        MySingleton.arrayList?.add(
+//            0, ItemForHistory(
+//                MySingleton.title,
+//                MySingleton.text,
+//                MySingleton.image,
+//                MySingleton.day,
+//                MySingleton.time,
+//                MySingleton.status,
+//                MySingleton.text
+//            )
 //        )
-//
-//
-//        val itemForHistory=ItemForHistory(
-//        MySingleton.title,
-//        MySingleton.text,
-//        MySingleton.image,
-//        MySingleton.day,
-//        MySingleton.time,
-//        MySingleton.status,
-//        MySingleton.text
-//        )
-        // MySingleton.itemForHistory = itemForHistory
-        // var zpp = itemForHistory
 
-
-        MySingleton.arrayList?.add(
-            0, ItemForHistory(
-                MySingleton.title,
-                MySingleton.text,
-                MySingleton.image,
-                MySingleton.day,
-                MySingleton.time,
-                MySingleton.status,
-                MySingleton.text
-            )
-        )
-
-
+        MySingleton.completedPages.clear()
         requireActivity().setResult(28)
         requireActivity().finish()
     }
@@ -222,4 +236,5 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //            activity?.findViewById<Button>(R.id.button)?.isClickable = true
 //        }
     }
+
 }

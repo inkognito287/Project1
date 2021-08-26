@@ -18,15 +18,16 @@ object MySingleton {
     lateinit var countUnsent: ObservableField<String>
 
     lateinit var singleItem: SingleItem
-    var itemForHistory: ItemForHistory? =null
+    var itemForHistory: ItemForHistory? = null
     val gson = Gson()
     lateinit var temporaryImage: Bitmap
     var countActivity: Int = 0
-    var mainActivityExistFlag = true
-    var scanActivityExistFlag = true
+    var applicationIsActive = true
+    var currentPage = 0
+    var newSession = true
     var arrayList: ArrayList<ItemForHistory?>? = null
     var pageclick = 0
-    var completedPages:ArrayList<Boolean> = ArrayList()
+    var completedPages: ArrayList<Boolean> = ArrayList()
 
 
 }

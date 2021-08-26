@@ -20,7 +20,7 @@ class CustomRecyclerAdapter(
 
 
     private var mItemListener: OnItemListener = itemListener
-    var myFunctions:Functions = Functions(context.applicationContext)
+    var myFunctions: Functions = Functions(context.applicationContext)
 
     class MyViewHolder(itemView: View, onItemListener: OnItemListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -59,20 +59,31 @@ class CustomRecyclerAdapter(
 
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        if( MySingleton.arrayList!!.size!=0) {
+            var pageCount = 0
+            var remember = 0
+            for (x in 0 until MySingleton.arrayList!![position]!!.documentFormatField.size)
+                if (MySingleton.arrayList!![position]!!.documentFormatField[x] != null) {
+                    pageCount++
+                    remember = x
+                }
+            holder.documentFormatField?.text =
+                MySingleton.arrayList!![position]!!.documentFormatField[remember]!!.split(
+                    ","
+                )[0] + ", стр. " + pageCount + " из " + MySingleton.arrayList!![position]!!.documentFormatField.size
+            holder.numberOfOrderField?.text =
+                MySingleton.arrayList!![position]!!.numberOfOrderField[remember].toString()
+            holder.day.text = MySingleton.arrayList!![position]!!.day[remember]
+            holder.time.text = MySingleton.arrayList!![position]!!.time[remember]
+            if (MySingleton.arrayList!![position]!!.status[0] == "no") {
+                holder.status.setImageResource(R.drawable.history_status_no)
 
-                holder.documentFormatField?.text =
-                    MySingleton.arrayList!![position]!!.documentFormatField[MySingleton.arrayList!![position]!!.documentFormatField.size-1].toString()
+            } else if (MySingleton.arrayList!![position]!!.status[0] == "uncompleted")
+                holder.status.setImageResource(R.drawable.ic_uncomplete)
+            else
+                holder.status.setImageResource(R.drawable.ic_submite)
 
-                holder.numberOfOrderField?.text =
-                    MySingleton.arrayList!![position]!!.numberOfOrderField[0].toString()
-                holder.day.text = MySingleton.arrayList!![position]!!.day[0]
-                holder.time.text = MySingleton.arrayList!![position]!!.time[0]
-                if (MySingleton.arrayList!![position]!!.status[0] == "no") {
-                    holder.status.setImageResource(R.drawable.history_status_no)
-
-                } else holder.status.setImageResource(R.drawable.ic_submite)
-
-
+        }
     }
 
     override fun getItemCount(): Int {
@@ -84,7 +95,7 @@ class CustomRecyclerAdapter(
 
     override fun update() {
         (context as AppCompatActivity).runOnUiThread() {
-          notifyDataSetChanged()
+            notifyDataSetChanged()
 
         }
 
@@ -108,7 +119,6 @@ class CustomRecyclerAdapter(
         }
 
     }
-
 
 
     interface OnItemListener {

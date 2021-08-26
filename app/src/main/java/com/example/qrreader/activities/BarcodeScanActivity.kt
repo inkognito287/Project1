@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.core.Camera
@@ -19,6 +20,11 @@ import androidx.core.content.ContextCompat
 import com.example.qrreader.*
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
+import com.example.qrreader.fragment.ImageFragment
+import com.example.qrreader.fragment.myAdapter
+import com.example.qrreader.fragment.myAdapterUpdate
+import com.example.qrreader.model.ItemForHistory
+import com.example.qrreader.service.MyService
 //import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -44,7 +50,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         code = "не найден"
-        MySingleton.mainActivityExistFlag = false
+
         MySingleton.countActivity = 1
         binding.button.setOnClickListener {
             binding.button.isClickable = false
@@ -81,7 +87,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
+        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.completedPages.size == 0) {
             MySingleton.pageclick = 0
             MySingleton.image = java.util.ArrayList()
             MySingleton.title = java.util.ArrayList()
@@ -92,10 +98,21 @@ class BarcodeScanActivity : AppCompatActivity() {
             MySingleton.status = java.util.ArrayList()
             MySingleton.text = java.util.ArrayList()
             super.onBackPressed()
+        } else if (MySingleton.completedPages.size != 0 && bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
+            val bottomSheetBehaviour =
+                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet)!!)
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
         } else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
-
             binding.button.isClickable = true
+            MySingleton.completedPages[MySingleton.currentPage-1] = false
+            MySingleton.image[MySingleton.currentPage-1] = null
+            MySingleton.title[MySingleton.currentPage-1] = null
+            MySingleton.text[MySingleton.currentPage-1] = null
+            MySingleton.status[MySingleton.currentPage-1] = null
+            MySingleton.day[MySingleton.currentPage-1] = null
+            MySingleton.time[MySingleton.currentPage-1] = null
+
         }
     }
 
@@ -183,70 +200,57 @@ class BarcodeScanActivity : AppCompatActivity() {
         return AspectRatio.RATIO_16_9
     }
 
-    override fun onStop() {
-        super.onStop()
 
-        Log.d(
-            "life",
-            "BarcodeAct Stop MySingleton.flag2 " + MySingleton.scanActivityExistFlag.toString()
-        )
-        Thread() {
+    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
 
-//                if (!isMyServiceRunning(MyService::class.java) && MySingleton.scanActivityExistFlag && MySingleton.countActivity == 1) {
-//                    startService(Intent(this, MyService::class.java))
-//                }
+        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-            MySingleton.mainActivityExistFlag = true
-            MySingleton.countActivity = 1
-        }.start()
-    }
 
-//    private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
-//
-//        val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-//
-//
-//        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
-//
-//
-//            if (myClass.name.equals(service.service.className)) {
-//
-//                return true
-//
-//            }
-//
-//        }
-//        return false
-//    }
+        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
 
-    private fun checkStatus(): Boolean {
 
-        var s = 0
-        if (MySingleton.arrayList != null) {
+            if (myClass.name.equals(service.service.className)) {
 
-            for (x in 0 until MySingleton.arrayList!!.size)
-                if (MySingleton.arrayList!![x]!!.status[0] == "no")
-                    s++
+                return true
+
+            }
+
         }
-        if (s > 0)
-
-            return true
-
         return false
-
     }
+
 
     override fun onResume() {
         super.onResume()
-//        binding.button.isClickable = true
-//        if (isMyServiceRunning(MyService::class.java)) {
-//            stopService(Intent(this, MyService::class.java))
-//        }
+        MySingleton.applicationIsActive = true
+        Log.d("MyLog", "Barcode is active=" + MySingleton.applicationIsActive)
+        if (isMyServiceRunning(MyService::class.java)) {
+            stopService(Intent(this, MyService::class.java))
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MySingleton.applicationIsActive = false
+        Log.d("MyLog", "Barcode is active=" + MySingleton.applicationIsActive)
     }
 
     companion object {
         private const val REQUEST_CODE_PERMS_CAMERA = 1341
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
+    }
+
+    override fun onStop() {
+
+        Thread() {
+
+            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive) {
+                startService(Intent(this, MyService::class.java))
+            }
+
+        }.start()
+        super.onStop()
     }
 }

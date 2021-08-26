@@ -1,5 +1,6 @@
 package com.example.qrreader
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -20,8 +21,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.*
 import android.graphics.Bitmap.CompressFormat
-
-
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.qrreader.service.MyService
 
 
 class Functions(var context: Context) {
@@ -78,11 +79,14 @@ class Functions(var context: Context) {
         }
     }
 
-    fun saveBitmap(bmp: ArrayList<Bitmap?>, numberOfOrder: String?) {
+    fun saveBitmaps(bmp: ArrayList<Bitmap?>, numberOfOrder: ArrayList<String?>) {
 
-        var numb = numberOfOrder!!.split("№")[1]
+
         var page=1
         for (element in bmp) {
+            if(numberOfOrder!![page-1]==null)
+                continue
+            var numb = numberOfOrder!![page-1]!!.split("№")[1]
             Log.d("MyLog",Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+"${numb}page${page}"+".png")
             val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
 
@@ -91,6 +95,13 @@ class Functions(var context: Context) {
             page++
             stream.close()
         }
+
+    }
+    fun saveBitmap(bmp: Bitmap,numberOfOrder: String,page:Int) {
+            var numb = numberOfOrder.split("№")[1]
+            val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
+            bmp.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
+            stream.close()
 
     }
 
@@ -222,5 +233,22 @@ class Functions(var context: Context) {
         intent.putExtra("error", error)
         (context as AppCompatActivity).startActivity(intent)
     }
+//     fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
+//
+//        val manager: ActivityManager =getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//
+//
+//        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
+//
+//
+//            if (myClass.name.equals(service.service.className)) {
+//
+//                return true
+//
+//            }
+//
+//        }
+//        return false
+//    }
 
 }
