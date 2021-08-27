@@ -87,7 +87,7 @@ class Functions(var context: Context) {
             if(numberOfOrder!![page-1]==null)
                 continue
             var numb = numberOfOrder!![page-1]!!.split("№")[1]
-            Log.d("MyLog",Environment.getExternalStorageDirectory().absolutePath.toString()+"/"+"${numb}page${page}"+".png")
+            Log.d("MyLog",Environment.getExternalStorageDirectory().    absolutePath.toString()+"/"+"${numb}page${page}"+".png")
             val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
 
             element!!.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%

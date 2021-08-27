@@ -53,6 +53,15 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         allNumberOfPages = arguments?.getString("allNumberOfPages")!!
         MySingleton.currentPage = numberOfPages.toInt()
         if (MySingleton.completedPages.size == 0) {
+
+            for (i in 0 until allNumberOfPages.toInt()) {
+
+                MySingleton.image.add(i, null)
+                MySingleton.title.add(i, null)
+                MySingleton.status.add(i, null)
+                MySingleton.day.add(i, null)
+                MySingleton.time.add(i, null)
+            }
 //            MySingleton.image.clear()
 //            MySingleton.title.clear()
 //            MySingleton.text.clear()
@@ -60,72 +69,184 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //            MySingleton.day.clear()
 //            MySingleton.time.clear()
 
-            for (i in 0 until allNumberOfPages.toInt()) {
-                MySingleton.completedPages.add(i, false)
-                MySingleton.image.add(i, null)
-                MySingleton.title.add(i, null)
-                MySingleton.text.add(i, null)
-                MySingleton.status.add(i, null)
-                MySingleton.day.add(i, null)
-                MySingleton.time.add(i, null)
-            }
-        }
-        MySingleton.completedPages[numberOfPages.toInt() - 1] = true
-        var count = 0
-        for (element in MySingleton.completedPages)
-            if (element)
-                count++
-        if (count == allNumberOfPages.toInt()) {
-            //нужно придумать другое решение
-            binding.imageFragmentSubmit.text = "Подтвердить"
-            binding.imageFragmentSubmit.setOnClickListener() {
-                submitImage()
-            }
-        } else {
-
-            binding.imageFragmentSubmit.text = "Продолжить"
-            binding.imageFragmentSubmit.setOnClickListener() {
-                //MySingleton.pageclick = position
-
-                val bottomSheetBehaviour =
-                    BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
-                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
-                activity?.findViewById<Button>(R.id.button)?.isClickable = true
-
-
-                if (MySingleton.newSession)
-                    MySingleton.arrayList?.add(
-                        0,
-                        ItemForHistory(
-                            MySingleton.title,
-                            MySingleton.text,
-                            MySingleton.image,
-                            MySingleton.day,
-                            MySingleton.time,
-                            MySingleton.status,
-                            MySingleton.text
-                        )
-                    )
-                else MySingleton.arrayList!![0] = ItemForHistory(
-                    MySingleton.title,
-                    MySingleton.text,
-                    MySingleton.image,
-                    MySingleton.day,
-                    MySingleton.time,
-                    MySingleton.status,
-                    MySingleton.text
-                )
-                myFunctions.saveBitmap(MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage-1]!!,
-                    MySingleton.arrayList!![0]!!.numberOfOrderField[MySingleton.currentPage-1]!!,MySingleton.currentPage-1
-                )
-            }
+//            for (i in 0 until allNumberOfPages.toInt()) {
+//                MySingleton.completedPages.add(i, false)
+//                MySingleton.image.add(i, null)
+//                MySingleton.title.add(i, null)
+//                MySingleton.status.add(i, null)
+//                MySingleton.day.add(i, null)
+//                MySingleton.time.add(i, null)
+//            }
         }
 
-        var pageAdapter =
-            recyclerImageResultAdapter(allNumberOfPages.toInt(), numberOfPages.toInt(), this)
-        binding.pageNumbers.adapter = pageAdapter
-        binding.pageNumbers.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//        var count = 0
+//        for (element in MySingleton.completedPages)
+//            if (element)
+//                count++
+//        if (count == allNumberOfPages.toInt()) {
+//            //нужно придумать другое решение
+//            binding.imageFragmentSubmit.text = "Подтвердить"
+//            binding.imageFragmentSubmit.setOnClickListener() {
+//
+//                if (MySingleton.newSession) {
+//                    MySingleton.arrayList?.add(
+//                        0,
+//                        ItemForHistory(
+//                            MySingleton.title,
+//                            MySingleton.text,
+//                            MySingleton.image,
+//                            MySingleton.day,
+//                            MySingleton.time,
+//                            MySingleton.status,
+//                            MySingleton.text
+//                        )
+//                    )
+//                    myFunctions.saveBitmap(
+//                        MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+//                        MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+//                        MySingleton.currentPage
+//                    )
+//                    MySingleton.newSession = true
+//                    MySingleton.image = java.util.ArrayList()
+//                    MySingleton.title = java.util.ArrayList()
+//                    MySingleton.text = String()
+//                    MySingleton.image = java.util.ArrayList()
+//                    MySingleton.day = java.util.ArrayList()
+//                    MySingleton.time = java.util.ArrayList()
+//                    MySingleton.status = java.util.ArrayList()
+//                } else {
+//                    MySingleton.arrayList!![0] = ItemForHistory(
+//                        MySingleton.title,
+//                        MySingleton.text,
+//                        MySingleton.image,
+//                        MySingleton.day,
+//                        MySingleton.time,
+//                        MySingleton.status,
+//                        MySingleton.text
+//                    )
+//                    myFunctions.saveBitmap(
+//                        MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+//                        MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+//                        MySingleton.currentPage
+//                    )
+//                    MySingleton.newSession = true
+//                    MySingleton.image = java.util.ArrayList()
+//                    MySingleton.title = java.util.ArrayList()
+//                    MySingleton.text = String()
+//                    MySingleton.image = java.util.ArrayList()
+//                    MySingleton.day = java.util.ArrayList()
+//                    MySingleton.time = java.util.ArrayList()
+//                    MySingleton.status = java.util.ArrayList()
+//
+//                }
+//
+//                submitImage()
+//            }
+//        } else {
+//
+//            binding.imageFragmentSubmit.text = "Продолжить"
+//            binding.imageFragmentSubmit.setOnClickListener() {
+//                //MySingleton.pageclick = position
+//
+//                val bottomSheetBehaviour =
+//                    BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+//                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+//                activity?.findViewById<Button>(R.id.button)?.isClickable = true
+//
+//
+//                if (MySingleton.newSession) {
+//
+//
+//                    var a = false
+//
+//                    for (x in 0..MySingleton.arrayList!!.size - 1)
+//
+//                        if (MySingleton.arrayList!![x]!!.numberOfOrderField
+//                            == MySingleton.text
+//                        ) {
+//                            for (i in 0..MySingleton.arrayList!![x]!!.day.size-1) {
+//
+//                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
+//                                    MySingleton.arrayList!![x]!!.documentFormatField[i] = MySingleton.title[i]
+//                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
+//                                    MySingleton.arrayList!![x]!!.numberOfOrderField = MySingleton.text
+//                                if (MySingleton.arrayList!![x]!!.image?.get(i) == null)
+//                                    MySingleton.arrayList!![x]!!.image?.set(i,MySingleton.image[i])
+//                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+//                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
+//                                if (MySingleton.arrayList!![x]!!.time[i] == null)
+//                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
+//                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+//                                    MySingleton.arrayList!![x]!!.status[i] = MySingleton.status[i]
+//                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
+//                                    MySingleton.arrayList!![x]!!.fullInformation = MySingleton.text
+//                            }
+//
+////                            MySingleton.arrayList!![x] = ItemForHistory(
+////                                MySingleton.title,
+////                                MySingleton.text,
+////                                MySingleton.image,
+////                                MySingleton.day,
+////                                MySingleton.time,
+////                                MySingleton.status,
+////                                MySingleton.text
+////                            )
+//                            a = true
+//                            myFunctions.saveBitmap(
+//                                MySingleton.arrayList!![x]!!.image!![MySingleton.currentPage - 1]!!,
+//                                MySingleton.arrayList!![x]!!.numberOfOrderField!!,
+//                                MySingleton.currentPage
+//                            )
+//                            break
+//
+//                        }
+//                    if (!a) {
+//                        MySingleton.arrayList?.add(
+//                            0,
+//                            ItemForHistory(
+//                                MySingleton.title,
+//                                MySingleton.text,
+//                                MySingleton.image,
+//                                MySingleton.day,
+//                                MySingleton.time,
+//                                MySingleton.status,
+//                                MySingleton.text
+//                            )
+//                        )
+//                        MySingleton.newSession = false
+//                        myFunctions.saveBitmap(
+//                            MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+//                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+//                            MySingleton.currentPage
+//                        )
+//                    }
+//
+//                } else {
+//                    MySingleton.arrayList!![0] = ItemForHistory(
+//                        MySingleton.title,
+//                        MySingleton.text,
+//                        MySingleton.image,
+//                        MySingleton.day,
+//                        MySingleton.time,
+//                        MySingleton.status,
+//                        MySingleton.text
+//                    )
+//                    myFunctions.saveBitmap(
+//                        MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+//                        MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+//                        MySingleton.currentPage
+//                    )
+//
+//                    MySingleton.newSession = false
+//                }
+//            }
+//        }
+
+//        var pageAdapter =
+//            recyclerImageResultAdapter(allNumberOfPages.toInt(), numberOfPages.toInt(), this)
+//        binding.pageNumbers.adapter = pageAdapter
+//        binding.pageNumbers.layoutManager =
+//            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 
         var bottomSheetBehavior =
@@ -170,7 +291,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //      if (MySingleton.image.size>= numberOfPages.toInt() - 1) {
         MySingleton.image[numberOfPages.toInt() - 1] = saveImage
         MySingleton.title[numberOfPages.toInt() - 1] = documentFormat
-        MySingleton.text[numberOfPages.toInt() - 1] = numberOfOrder
+        MySingleton.text = numberOfOrder
         MySingleton.status[numberOfPages.toInt() - 1] = "no"
         MySingleton.day[numberOfPages.toInt() - 1] = day
         MySingleton.time[numberOfPages.toInt() - 1] = time
@@ -183,6 +304,341 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 //            MySingleton.day.add(numberOfPages.toInt(),day)
 //            MySingleton.time.add(numberOfPages.toInt(),time)
         //}
+        if (MySingleton.completedPages.size==0)
+        for (i in 0 until allNumberOfPages.toInt()) {
+            MySingleton.completedPages.add(i, false)
+
+        }
+
+        MySingleton.completedPages[numberOfPages.toInt() - 1] = true
+        for (x in 0..MySingleton.arrayList!!.size - 1)
+
+            if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                == MySingleton.text
+            ) {
+                var count=0
+                for (i in 0 until allNumberOfPages.toInt()) {
+                    if (MySingleton.arrayList!![x]!!.day[i]!=null) {
+                        MySingleton.completedPages[i] = true
+                        count++
+//                        if (count==MySingleton.completedPages.size){
+//                            myFunctions= Functions(requireActivity())
+//                            myFunctions.showError("Этот заказ уже укомплектован")}
+                    }
+                }
+                break
+            }
+
+        var count = 0
+        for (element in MySingleton.completedPages)
+            if (element)
+                count++
+        if (count == allNumberOfPages.toInt()) {
+            //нужно придумать другое решение
+            binding.imageFragmentSubmit.text = "Подтвердить"
+            binding.imageFragmentSubmit.setOnClickListener() {
+
+                if (MySingleton.newSession) {
+                    var a = false
+
+                    for (x in 0..MySingleton.arrayList!!.size - 1)
+
+                        if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                            == MySingleton.text
+                        ) {
+                            for (i in 0..MySingleton.arrayList!![x]!!.day.size - 1) {
+
+                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayList!![x]!!.documentFormatField[i] =
+                                        MySingleton.title[i]
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayList!![x]!!.numberOfOrderField =
+                                        MySingleton.text
+                                if (MySingleton.arrayList!![x]!!.image?.get(i) == null)
+                                    MySingleton.arrayList!![x]!!.image?.set(i, MySingleton.image[i])
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayList!![x]!!.time[i] == null)
+                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.status[i] = MySingleton.status[i]
+                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
+                                    MySingleton.arrayList!![x]!!.fullInformation = MySingleton.text
+                            }
+
+                            a = true
+                            myFunctions.saveBitmap(
+                                MySingleton.arrayList!![x]!!.image!![MySingleton.currentPage - 1]!!,
+                                MySingleton.arrayList!![x]!!.numberOfOrderField!!,
+                                MySingleton.currentPage
+                            )
+                            MySingleton.newSession = true
+                            break
+
+                        }
+                    if (!a) {
+
+                        ///////////////////////////////////////////////////////////////////////////////
+                        MySingleton.arrayList?.add(
+                            0,
+                            ItemForHistory(
+                                MySingleton.title,
+                                MySingleton.text,
+                                MySingleton.image,
+                                MySingleton.day,
+                                MySingleton.time,
+                                MySingleton.status,
+                                MySingleton.text
+                            )
+                        )
+                        myFunctions.saveBitmap(
+                            MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+                            MySingleton.currentPage
+                        )
+//                        MySingleton.newSession = true
+//                        MySingleton.image = java.util.ArrayList()
+//                        MySingleton.title = java.util.ArrayList()
+//                        MySingleton.text = String()
+//                        MySingleton.image = java.util.ArrayList()
+//                        MySingleton.day = java.util.ArrayList()
+//                        MySingleton.time = java.util.ArrayList()
+//                        MySingleton.status = java.util.ArrayList()
+                    }
+                    MySingleton.newSession = true
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.title = java.util.ArrayList()
+                    MySingleton.text = String()
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.day = java.util.ArrayList()
+                    MySingleton.time = java.util.ArrayList()
+                    MySingleton.status = java.util.ArrayList()
+                } else {
+                    var a = false
+
+                    for (x in 0..MySingleton.arrayList!!.size - 1)
+
+                        if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                            == MySingleton.text
+                        ) {
+                            for (i in 0..MySingleton.arrayList!![x]!!.day.size - 1) {
+
+                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayList!![x]!!.documentFormatField[i] =
+                                        MySingleton.title[i]
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayList!![x]!!.numberOfOrderField =
+                                        MySingleton.text
+                                if (MySingleton.arrayList!![x]!!.image?.get(i) == null)
+                                    MySingleton.arrayList!![x]!!.image?.set(i, MySingleton.image[i])
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayList!![x]!!.time[i] == null)
+                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.status[i] = MySingleton.status[i]
+                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
+                                    MySingleton.arrayList!![x]!!.fullInformation = MySingleton.text
+                            }
+
+                            a = true
+                            myFunctions.saveBitmap(
+                                MySingleton.arrayList!![x]!!.image!![MySingleton.currentPage - 1]!!,
+                                MySingleton.arrayList!![x]!!.numberOfOrderField!!,
+                                MySingleton.currentPage
+                            )
+                            MySingleton.newSession = true
+                            break
+
+                        }
+                    if (!a) {
+
+
+                        MySingleton.arrayList!![0] = ItemForHistory(
+                            MySingleton.title,
+                            MySingleton.text,
+                            MySingleton.image,
+                            MySingleton.day,
+                            MySingleton.time,
+                            MySingleton.status,
+                            MySingleton.text
+                        )
+                        myFunctions.saveBitmap(
+                            MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+                            MySingleton.currentPage
+                        )
+//                        MySingleton.newSession = true
+//                        MySingleton.image = java.util.ArrayList()
+//                        MySingleton.title = java.util.ArrayList()
+//                        MySingleton.text = String()
+//                        MySingleton.image = java.util.ArrayList()
+//                        MySingleton.day = java.util.ArrayList()
+//                        MySingleton.time = java.util.ArrayList()
+//                        MySingleton.status = java.util.ArrayList()
+
+                    }
+
+
+                }
+                submitImage()
+                MySingleton.newSession = true
+                MySingleton.image = java.util.ArrayList()
+                MySingleton.title = java.util.ArrayList()
+                MySingleton.text = String()
+                MySingleton.image = java.util.ArrayList()
+                MySingleton.day = java.util.ArrayList()
+                MySingleton.time = java.util.ArrayList()
+                MySingleton.status = java.util.ArrayList()
+            }
+
+        } else {
+
+            binding.imageFragmentSubmit.text = "Продолжить"
+            binding.imageFragmentSubmit.setOnClickListener() {
+                //MySingleton.pageclick = position
+
+                val bottomSheetBehaviour =
+                    BottomSheetBehavior.from(activity?.findViewById(R.id.containerBottomSheet)!!)
+                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+                activity?.findViewById<Button>(R.id.button)?.isClickable = true
+
+
+                if (MySingleton.newSession) {
+
+
+                    var a = false
+
+                    for (x in 0..MySingleton.arrayList!!.size - 1)
+
+                        if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                            == MySingleton.text
+                        ) {
+                            for (i in 0..MySingleton.arrayList!![x]!!.day.size-1) {
+
+                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayList!![x]!!.documentFormatField[i] = MySingleton.title[i]
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayList!![x]!!.numberOfOrderField = MySingleton.text
+                                if (MySingleton.arrayList!![x]!!.image?.get(i) == null)
+                                    MySingleton.arrayList!![x]!!.image?.set(i,MySingleton.image[i])
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayList!![x]!!.time[i] == null)
+                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.status[i] = MySingleton.status[i]
+                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
+                                    MySingleton.arrayList!![x]!!.fullInformation = MySingleton.text
+                            }
+
+                            a = true
+                            myFunctions.saveBitmap(
+                                MySingleton.arrayList!![x]!!.image!![MySingleton.currentPage - 1]!!,
+                                MySingleton.arrayList!![x]!!.numberOfOrderField!!,
+                                MySingleton.currentPage
+                            )
+                            break
+
+                        }
+                    if (!a) {
+                        MySingleton.arrayList?.add(
+                            0,
+                            ItemForHistory(
+                                MySingleton.title,
+                                MySingleton.text,
+                                MySingleton.image,
+                                MySingleton.day,
+                                MySingleton.time,
+                                MySingleton.status,
+                                MySingleton.text
+                            )
+                        )
+
+                        myFunctions.saveBitmap(
+                            MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+                            MySingleton.currentPage
+                        )
+                    }
+                    MySingleton.newSession = false
+                } else {
+
+
+                    var a = false
+
+                    for (x in 0..MySingleton.arrayList!!.size - 1)
+
+                        if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                            == MySingleton.text
+                        ) {
+                            for (i in 0..MySingleton.arrayList!![x]!!.day.size - 1) {
+
+                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayList!![x]!!.documentFormatField[i] =
+                                        MySingleton.title[i]
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayList!![x]!!.numberOfOrderField =
+                                        MySingleton.text
+                                if (MySingleton.arrayList!![x]!!.image?.get(i) == null)
+                                    MySingleton.arrayList!![x]!!.image?.set(i, MySingleton.image[i])
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayList!![x]!!.time[i] == null)
+                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayList!![x]!!.day[i] == null)
+                                    MySingleton.arrayList!![x]!!.status[i] = MySingleton.status[i]
+                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
+                                    MySingleton.arrayList!![x]!!.fullInformation = MySingleton.text
+                            }
+
+                            a = true
+                            myFunctions.saveBitmap(
+                                MySingleton.arrayList!![x]!!.image!![MySingleton.currentPage - 1]!!,
+                                MySingleton.arrayList!![x]!!.numberOfOrderField!!,
+                                MySingleton.currentPage
+                            )
+                            MySingleton.newSession = false
+                            break
+
+                        }
+                    if (!a) {
+
+
+                        MySingleton.arrayList!![0] = ItemForHistory(
+                            MySingleton.title,
+                            MySingleton.text,
+                            MySingleton.image,
+                            MySingleton.day,
+                            MySingleton.time,
+                            MySingleton.status,
+                            MySingleton.text
+                        )
+                        myFunctions.saveBitmap(
+                            MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage - 1]!!,
+                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+                            MySingleton.currentPage
+                        )
+
+                        MySingleton.newSession = false
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+        var pageAdapter =
+            recyclerImageResultAdapter(allNumberOfPages.toInt(), numberOfPages.toInt(), this)
+        binding.pageNumbers.adapter = pageAdapter
+        binding.pageNumbers.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 
         Log.d("MyLog", saveCode)
@@ -200,22 +656,9 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     private fun submitImage() {
         binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE
-        myFunctions.saveBitmap(MySingleton.arrayList!![0]!!.image!![MySingleton.currentPage]!!,
-            MySingleton.arrayList!![0]!!.numberOfOrderField[MySingleton.currentPage]!!,MySingleton.currentPage)
-//        MySingleton.arrayList?.add(
-//            0, ItemForHistory(
-//                MySingleton.title,
-//                MySingleton.text,
-//                MySingleton.image,
-//                MySingleton.day,
-//                MySingleton.time,
-//                MySingleton.status,
-//                MySingleton.text
-//            )
-//        )
 
         MySingleton.completedPages.clear()
-        requireActivity().setResult(28)
+        requireActivity().setResult(1)
         requireActivity().finish()
     }
 

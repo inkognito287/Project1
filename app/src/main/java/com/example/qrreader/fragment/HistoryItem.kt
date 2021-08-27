@@ -1,5 +1,6 @@
 package com.example.qrreader.fragment
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
@@ -22,6 +23,7 @@ import com.synnapps.carouselview.ImageListener
 class HistoryItem : Fragment() {
     lateinit var binding: FragmentHistoryItemBinding
     lateinit var item: ItemForHistory
+    var remember = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,16 +39,21 @@ class HistoryItem : Fragment() {
         var myFunctions = Functions(requireContext())
 
         var arg = arguments?.getInt("position")
-//        Log.d("MyLog",MySingleton.arrayList!![arg!!]!!.numberOfOrderField[0]!!.split("№")[1]+"-"+(1).toString())
-        //Log.d("MyLog", MySingleton.arrayList!![arg!!].stringImage!!.size.toString())
+
         item = MySingleton.arrayList!![arg!!]!!
+
+        for (x in 0 until MySingleton.arrayList!![arg]!!.documentFormatField.size)
+            if (MySingleton.arrayList!![arg]!!.documentFormatField[x] != null) {
+                remember = x
+                break
+            }
 
         var imageListener: ImageListener =
             ImageListener { position, imageView -> // You can use Glide or Picasso here
-                if (MySingleton.arrayList!![arg]?.numberOfOrderField!![position] != null)
+                if (MySingleton.arrayList!![arg]?.time!![position] != null)
                     imageView.setImageBitmap(
                         BitmapFactory.decodeFile(
-                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![arg]!!.numberOfOrderField[position]!!.split(
+                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![arg]!!.numberOfOrderField!!.split(
                                 "№"
                             )[1] + "page" + (position + 1).toString() + ".png"
                         )
@@ -57,23 +64,31 @@ class HistoryItem : Fragment() {
         var carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
         carousel?.setImageListener(imageListener)
         var listener: ViewPager.OnPageChangeListener = object : ViewPager.OnPageChangeListener {
+            @SuppressLint("SetTextI18n")
             override fun onPageScrolled(
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
                 if (MySingleton.arrayList!![arg]!!.documentFormatField[position] == null) {
-                    binding.documentFormat.text = "Не отсканирован"
-                    binding.orderNumber.text = ""
-                    binding.status.text = ""
+
+
+
+                    binding.documentFormat.text =
+                        MySingleton.arrayList!![arg]!!.documentFormatField[remember]!!.split(
+                            ","
+                        )[0] + ", стр. " + (position + 1) + " из " + MySingleton.arrayList!![arg]!!.documentFormatField.size
+
+                    binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField
+                    binding.status.text = "Не отсканирован"
                 } else {
                     binding.documentFormat.text =
                         MySingleton.arrayList!![arg]!!.documentFormatField[position]
                     binding.orderNumber.text =
-                        MySingleton.arrayList!![arg]!!.numberOfOrderField[position]
+                        MySingleton.arrayList!![arg]!!.numberOfOrderField
                     binding.status.text =
-                        if (MySingleton.arrayList!![arg]!!.status[position] == "no") "не отправлен" else if(MySingleton.arrayList!![arg]!!.status[position] == "yes") "отправлен"
-                    else "не укомплектован"
+                        if (MySingleton.arrayList!![arg]!!.status[position] == "no") "не отправлен" else if (MySingleton.arrayList!![arg]!!.status[position] == "yes") "отправлен"
+                        else "не укомплектован"
                 }
             }
 
@@ -89,19 +104,25 @@ class HistoryItem : Fragment() {
         }
         carousel?.addOnPageChangeListener(listener)
 
-
+        binding.documentFormat.text =
+            MySingleton.arrayList!![arg]!!.documentFormatField[remember]!!.split(
+                ","
+            )[0] + ", стр. " + 1 + " из " + MySingleton.arrayList!![arg]!!.documentFormatField.size
 
 
 
         carousel?.pageCount = item.status!!.size
 
+
+
         if (MySingleton.arrayList!![arg]!!.documentFormatField[0] != null) {
-            binding.documentFormat.text = MySingleton.arrayList!![arg]!!.documentFormatField[0]
-            binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField[0]
-            binding.status.text =  if (MySingleton.arrayList!![arg]!!.status[0] == "no") "не отправлен" else if(MySingleton.arrayList!![arg]!!.status[0] == "yes") "отправлен"
-            else "не укомплектован"
-        } else
-            binding.documentFormat.text = "Не отсканирован"
+
+            binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField
+            binding.status.text =
+                if (MySingleton.arrayList!![arg]!!.status[0] == "no") "не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "отправлен"
+                else "не укомплектован"
+        } else{}
+          //  binding.documentFormat.text = "Не отсканирован"
     }
 
     private fun getImage() {

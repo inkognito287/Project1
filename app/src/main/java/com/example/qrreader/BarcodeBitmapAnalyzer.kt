@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.MainActivity
@@ -58,6 +59,10 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                         if (information == barcode.rawValue.toString()) {
 
+
+
+
+
                             var numberOfPages = information
                             var allNumberOfPages = ""
                             if (numberOfPages.contains("http")) {
@@ -74,6 +79,29 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                 numberOfPages = numberOfPages.split("/")[2]
 
                             }
+                            var count = 0
+                            var flag=false
+                            for (x in 0 until MySingleton.arrayList!!.size){
+                                Log.d("MyLog",information.split("/")[4].split("/")[0])
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1]==information.split("/")[4].split("/")[0]){
+
+                                    for (element in MySingleton.arrayList!![x]!!.time)
+                                        if (element!=null)
+                                            count++
+                                    if (count== MySingleton.arrayList!![x]!!.day.size){
+                                        myFunctions= Functions(context)
+                                        myFunctions.showError("Этот заказ уже укомплектован")
+                                        flag=true
+                                        (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                                            true
+                                    }
+
+                                    break
+                                }}
+
+
+                            if(!flag) {
+
 
                                 val bottomFragment = ImageFragment()
                                 val bundle = Bundle()
@@ -96,7 +124,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
-
+                            }
                         }
 
 

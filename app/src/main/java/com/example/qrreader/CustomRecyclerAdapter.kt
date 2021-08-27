@@ -72,16 +72,33 @@ class CustomRecyclerAdapter(
                     ","
                 )[0] + ", стр. " + pageCount + " из " + MySingleton.arrayList!![position]!!.documentFormatField.size
             holder.numberOfOrderField?.text =
-                MySingleton.arrayList!![position]!!.numberOfOrderField[remember].toString()
+                MySingleton.arrayList!![position]!!.numberOfOrderField.toString()
             holder.day.text = MySingleton.arrayList!![position]!!.day[remember]
             holder.time.text = MySingleton.arrayList!![position]!!.time[remember]
-            if (MySingleton.arrayList!![position]!!.status[0] == "no") {
-                holder.status.setImageResource(R.drawable.history_status_no)
 
-            } else if (MySingleton.arrayList!![position]!!.status[0] == "uncompleted")
+            var check=false
+            for (x in 0 until MySingleton.arrayList!![position]!!.day.size)
+            if (MySingleton.arrayList!![position]!!.day[x]==null) {
                 holder.status.setImageResource(R.drawable.ic_uncomplete)
-            else
-                holder.status.setImageResource(R.drawable.ic_submite)
+                check=true
+                break
+            }
+            if(!check)
+                if (MySingleton.arrayList!![position]!!.status[0] == "no") {
+                    holder.status.setImageResource(R.drawable.history_status_no)
+
+                } else{
+                    holder.status.setImageResource(R.drawable.ic_submite)
+                }
+
+
+
+
+
+
+
+
+
 
         }
     }

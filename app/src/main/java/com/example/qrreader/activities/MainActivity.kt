@@ -32,6 +32,8 @@ import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.lang.Exception
+import android.os.Environment
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,12 +62,11 @@ class MainActivity : AppCompatActivity() {
 
         MySingleton.image = java.util.ArrayList()
         MySingleton.title = java.util.ArrayList()
-        MySingleton.text = java.util.ArrayList()
+        MySingleton.text = String()
         MySingleton.image = java.util.ArrayList()
         MySingleton.day = java.util.ArrayList()
         MySingleton.time = java.util.ArrayList()
         MySingleton.status = java.util.ArrayList()
-        MySingleton.text = java.util.ArrayList()
 
 
         MySingleton.countUnsent.addOnPropertyChangedCallback(snackbarCallback)
@@ -122,12 +123,12 @@ class MainActivity : AppCompatActivity() {
                         MySingleton.arrayList!!.add(
                             ItemForHistory(
                                 element!!.documentFormatField as ArrayList<String?>,
-                                element.numberOfOrderField as ArrayList<String?>,
+                                element.numberOfOrderField,
                                 null,
                                 element.day as ArrayList<String?>,
                                 element.time as ArrayList<String?>,
                                 element.status as ArrayList<String?>,
-                                element.fullInformation as ArrayList<String?>
+                                element.fullInformation
                             )
                         )
                 }catch (e:Exception){
@@ -220,6 +221,7 @@ class MainActivity : AppCompatActivity() {
 
     fun clearHistory(v: View) {
 
+
         val builder = AlertDialog.Builder(this)
         builder
             .setTitle("Очистка истории")
@@ -234,6 +236,21 @@ class MainActivity : AppCompatActivity() {
                     myAdapterUpdate?.clear()
 
                 }
+                try {
+
+
+                    val dir =
+                        File(Environment.getExternalStorageDirectory().absolutePath)
+                    if (dir.isDirectory()) {
+                        val children: Array<String> = dir.list()
+                        for (i in children.indices) {
+                            File(dir, children[i]).delete()
+                        }
+                    }
+                }catch (e:Exception){
+                    Log.d("MyLog",e.toString())
+                }
+
             }
             .setNegativeButton("Отмена") { dialog, _ ->
                 dialog.dismiss()
@@ -257,6 +274,11 @@ class MainActivity : AppCompatActivity() {
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
+
+            if (result.resultCode == 1)
+            {
+
+            }
             if (result.resultCode == 3)
             {
                 MySingleton.completedPages.clear()
@@ -265,12 +287,12 @@ class MainActivity : AppCompatActivity() {
                     MySingleton.arrayList!![0]!!.status[i]="uncompleted"
                 MySingleton.image = java.util.ArrayList()
                 MySingleton.title = java.util.ArrayList()
-                MySingleton.text = java.util.ArrayList()
+                MySingleton.text = String()
                 MySingleton.image = java.util.ArrayList()
                 MySingleton.day = java.util.ArrayList()
                 MySingleton.time = java.util.ArrayList()
                 MySingleton.status = java.util.ArrayList()
-                MySingleton.text = java.util.ArrayList()
+
                 myAdapterUpdate = myAdapter
                 myAdapterUpdate.update()
                 try {
@@ -289,12 +311,12 @@ class MainActivity : AppCompatActivity() {
                    // myFunctions.saveBitmaps(MySingleton.arrayList!![0]!!.image!!, MySingleton.arrayList!![0]!!.numberOfOrderField)
                     MySingleton.image = java.util.ArrayList()
                     MySingleton.title = java.util.ArrayList()
-                    MySingleton.text = java.util.ArrayList()
+                    MySingleton.text = String()
                     MySingleton.image = java.util.ArrayList()
                     MySingleton.day = java.util.ArrayList()
                     MySingleton.time = java.util.ArrayList()
                     MySingleton.status = java.util.ArrayList()
-                    MySingleton.text = java.util.ArrayList()
+
 
                     //  MySingleton.itemForHistory = null
 
@@ -340,7 +362,7 @@ class MainActivity : AppCompatActivity() {
                             item!!.image!![x]!!
                         )!!,
                         item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
-                        item.fullInformation[x]!!,
+                        item.fullInformation!!,
                         sharedPreferencesAddress,
                         sharedPreferencesUser
                     ) == "true"
@@ -430,7 +452,16 @@ runOnUiThread {
 
     override fun onResume() {
         super.onResume()
-        myAdapterUpdate.update()
+
+        try {
+
+
+            myAdapterUpdate.update()
+            Thread(){
+            myFunctions.saveJson()}.start()
+        }catch (e:Exception){}
+
+        //myAdapterUpdate.update()
         MySingleton.applicationIsActive = true
         Log.d("MyLog","Main is active="+MySingleton.applicationIsActive)
         if (isMyServiceRunning(MyService::class.java)) {

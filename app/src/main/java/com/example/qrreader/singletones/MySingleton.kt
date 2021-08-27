@@ -10,7 +10,7 @@ import com.google.gson.Gson
 object MySingleton {
     lateinit var image: ArrayList<Bitmap?>
     lateinit var title: ArrayList<String?>
-    lateinit var text: ArrayList<String?>
+    var text: String? = null
     lateinit var status: ArrayList<String?>
     lateinit var day: ArrayList<String?>
     lateinit var time: ArrayList<String?>

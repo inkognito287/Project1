@@ -62,13 +62,13 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                         if (myFunctions.imageRequest(
                                 myFunctions.getStringFromBitmap(
                                     BitmapFactory.decodeFile(
-                                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField[x]!!.split(
+                                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField!!.split(
                                             "№"
                                         )[1] + "page" + (x + 1).toString() + ".png"
                                     )
                                 )!!,
                                 item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
-                                item.fullInformation[x]!!,
+                                item.fullInformation!!,
                                 sharedPreferencesAddress,
                                 sharedPreferencesUser
                             ) == "true"

@@ -87,31 +87,33 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.completedPages.size == 0) {
-            MySingleton.pageclick = 0
+        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN ) {
+            MySingleton.completedPages.clear()
             MySingleton.image = java.util.ArrayList()
             MySingleton.title = java.util.ArrayList()
-            MySingleton.text = java.util.ArrayList()
+            MySingleton.text = String()
             MySingleton.image = java.util.ArrayList()
             MySingleton.day = java.util.ArrayList()
             MySingleton.time = java.util.ArrayList()
             MySingleton.status = java.util.ArrayList()
-            MySingleton.text = java.util.ArrayList()
+            MySingleton.text = String()
+            MySingleton.newSession = true
             super.onBackPressed()
-        } else if (MySingleton.completedPages.size != 0 && bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
-            val bottomSheetBehaviour =
-                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet)!!)
-            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-        } else {
+        }
+//        } else if (MySingleton.completedPages.size != 0 && bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
+//            val bottomSheetBehaviour =
+//                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet)!!)
+//            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+             else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
             binding.button.isClickable = true
-            MySingleton.completedPages[MySingleton.currentPage-1] = false
-            MySingleton.image[MySingleton.currentPage-1] = null
-            MySingleton.title[MySingleton.currentPage-1] = null
-            MySingleton.text[MySingleton.currentPage-1] = null
-            MySingleton.status[MySingleton.currentPage-1] = null
-            MySingleton.day[MySingleton.currentPage-1] = null
-            MySingleton.time[MySingleton.currentPage-1] = null
+            MySingleton.completedPages[MySingleton.currentPage - 1] = false
+            MySingleton.image[MySingleton.currentPage - 1] = null
+            MySingleton.title[MySingleton.currentPage - 1] = null
+            MySingleton.text = null
+            MySingleton.status[MySingleton.currentPage - 1] = null
+            MySingleton.day[MySingleton.currentPage - 1] = null
+            MySingleton.time[MySingleton.currentPage - 1] = null
 
         }
     }

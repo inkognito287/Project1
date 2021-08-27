@@ -14,7 +14,7 @@ data class Response2Item(
 	val image: List<ImageItem?>? = null,
 
 	@field:SerializedName("numberOfOrderField")
-	val numberOfOrderField: List<String?>? = null,
+	val numberOfOrderField: String? = null,
 
 	@field:SerializedName("stringImage")
 	val stringImage: List<String?>? = null,
@@ -29,7 +29,7 @@ data class Response2Item(
 	val documentFormatField: List<String?>? = null,
 
 	@field:SerializedName("fullInformation")
-	val fullInformation: List<String?>? = null,
+	val fullInformation: String? = null,
 
 	@field:SerializedName("status")
 	val status: List<String?>? = null
