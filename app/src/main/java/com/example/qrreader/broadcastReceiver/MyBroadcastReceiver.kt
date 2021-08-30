@@ -53,10 +53,31 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 
         Thread {
+
+//            for (y in MySingleton.arrayList?.size!! - 1 downTo 0) {
+//                var countOfUncompleted=0
+//               loop@ for (x in 0..MySingleton.arrayList!!!![y]!!.status.size-1)
+//                    if (MySingleton.arrayList!!!![y]!!.status[x]=="uncopleted") {
+//                        countOfUncompleted = 1
+//                        break@loop
+//                    }
+//                if (countOfUncompleted==0)
+//
+//            }
+
+
+
+
+
+
             for (y in MySingleton.arrayList?.size!! - 1 downTo 0) {
                 val item = MySingleton.arrayList!![y]
 
-
+                var count =0
+                for(z in 0..item!!.status!!.size - 1)
+                    if (MySingleton.arrayList!![y]!!.status[z]!=null)
+                count++
+                    if(count==0)
                 for (x in 0..item!!.status!!.size - 1)
                     if (item.status[x] == "no")
                         if (myFunctions.imageRequest(
@@ -93,19 +114,11 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                 } catch (e: Exception) {
                                 }
                             }
-                            // if(MySingleton.countUnsent.get()=="0")
 
-                            //(binding.counterUnsent as View).visibility =View.GONE
-                            // (context as MainActivity).findViewById<View>(R.id.counter_unsent).visibility = View.GONE
                         }
 
             }
-            //   if (MySingleton.arrayList!![x].status == "no") {
-            //      MySingleton.arrayList!![x].status = "yes"
-//                            MySingleton.countUnsent.set(
-//                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-//                            )
-            //}
+
 
 
             try {

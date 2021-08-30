@@ -26,8 +26,11 @@ object MySingleton {
     var currentPage = 0
     var newSession = true
     var arrayList: ArrayList<ItemForHistory?>? = null
+    var imagearray = ArrayList<Bitmap>()
     var pageclick = 0
     var completedPages: ArrayList<Boolean> = ArrayList()
+    var numberOfTheChangedItem = 0
+    var dontGoOut = 0
 
 
 }

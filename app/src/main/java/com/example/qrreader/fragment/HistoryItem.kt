@@ -87,8 +87,8 @@ class HistoryItem : Fragment() {
                     binding.orderNumber.text =
                         MySingleton.arrayList!![arg]!!.numberOfOrderField
                     binding.status.text =
-                        if (MySingleton.arrayList!![arg]!!.status[position] == "no") "не отправлен" else if (MySingleton.arrayList!![arg]!!.status[position] == "yes") "отправлен"
-                        else "не укомплектован"
+                        if (MySingleton.arrayList!![arg]!!.status[0] == "no") "Не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "Отправлен"
+                        else "Не отправлен"
                 }
             }
 
@@ -119,8 +119,8 @@ class HistoryItem : Fragment() {
 
             binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField
             binding.status.text =
-                if (MySingleton.arrayList!![arg]!!.status[0] == "no") "не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "отправлен"
-                else "не укомплектован"
+                if (MySingleton.arrayList!![arg]!!.status[0] == "no") "Не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "Отправлен"
+                else "Не отправлен"
         } else{}
           //  binding.documentFormat.text = "Не отсканирован"
     }

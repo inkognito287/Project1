@@ -10,8 +10,8 @@ data class Response2(
 
 data class Response2Item(
 
-	@field:SerializedName("image")
-	val image: List<ImageItem?>? = null,
+//	@field:SerializedName("image")
+//	val image: List<ImageItem?>? = null,
 
 	@field:SerializedName("numberOfOrderField")
 	val numberOfOrderField: String? = null,

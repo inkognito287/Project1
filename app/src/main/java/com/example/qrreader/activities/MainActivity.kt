@@ -1,6 +1,7 @@
 package com.example.qrreader.activities
 
 
+//import com.example.qrreader.service.MyService
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
@@ -8,11 +9,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,19 +21,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
-import com.example.qrreader.fragment.SettingFragment
-import com.example.qrreader.fragment.*
+import com.example.qrreader.Functions
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
-import com.example.qrreader.Functions
+import com.example.qrreader.fragment.*
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
-//import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
-import java.lang.Exception
-import android.os.Environment
 import java.io.File
 
 
@@ -100,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
-        MySingleton.countUnsent.set(0.toString())
+        //MySingleton.countUnsent.set(0.toString())
         var arrayOfDocumentsItem = ArrayList<ItemForHistory>()
         binding.progressBarMainActivity.visibility = View.VISIBLE
         Thread() {
@@ -124,18 +121,19 @@ class MainActivity : AppCompatActivity() {
                             ItemForHistory(
                                 element!!.documentFormatField as ArrayList<String?>,
                                 element.numberOfOrderField,
-                                null,
                                 element.day as ArrayList<String?>,
                                 element.time as ArrayList<String?>,
                                 element.status as ArrayList<String?>,
                                 element.fullInformation
                             )
                         )
-                }catch (e:Exception){
 
+
+                } catch (e: Exception) {
+            Log.d("MyLog",e.toString())
                 }
                 runOnUiThread {
-                    Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+
                     var count = 0
                     try {
 
@@ -146,10 +144,10 @@ class MainActivity : AppCompatActivity() {
 
                     } catch (e: Exception) {
                     }
-                    if (count != 0)
-                        runOnUiThread {
-                            findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                        }
+//                    if (count != 0)
+//                        runOnUiThread {
+//                            findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+//                        }
                     MySingleton.countUnsent.set(count.toString())
 //runOnUiThread {
                     //  findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
@@ -221,7 +219,7 @@ class MainActivity : AppCompatActivity() {
 
     fun clearHistory(v: View) {
 
-
+        MySingleton.countUnsent.set("0")
         val builder = AlertDialog.Builder(this)
         builder
             .setTitle("Очистка истории")
@@ -247,8 +245,8 @@ class MainActivity : AppCompatActivity() {
                             File(dir, children[i]).delete()
                         }
                     }
-                }catch (e:Exception){
-                    Log.d("MyLog",e.toString())
+                } catch (e: Exception) {
+                    Log.d("MyLog", e.toString())
                 }
 
             }
@@ -275,40 +273,38 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
 
-            if (result.resultCode == 1)
-            {
+            if (result.resultCode == 1) {
 
             }
-            if (result.resultCode == 3)
-            {
-                MySingleton.completedPages.clear()
-                binding.button.isClickable = true
-                for(i in 0 until MySingleton.arrayList!![0]!!.status.size)
-                    MySingleton.arrayList!![0]!!.status[i]="uncompleted"
-                MySingleton.image = java.util.ArrayList()
-                MySingleton.title = java.util.ArrayList()
-                MySingleton.text = String()
-                MySingleton.image = java.util.ArrayList()
-                MySingleton.day = java.util.ArrayList()
-                MySingleton.time = java.util.ArrayList()
-                MySingleton.status = java.util.ArrayList()
+            if (result.resultCode == 4) {
+//                MySingleton.completedPages.clear()
+//                binding.button.isClickable = true
+//                for (i in 0 until MySingleton.arrayList!![0]!!.status.size)
+//                    MySingleton.arrayList!![0]!!.status[i] = "uncompleted"
+//                MySingleton.image = java.util.ArrayList()
+//                MySingleton.title = java.util.ArrayList()
+//                MySingleton.text = String()
+//                MySingleton.image = java.util.ArrayList()
+//                MySingleton.day = java.util.ArrayList()
+//                MySingleton.time = java.util.ArrayList()
+//                MySingleton.status = java.util.ArrayList()
 
-                myAdapterUpdate = myAdapter
-                myAdapterUpdate.update()
-                try {
-                    myFunctions.saveJson()
-                } catch (e: Exception) {
-                    Log.d("MyLog", e.toString())
-                }
+ //               myAdapterUpdate = myAdapter
+   //             myAdapterUpdate.update()
+//                try {
+//                    myFunctions.saveJson()
+//                } catch (e: Exception) {
+//                    Log.d("MyLog", e.toString())
+//                }
 
             }
-            if (result.resultCode == 28) {
+            if (result.resultCode == 3) {
                 MySingleton.pageclick = 0
                 binding.button.isClickable = false
-                findViewById<ProgressBar>(R.id.progressBar2).visibility=View.VISIBLE
+
                 Thread() {
 
-                   // myFunctions.saveBitmaps(MySingleton.arrayList!![0]!!.image!!, MySingleton.arrayList!![0]!!.numberOfOrderField)
+                    // myFunctions.saveBitmaps(MySingleton.arrayList!![0]!!.image!!, MySingleton.arrayList!![0]!!.numberOfOrderField)
                     MySingleton.image = java.util.ArrayList()
                     MySingleton.title = java.util.ArrayList()
                     MySingleton.text = String()
@@ -327,15 +323,13 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
 
                         //myAdapter.notifyDataSetChanged()
-                      myAdapterUpdate.update()
+                        myAdapterUpdate.update()
                         binding.button.isClickable = true
-                        findViewById<ProgressBar>(R.id.progressBar2).visibility=View.GONE
+
                     }
 
 
-                    runOnUiThread {
-                        findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                    }
+
                     deserialize()
 
                     runOnUiThread {
@@ -352,14 +346,18 @@ class MainActivity : AppCompatActivity() {
     private fun deserialize() = Thread {
 
 
-        val item = MySingleton.arrayList!![0]
+        val item = MySingleton.arrayList!![MySingleton.numberOfTheChangedItem]
 
 
         for (x in 0..item!!.status.size - 1) {
-            if (item.status[x] == "no")
+          //  if (item.status[x] == "no")
                 if (myFunctions.imageRequest(
                         myFunctions.getStringFromBitmap(
-                            item!!.image!![x]!!
+                            BitmapFactory.decodeFile(
+                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item!!.numberOfOrderField!!.split(
+                                    "№"
+                                )[1] + "page" + (x + 1).toString() + ".png"
+                            )
                         )!!,
                         item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
                         item.fullInformation!!,
@@ -368,21 +366,20 @@ class MainActivity : AppCompatActivity() {
                     ) == "true"
                 ) {
                     item.status[x] = "yes"
-                    if (MySingleton.countUnsent.get()!!.toInt() - 1 == 0) {
-                        MySingleton.countUnsent.set(
-                            (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                        )
-                        runOnUiThread {
 
-                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-                        }
-
-                    } else (MySingleton.countUnsent.set(
-                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                    ))
 
                 }
         }
+        var countOfSended=0
+        for (x in 0..item!!.status.size - 1) {
+            if (item.status[x]=="yes")
+            countOfSended++
+        }
+        if (countOfSended==item.status.size)
+            MySingleton.countUnsent.set(
+                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+            )
+
         myAdapterUpdate = myAdapter
         runOnUiThread {
 
@@ -421,33 +418,37 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-   var snackbarCallback = object : Observable.OnPropertyChangedCallback() {
+    var snackbarCallback = object : Observable.OnPropertyChangedCallback() {
 
         override fun onPropertyChanged(observable: Observable, i: Int) {
-            Log.d("MyLog",observable.toString()+" "+i)
-            if (MySingleton.countUnsent.get()=="0")
-runOnUiThread {
-    findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-}
+            Log.d("MyLog", observable.toString() + " " + i)
+            if (MySingleton.countUnsent.get() == "0")
+                runOnUiThread {
+                    findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                }
+            else if(MySingleton.countUnsent.get()!!.toInt()>0)
+                runOnUiThread {
+                    findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                }
         }
     }
 
     override fun onStop() {
 
-       Thread() {
+        Thread() {
 
-            if (!isMyServiceRunning(MyService::class.java)  && !MySingleton.applicationIsActive) {
-        startService(Intent(this, MyService::class.java))
+            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive) {
+                startService(Intent(this, MyService::class.java))
             }
 
-    }.start()
+        }.start()
         super.onStop()
     }
 
     override fun onPause() {
         super.onPause()
         MySingleton.applicationIsActive = false
-        Log.d("MyLog","Main is active="+MySingleton.applicationIsActive)
+        Log.d("MyLog", "Main is active=" + MySingleton.applicationIsActive)
     }
 
     override fun onResume() {
@@ -457,18 +458,20 @@ runOnUiThread {
 
 
             myAdapterUpdate.update()
-            Thread(){
-            myFunctions.saveJson()}.start()
-        }catch (e:Exception){}
+            Thread() {
+                myFunctions.saveJson()
+            }.start()
+        } catch (e: Exception) {
+            Log.d("MyLog",e.toString())
+        }
 
         //myAdapterUpdate.update()
         MySingleton.applicationIsActive = true
-        Log.d("MyLog","Main is active="+MySingleton.applicationIsActive)
+        Log.d("MyLog", "Main is active=" + MySingleton.applicationIsActive)
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }
     }
-
 
 
 }

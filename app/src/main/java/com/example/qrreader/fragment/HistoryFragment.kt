@@ -100,7 +100,7 @@ class HistoryFragment : Fragment()
 
 
     override fun onItemClick(position: Int) {
-        Toast.makeText(context, "not implemented", Toast.LENGTH_SHORT).show()
+
 //        MySingleton.text = MySingleton.arrayList!![position].numberOfOrderField.toString()
 //        print(MySingleton.text)
 //        MySingleton.image = MySingleton.arrayList!![position].image

@@ -17,6 +17,7 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import java.lang.Exception
 
 class BarcodeBitmapAnalyzer(var context: Context) {
 
@@ -60,47 +61,65 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                         if (information == barcode.rawValue.toString()) {
 
 
-
-
-
                             var numberOfPages = information
                             var allNumberOfPages = ""
+                            var correctFormat = false
                             if (numberOfPages.contains("http")) {
 
-                                if (numberOfPages.contains("http://")) {
+                                if (numberOfPages.contains("http://static.giprint.ru")) {
                                     numberOfPages =
                                         numberOfPages.removePrefix("http://static.giprint.ru/doc/")
                                     //0713/OS/1/1
-                                } else if (numberOfPages.contains("https://")) {
+                                    correctFormat = true
+                                } else if (numberOfPages.contains("https://static.giprint.ru")) {
                                     numberOfPages =
                                         numberOfPages.removePrefix("https://static.giprint.ru/doc/")
+                                    correctFormat = true
+                                } else {
+                                    myFunctions.showError("Неизвестный документ")
                                 }
-                                allNumberOfPages = numberOfPages.split("/")[3]
-                                numberOfPages = numberOfPages.split("/")[2]
 
+
+                                try {
+
+
+                                    allNumberOfPages = numberOfPages.split("/")[3]
+                                    numberOfPages = numberOfPages.split("/")[2]
+                                } catch (e: Exception) {
+
+                                }
                             }
+                            if(!correctFormat){
+                                (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                                    true
+                            }
+                            if (correctFormat){
                             var count = 0
-                            var flag=false
-                            for (x in 0 until MySingleton.arrayList!!.size){
-                                Log.d("MyLog",information.split("/")[4].split("/")[0])
-                                if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1]==information.split("/")[4].split("/")[0]){
+                            var flag = false
+                            for (x in 0 until MySingleton.arrayList!!.size) {
+                                Log.d("MyLog", information.split("/")[4].split("/")[0])
+                                if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1] == information.split(
+                                        "/"
+                                    )[4].split("/")[0]
+                                ) {
 
                                     for (element in MySingleton.arrayList!![x]!!.time)
-                                        if (element!=null)
+                                        if (element != null)
                                             count++
-                                    if (count== MySingleton.arrayList!![x]!!.day.size){
-                                        myFunctions= Functions(context)
+                                    if (count == MySingleton.arrayList!![x]!!.day.size) {
+                                        myFunctions = Functions(context)
                                         myFunctions.showError("Этот заказ уже укомплектован")
-                                        flag=true
+                                        flag = true
                                         (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
                                             true
                                     }
 
                                     break
-                                }}
+                                }
+                            }
 
 
-                            if(!flag) {
+                            if (!flag) {
 
 
                                 val bottomFragment = ImageFragment()
@@ -125,6 +144,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                 bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
                             }
+                        }
                         }
 
 

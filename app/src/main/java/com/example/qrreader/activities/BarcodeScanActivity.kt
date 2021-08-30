@@ -100,12 +100,15 @@ class BarcodeScanActivity : AppCompatActivity() {
             MySingleton.newSession = true
             super.onBackPressed()
         }
-//        } else if (MySingleton.completedPages.size != 0 && bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) {
-//            val bottomSheetBehaviour =
-//                BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet)!!)
+//        else if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.dontGoOut == 1) {
 //            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-             else {
+//            MySingleton.dontGoOut == 0
+//
+//
+//        }
+        else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            MySingleton.dontGoOut = 0
             binding.button.isClickable = true
             MySingleton.completedPages[MySingleton.currentPage - 1] = false
             MySingleton.image[MySingleton.currentPage - 1] = null

@@ -2,6 +2,7 @@ package com.example.qrreader
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,18 +88,10 @@ class CustomRecyclerAdapter(
                 if (MySingleton.arrayList!![position]!!.status[0] == "no") {
                     holder.status.setImageResource(R.drawable.history_status_no)
 
-                } else{
+                } else if (MySingleton.arrayList!![position]!!.status[0] == "yes"){
+                    Log.d("MyLog","status" + MySingleton.arrayList!![position]!!.status[0].toString())
                     holder.status.setImageResource(R.drawable.ic_submite)
                 }
-
-
-
-
-
-
-
-
-
 
         }
     }
