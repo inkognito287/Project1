@@ -12,6 +12,7 @@
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/broken_image.xml" value="0.175" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/button_page.xml" value="0.17395833333333333" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/clear_history.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/complete_image.xml" value="0.221875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/header_background.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/history_status_no.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic___________.xml" value="0.2140625" />
@@ -21,6 +22,7 @@
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_center_label.xml" value="0.23333333333333334" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_cil_settings.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_codicon_history.xml" value="0.21875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_complete_image.xml" value="0.221875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_cross.xml" value="0.3828125" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_data_key.xml" value="0.21875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_data_planet.xml" value="0.21875" />
@@ -34,6 +36,8 @@
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_my_logo.xml" value="0.22" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_my_logotype.xml" value="0.2328125" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_submite.xml" value="0.23333333333333334" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_take_photo_button.xml" value="0.221875" />
+        <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_typography_label.xml" value="0.221875" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_uncomplete.xml" value="0.2140625" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/ic_unloaded_image.xml" value="0.175" />
         <entry key="..\:/Github/Project1/app/src/main/res/drawable/notification_circle.xml" value="0.2" />

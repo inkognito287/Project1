@@ -39,12 +39,15 @@ class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         if (MySingleton.completedPages[position]){
-            holder.background?.setBackgroundResource(R.drawable.ic_submite)
-            holder.numberOfPageTextView?.text=""
-        }
-        else
-            holder.numberOfPageTextView?.text = (position+1).toString()
 
+            holder.background?.setBackgroundResource(R.drawable.ic_complete_image)
+            holder.numberOfPageTextView?.text=""
+            holder.numberOfPageTextView?.text = (position+1).toString()
+        }
+        else {
+            holder.background?.setBackgroundResource(R.drawable.ic_uncomplete_image)
+            holder.numberOfPageTextView?.text = (position + 1).toString()
+        }
     }
 
     override fun getItemCount(): Int {
