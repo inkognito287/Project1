@@ -13,6 +13,7 @@ import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
 import com.example.qrreader.pojo.User
+import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 //import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import okhttp3.*
@@ -120,7 +121,7 @@ class Authorization : AppCompatActivity() {
                     finish()
                 } else {
                     runOnUiThread {
-                        myFunctions.showError(responseBody)
+                        myFunctions.showError("Неверные логин или пароль")
                     }
 
                 }
@@ -134,5 +135,16 @@ class Authorization : AppCompatActivity() {
             }
         }.start()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MySingleton.applicationIsActive = true
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MySingleton.applicationIsActive = false
     }
 }

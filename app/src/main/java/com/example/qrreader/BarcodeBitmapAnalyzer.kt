@@ -66,12 +66,12 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                             var correctFormat = false
                             if (numberOfPages.contains("http")) {
 
-                                if (numberOfPages.contains("http://static.giprint.ru")) {
+                                if (numberOfPages.contains("http://static.giprint.ru/doc/")) {
                                     numberOfPages =
                                         numberOfPages.removePrefix("http://static.giprint.ru/doc/")
                                     //0713/OS/1/1
                                     correctFormat = true
-                                } else if (numberOfPages.contains("https://static.giprint.ru")) {
+                                } else if (numberOfPages.contains("https://static.giprint.ru/doc/")) {
                                     numberOfPages =
                                         numberOfPages.removePrefix("https://static.giprint.ru/doc/")
                                     correctFormat = true

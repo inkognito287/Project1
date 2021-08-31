@@ -87,7 +87,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN ) {
+        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.dontGoOut==0 ) {
             MySingleton.completedPages.clear()
             MySingleton.image = java.util.ArrayList()
             MySingleton.title = java.util.ArrayList()
@@ -100,12 +100,15 @@ class BarcodeScanActivity : AppCompatActivity() {
             MySingleton.newSession = true
             super.onBackPressed()
         }
-//        else if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.dontGoOut == 1) {
-//            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-//            MySingleton.dontGoOut == 0
-//
-//
-//        }
+        else if(MySingleton.dontGoOut==1)
+        {
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            MySingleton.dontGoOut=2
+        }
+        else if(MySingleton.dontGoOut==2)
+        {
+            finish()
+        }
         else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
             MySingleton.dontGoOut = 0
@@ -130,6 +133,9 @@ class BarcodeScanActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_PERMS_CAMERA) {
             if (isCameraPermissionGranted()) {
                 startCamera()
+            }
+            else{
+                finish()
             }
         }
     }

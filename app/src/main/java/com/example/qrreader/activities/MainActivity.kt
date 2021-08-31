@@ -46,6 +46,47 @@ class MainActivity : AppCompatActivity() {
     lateinit var myFunctions: Functions
     //var kring : List<DocumentsItem?>? = null
 
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        val intent = Intent(this, BarcodeScanActivity::class.java)
+//        if (isExternalPermissionGranted()&&isCameraPermissionGranted())
+//            resultLauncher.launch(intent)
+//        else if(!isExternalPermissionGranted())
+//        {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                1342
+//            )
+//            if (!isCameraPermissionGranted())
+//                ActivityCompat.requestPermissions(
+//                    this,
+//                    arrayOf(Manifest.permission.CAMERA),
+//                    1341
+//                )
+//        }
+//            else if (!isCameraPermissionGranted()) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.CAMERA),
+//                1341
+//            )
+//            if(!isExternalPermissionGranted()) {
+//                ActivityCompat.requestPermissions(
+//                    this,
+//                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                    1342
+//                )}
+//
+//        }
+//    }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -67,33 +108,13 @@ class MainActivity : AppCompatActivity() {
 
 
         MySingleton.countUnsent.addOnPropertyChangedCallback(snackbarCallback)
-        fun isExternalPermissionGranted(): Boolean {
-            return (ContextCompat.checkSelfPermission(
-                baseContext,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) ==
-                    PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                baseContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) ==
-                    PackageManager.PERMISSION_GRANTED)
-        }
+
 
         ActivityCompat.requestPermissions(
             this,
             arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
             1
         )
-//        override fun onRequestPermissionsResult(
-//            requestCode: Int,
-//            permissions: Array<String>,
-//            grantResults: IntArray
-//        ) {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//            if( isExternalPermissionGranted()){}
-//
-//        }
-
 
         MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
@@ -108,13 +129,12 @@ class MainActivity : AppCompatActivity() {
 
             if (text != "" && text != "ERROR") {
 
-                // text=text.substring(1)
+
                 Log.d("MyLog", text)
 
                 try {
                     val result =
                         gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
-//                       Log.d("MyLog", result.response2!![0]!!.documentFormatField!![0].toString())
 
                     for (element in result.response2!!)
                         MySingleton.arrayList!!.add(
@@ -180,18 +200,53 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(requestCode==1)
+        if (isExternalPermissionGranted()){}
+        else{finish()}
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
     fun history(v: View) {
         myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
     }
 
     fun camera(v: View) {
+
+//        if (isCameraPermissionGranted()&&isExternalPermissionGranted()) {
+            val intent = Intent(this, BarcodeScanActivity::class.java)
+            resultLauncher.launch(intent)
+
+//        } else {
+//            if(!isCameraPermissionGranted())
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.CAMERA),
+//                1341
+//            )
+//
+//        }
         // MySingleton.flag=false
-        val intent = Intent(this, BarcodeScanActivity::class.java)
-        resultLauncher.launch(intent)
-
-
     }
 
+    private fun isCameraPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+    fun isExternalPermissionGranted(): Boolean {
+        return (ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) ==
+                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) ==
+                PackageManager.PERMISSION_GRANTED)
+    }
 
     fun setting(v: View) {
 
@@ -219,7 +274,7 @@ class MainActivity : AppCompatActivity() {
 
     fun clearHistory(v: View) {
 
-        MySingleton.countUnsent.set("0")
+
         val builder = AlertDialog.Builder(this)
         builder
             .setTitle("Очистка истории")
@@ -227,6 +282,7 @@ class MainActivity : AppCompatActivity() {
             .setIcon(R.drawable.clear_history)
             .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
+                MySingleton.countUnsent.set("0")
                 myAdapterUpdate = myAdapter
                 if (myAdapter != null) {
 
@@ -453,7 +509,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
+        MySingleton.dontGoOut=0
         try {
 
 

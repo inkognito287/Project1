@@ -75,7 +75,7 @@ class MyService : Service() {
                         val item = MySingleton.arrayList!![y]
                         var count =0
                         for(z in 0..item!!.status!!.size - 1)
-                            if (MySingleton.arrayList!![y]!!.status[z]!=null)
+                            if (MySingleton.arrayList!![y]!!.status[z]==null)
                                 count++
                         if(count==0)
 

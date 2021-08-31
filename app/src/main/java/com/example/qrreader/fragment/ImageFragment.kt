@@ -316,8 +316,8 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         } else {
 
             binding.imageFragmentSubmit.text = "Продолжить"
-            MySingleton.dontGoOut = 1
             binding.imageFragmentSubmit.setOnClickListener() {
+                MySingleton.dontGoOut = 1
                 //MySingleton.pageclick = position
 
                 val bottomSheetBehaviour =
