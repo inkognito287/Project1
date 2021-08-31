@@ -64,6 +64,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                             var numberOfPages = information
                             var allNumberOfPages = ""
                             var correctFormat = false
+                            var thisOrderNumber = "-1"
                             if (numberOfPages.contains("http")) {
 
                                 if (numberOfPages.contains("http://static.giprint.ru/doc/")) {
@@ -71,12 +72,15 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                         numberOfPages.removePrefix("http://static.giprint.ru/doc/")
                                     //0713/OS/1/1
                                     correctFormat = true
+                                    thisOrderNumber=numberOfPages.split("/")[0]
                                 } else if (numberOfPages.contains("https://static.giprint.ru/doc/")) {
                                     numberOfPages =
                                         numberOfPages.removePrefix("https://static.giprint.ru/doc/")
                                     correctFormat = true
+                                    thisOrderNumber=numberOfPages.split("/")[0]
                                 } else {
                                     myFunctions.showError("Неизвестный документ")
+                                    thisOrderNumber="-1"
                                 }
 
 
@@ -89,60 +93,71 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                                 }
                             }
-                            if(!correctFormat){
+                            if(thisOrderNumber!=MySingleton.currentOrderNumber && MySingleton.currentOrderNumber!="0"){
+                                Log.d("MyLog", thisOrderNumber.toString())
+                                Log.d("MyLog", MySingleton.currentOrderNumber.toString())
+                                myFunctions.showError("Документ не из этой серии")
+                                (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                                    true
+
+                            }else{
+
+
+                            if (!correctFormat) {
                                 (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
                                     true
                             }
-                            if (correctFormat){
-                            var count = 0
-                            var flag = false
-                            for (x in 0 until MySingleton.arrayList!!.size) {
-                                Log.d("MyLog", information.split("/")[4].split("/")[0])
-                                if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1] == information.split(
-                                        "/"
-                                    )[4].split("/")[0]
-                                ) {
+                            if (correctFormat) {
+                                var count = 0
+                                var flag = false
+                                for (x in 0 until MySingleton.arrayList!!.size) {
+                                    Log.d("MyLog", information.split("/")[4].split("/")[0])
+                                    if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1] == information.split(
+                                            "/"
+                                        )[4].split("/")[0]
+                                    ) {
 
-                                    for (element in MySingleton.arrayList!![x]!!.time)
-                                        if (element != null)
-                                            count++
-                                    if (count == MySingleton.arrayList!![x]!!.day.size) {
-                                        myFunctions = Functions(context)
-                                        myFunctions.showError("Этот заказ уже укомплектован")
-                                        flag = true
-                                        (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
-                                            true
+                                        for (element in MySingleton.arrayList!![x]!!.time)
+                                            if (element != null)
+                                                count++
+                                        if (count == MySingleton.arrayList!![x]!!.day.size) {
+                                            myFunctions = Functions(context)
+                                            myFunctions.showError("Этот заказ уже укомплектован")
+                                            flag = true
+                                            (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                                                true
+                                        }
+
+                                        break
                                     }
-
-                                    break
                                 }
-                            }
 
 
-                            if (!flag) {
+                                if (!flag) {
 
 
-                                val bottomFragment = ImageFragment()
-                                val bundle = Bundle()
+                                    val bottomFragment = ImageFragment()
+                                    val bundle = Bundle()
 
-                                bundle.putString("code", information)
-                                bundle.putString("allNumberOfPages", allNumberOfPages)
-                                bundle.putString("numberOfPages", numberOfPages)
+                                    bundle.putString("code", information)
+                                    bundle.putString("allNumberOfPages", allNumberOfPages)
+                                    bundle.putString("numberOfPages", numberOfPages)
 
-                                bottomFragment.arguments = bundle
-                                (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-                                    .replace(R.id.containerBottomSheet, bottomFragment)
-                                    .commit()
+                                    bottomFragment.arguments = bundle
+                                    (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                                        .replace(R.id.containerBottomSheet, bottomFragment)
+                                        .commit()
 
-                                val bottomSheetBehaviour =
-                                    BottomSheetBehavior.from(
-                                        (context as AppCompatActivity).findViewById(
-                                            R.id.containerBottomSheet
+                                    val bottomSheetBehaviour =
+                                        BottomSheetBehavior.from(
+                                            (context as AppCompatActivity).findViewById(
+                                                R.id.containerBottomSheet
+                                            )
                                         )
-                                    )
 
-                                bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                                    bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
 
+                                }
                             }
                         }
                         }

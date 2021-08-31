@@ -31,6 +31,7 @@ object MySingleton {
     var completedPages: ArrayList<Boolean> = ArrayList()
     var numberOfTheChangedItem = 0
     var dontGoOut = 0
+    var currentOrderNumber = "0"
 
 
 }

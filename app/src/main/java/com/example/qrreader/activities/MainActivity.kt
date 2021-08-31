@@ -44,47 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var myFragmentTransaction: MyFragmentTransaction
     lateinit var myFunctions: Functions
-    //var kring : List<DocumentsItem?>? = null
-
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        val intent = Intent(this, BarcodeScanActivity::class.java)
-//        if (isExternalPermissionGranted()&&isCameraPermissionGranted())
-//            resultLauncher.launch(intent)
-//        else if(!isExternalPermissionGranted())
-//        {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-//                1342
-//            )
-//            if (!isCameraPermissionGranted())
-//                ActivityCompat.requestPermissions(
-//                    this,
-//                    arrayOf(Manifest.permission.CAMERA),
-//                    1341
-//                )
-//        }
-//            else if (!isCameraPermissionGranted()) {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.CAMERA),
-//                1341
-//            )
-//            if(!isExternalPermissionGranted()) {
-//                ActivityCompat.requestPermissions(
-//                    this,
-//                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-//                    1342
-//                )}
-//
-//        }
-//    }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,32 +109,29 @@ class MainActivity : AppCompatActivity() {
 
 
                 } catch (e: Exception) {
-            Log.d("MyLog",e.toString())
+                    Log.d("MyLog", e.toString())
                 }
                 runOnUiThread {
 
-                    var count = 0
-                    try {
-
-
-                        for (element in MySingleton.arrayList!!)
-                            if (element!!.status[0] == "no")
-                                count++
-
-                    } catch (e: Exception) {
-                    }
-//                    if (count != 0)
-//                        runOnUiThread {
-//                            findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-//                        }
-                    MySingleton.countUnsent.set(count.toString())
-//runOnUiThread {
-                    //  findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
-                    binding.count = MySingleton.countUnsent
                 }
-                //}
 
 
+            }
+            runOnUiThread {
+
+                var count = 0
+                try {
+
+
+                    for (element in MySingleton.arrayList!!)
+                        if (element!!.status[0] == "no")
+                            count++
+
+                } catch (e: Exception) {
+                }
+                MySingleton.countUnsent.set(count.toString())
+
+                binding.count = MySingleton.countUnsent
             }
             myFragmentTransaction = MyFragmentTransaction(this)
             myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
@@ -195,9 +151,6 @@ class MainActivity : AppCompatActivity() {
         }.start()
 
 
-        // request()
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -205,37 +158,31 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(requestCode==1)
-        if (isExternalPermissionGranted()){}
-        else{finish()}
+        if (requestCode == 1)
+            if (isExternalPermissionGranted()) {
+            } else {
+                finish()
+            }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
     fun history(v: View) {
         myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
     }
 
     fun camera(v: View) {
 
-//        if (isCameraPermissionGranted()&&isExternalPermissionGranted()) {
-            val intent = Intent(this, BarcodeScanActivity::class.java)
-            resultLauncher.launch(intent)
+        val intent = Intent(this, BarcodeScanActivity::class.java)
+        resultLauncher.launch(intent)
 
-//        } else {
-//            if(!isCameraPermissionGranted())
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.CAMERA),
-//                1341
-//            )
-//
-//        }
-        // MySingleton.flag=false
+
     }
 
     private fun isCameraPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED
     }
+
     fun isExternalPermissionGranted(): Boolean {
         return (ContextCompat.checkSelfPermission(
             baseContext,
@@ -345,8 +292,8 @@ class MainActivity : AppCompatActivity() {
 //                MySingleton.time = java.util.ArrayList()
 //                MySingleton.status = java.util.ArrayList()
 
- //               myAdapterUpdate = myAdapter
-   //             myAdapterUpdate.update()
+                //               myAdapterUpdate = myAdapter
+                //             myAdapterUpdate.update()
 //                try {
 //                    myFunctions.saveJson()
 //                } catch (e: Exception) {
@@ -406,32 +353,32 @@ class MainActivity : AppCompatActivity() {
 
 
         for (x in 0..item!!.status.size - 1) {
-          //  if (item.status[x] == "no")
-                if (myFunctions.imageRequest(
-                        myFunctions.getStringFromBitmap(
-                            BitmapFactory.decodeFile(
-                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item!!.numberOfOrderField!!.split(
-                                    "№"
-                                )[1] + "page" + (x + 1).toString() + ".png"
-                            )
-                        )!!,
-                        item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
-                        item.fullInformation!!,
-                        sharedPreferencesAddress,
-                        sharedPreferencesUser
-                    ) == "true"
-                ) {
-                    item.status[x] = "yes"
+            //  if (item.status[x] == "no")
+            if (myFunctions.imageRequest(
+                    myFunctions.getStringFromBitmap(
+                        BitmapFactory.decodeFile(
+                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item!!.numberOfOrderField!!.split(
+                                "№"
+                            )[1] + "page" + (x + 1).toString() + ".png"
+                        )
+                    )!!,
+                    item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
+                    item.fullInformation!!,
+                    sharedPreferencesAddress,
+                    sharedPreferencesUser
+                ) == "true"
+            ) {
+                item.status[x] = "yes"
 
 
-                }
+            }
         }
-        var countOfSended=0
+        var countOfSended = 0
         for (x in 0..item!!.status.size - 1) {
-            if (item.status[x]=="yes")
-            countOfSended++
+            if (item.status[x] == "yes")
+                countOfSended++
         }
-        if (countOfSended==item.status.size)
+        if (countOfSended == item.status.size)
             MySingleton.countUnsent.set(
                 (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
@@ -482,7 +429,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     findViewById<View>(R.id.counter_unsent).visibility = View.GONE
                 }
-            else if(MySingleton.countUnsent.get()!!.toInt()>0)
+            else if (MySingleton.countUnsent.get()!!.toInt() > 0)
                 runOnUiThread {
                     findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
                 }
@@ -509,7 +456,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MySingleton.dontGoOut=0
+        MySingleton.currentOrderNumber = "0"
+        MySingleton.dontGoOut = 0
         try {
 
 
@@ -518,7 +466,7 @@ class MainActivity : AppCompatActivity() {
                 myFunctions.saveJson()
             }.start()
         } catch (e: Exception) {
-            Log.d("MyLog",e.toString())
+            Log.d("MyLog", e.toString())
         }
 
         //myAdapterUpdate.update()

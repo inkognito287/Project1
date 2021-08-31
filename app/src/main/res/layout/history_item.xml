@@ -82,7 +82,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline45"
         app:layout_constraintStart_toStartOf="@+id/guideline100"
         app:layout_constraintTop_toBottomOf="@+id/txt_name"
-        app:srcCompat="@drawable/ic_submite" />
+        app:srcCompat="@android:drawable/ic_menu_help" />
 
     <TextView
         android:id="@+id/textViewDateDay"

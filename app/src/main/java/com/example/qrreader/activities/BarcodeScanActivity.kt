@@ -53,6 +53,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         MySingleton.countActivity = 1
         binding.button.setOnClickListener {
+            MySingleton.dontGoOut=0
             binding.button.isClickable = false
             //  if (code != "не найден") {
             MySingleton.temporaryImage = findViewById<PreviewView>(R.id.preview)?.bitmap!!
@@ -87,7 +88,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if (bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN && MySingleton.dontGoOut==0 ) {
+        if ((bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) && MySingleton.dontGoOut == 0) {
             MySingleton.completedPages.clear()
             MySingleton.image = java.util.ArrayList()
             MySingleton.title = java.util.ArrayList()
@@ -99,17 +100,22 @@ class BarcodeScanActivity : AppCompatActivity() {
             MySingleton.text = String()
             MySingleton.newSession = true
             super.onBackPressed()
-        }
-        else if(MySingleton.dontGoOut==1)
-        {
+        } else if (MySingleton.dontGoOut == 1) {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-            MySingleton.dontGoOut=2
-        }
-        else if(MySingleton.dontGoOut==2)
-        {
+            MySingleton.dontGoOut = 2
+        } else if (MySingleton.dontGoOut == 2) {
             finish()
-        }
-        else {
+            MySingleton.completedPages.clear()
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.title = java.util.ArrayList()
+            MySingleton.text = String()
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.day = java.util.ArrayList()
+            MySingleton.time = java.util.ArrayList()
+            MySingleton.status = java.util.ArrayList()
+            MySingleton.text = String()
+            MySingleton.newSession = true
+        } else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
             MySingleton.dontGoOut = 0
             binding.button.isClickable = true
@@ -133,8 +139,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_PERMS_CAMERA) {
             if (isCameraPermissionGranted()) {
                 startCamera()
-            }
-            else{
+            } else {
                 finish()
             }
         }

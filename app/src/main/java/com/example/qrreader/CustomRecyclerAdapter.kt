@@ -76,7 +76,7 @@ class CustomRecyclerAdapter(
                 MySingleton.arrayList!![position]!!.numberOfOrderField.toString()
             holder.day.text = MySingleton.arrayList!![position]!!.day[remember]
             holder.time.text = MySingleton.arrayList!![position]!!.time[remember]
-
+            Log.d("MyLog",MySingleton.arrayList!![position]!!.status[0].toString())
             var check=false
             for (x in 0 until MySingleton.arrayList!![position]!!.day.size)
             if (MySingleton.arrayList!![position]!!.day[x]==null) {
