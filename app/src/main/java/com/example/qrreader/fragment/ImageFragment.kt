@@ -168,19 +168,21 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
             if (MySingleton.arrayList!![x]!!.numberOfOrderField
                 == MySingleton.text
             ) {
-                var count = 0
+
                 if (allNumberOfPages.toInt() > MySingleton.arrayList!![x]!!.day.size) {
                     MySingleton.completedPages[numberOfPages.toInt() - 1] = true
 
-                } else {
-//                    for (i in 0 until allNumberOfPages.toInt()) {
-//                        if (MySingleton.arrayList!![x]!!.day[i] != null) {
-//                            MySingleton.completedPages[i] = true
-//                            count++
-//                        }
+                } else if (allNumberOfPages.toInt() == MySingleton.arrayList!![x]!!.day.size){
+                    for (i in 0 until allNumberOfPages.toInt()) {
+                        if (MySingleton.arrayList!![x]!!.day[i] != null) {
+                            MySingleton.completedPages[i] = true
 
-                    break
-                }
+                        }
+
+
+                }}
+                break
+
             }
 
         var count = 0

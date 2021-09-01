@@ -120,12 +120,21 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
 
                 var count = 0
+
                 try {
 
 
-                    for (element in MySingleton.arrayList!!)
-                        if (element!!.status[0] == "no")
-                            count++
+                    for (element in MySingleton.arrayList!!) {
+                        var notNull = 0
+                        for (x in element!!.day) {
+                            if (x != null)
+                                notNull++
+                        }
+                        if (notNull ==element.day.size)
+
+                            if (element!!.status[0] == "no")
+                                count++
+                    }
 
                 } catch (e: Exception) {
                 }
