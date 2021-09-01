@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.example.qrreader.Functions
@@ -33,27 +31,25 @@ class HistoryItem : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var myFunctions = Functions(requireContext())
+        val numberOfHistoryItem = arguments?.getInt("position")
+        item = MySingleton.arrayList!![numberOfHistoryItem!!]!!
 
-        var arg = arguments?.getInt("position")
-
-        item = MySingleton.arrayList!![arg!!]!!
-
-        for (x in 0 until MySingleton.arrayList!![arg]!!.documentFormatField.size)
-            if (MySingleton.arrayList!![arg]!!.documentFormatField[x] != null) {
+        for (x in 0 until MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField.size)
+            if (MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[x] != null) {
                 remember = x
                 break
             }
 
-        var imageListener: ImageListener =
-            ImageListener { position, imageView -> // You can use Glide or Picasso here
-                if (MySingleton.arrayList!![arg]?.time!![position] != null)
+        val imageListener =
+            ImageListener { position, imageView ->
+                if (MySingleton.arrayList!![numberOfHistoryItem]?.time!![position] != null)
                     imageView.setImageBitmap(
                         BitmapFactory.decodeFile(
-                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![arg]!!.numberOfOrderField!!.split(
+                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![numberOfHistoryItem]!!.numberOfOrderField!!.split(
                                 "№"
                             )[1] + "page" + (position + 1).toString() + ".png"
                         )
@@ -61,43 +57,38 @@ class HistoryItem : Fragment() {
                 else imageView.setImageResource(R.drawable.broken_image)
             }
 
-        var carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
+        val carousel = activity?.findViewById<CarouselView>(R.id.documentImages)
         carousel?.setImageListener(imageListener)
-        var listener: ViewPager.OnPageChangeListener = object : ViewPager.OnPageChangeListener {
+
+        val listener: ViewPager.OnPageChangeListener = object : ViewPager.OnPageChangeListener {
             @SuppressLint("SetTextI18n")
             override fun onPageScrolled(
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-                if (MySingleton.arrayList!![arg]!!.documentFormatField[position] == null) {
+                if (MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[position] == null) {
 
 
 
                     binding.documentFormat.text =
-                        MySingleton.arrayList!![arg]!!.documentFormatField[remember]!!.split(
+                        MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[remember]!!.split(
                             ","
-                        )[0] + ", стр. " + (position + 1) + " из " + MySingleton.arrayList!![arg]!!.documentFormatField.size
+                        )[0] + ", стр. " + (position + 1) + " из " + MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField.size
 
-                    binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField
+
                     binding.status.text = "Не отсканирован"
                 } else {
                     binding.documentFormat.text =
-                        MySingleton.arrayList!![arg]!!.documentFormatField[position]
-                    binding.orderNumber.text =
-                        MySingleton.arrayList!![arg]!!.numberOfOrderField
+                        MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[position]
                     binding.status.text =
-                        if (MySingleton.arrayList!![arg]!!.status[0] == "no") "Не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "Отправлен"
+                        if (MySingleton.arrayList!![numberOfHistoryItem]!!.status[0] == "no") "Не отправлен" else if (MySingleton.arrayList!![numberOfHistoryItem]!!.status[0] == "yes") "Отправлен"
                         else "Не отправлен"
                 }
             }
-
             override fun onPageSelected(position: Int) {
-
             }
-
             override fun onPageScrollStateChanged(state: Int) {
-
             }
 
 
@@ -105,38 +96,25 @@ class HistoryItem : Fragment() {
         carousel?.addOnPageChangeListener(listener)
 
         binding.documentFormat.text =
-            MySingleton.arrayList!![arg]!!.documentFormatField[remember]!!.split(
+            MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[remember]!!.split(
                 ","
-            )[0] + ", стр. " + 1 + " из " + MySingleton.arrayList!![arg]!!.documentFormatField.size
+            )[0] + ", стр. " + 1 + " из " + MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField.size
 
 
-
+        binding.orderNumber.text = MySingleton.arrayList!![numberOfHistoryItem]!!.numberOfOrderField
         carousel?.pageCount = item.status!!.size
 
 
 
-        if (MySingleton.arrayList!![arg]!!.documentFormatField[0] != null) {
+        if (MySingleton.arrayList!![numberOfHistoryItem]!!.documentFormatField[0] != null) {
 
-            binding.orderNumber.text = MySingleton.arrayList!![arg]!!.numberOfOrderField
             binding.status.text =
-                if (MySingleton.arrayList!![arg]!!.status[0] == "no") "Не отправлен" else if (MySingleton.arrayList!![arg]!!.status[0] == "yes") "Отправлен"
+                if (MySingleton.arrayList!![numberOfHistoryItem]!!.status[0] == "yes") "Отправлен"
                 else "Не отправлен"
-        } else{}
-          //  binding.documentFormat.text = "Не отсканирован"
-    }
 
-    private fun getImage() {
-
-//           activity?.runOnUiThread {
-//                binding.documentImage.setImageBitmap(MySingleton.image)
-//                binding.documentFormat.text = MySingleton.text
-//                binding.orderNumber.text = MySingleton.title
-//                binding.documentImage.scaleType = ImageView.ScaleType.CENTER_CROP
-//                binding.status.text = MySingleton.status
-//                binding.progressBarHistoryItem.visibility = View.GONE
-//            }
-
+        }
 
     }
+
 
 }

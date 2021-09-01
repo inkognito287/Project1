@@ -128,7 +128,6 @@ class Authorization : AppCompatActivity() {
             } catch (e: Exception) {
 
                 Log.d("MyLog", e.toString())
-
             }
             runOnUiThread() {
                 binding.progressBarSecond.visibility = View.GONE

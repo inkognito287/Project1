@@ -1,16 +1,14 @@
 package com.example.qrreader
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap.CompressFormat
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
-import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.Error
@@ -20,9 +18,6 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.*
-import android.graphics.Bitmap.CompressFormat
-import androidx.core.content.ContextCompat.getSystemService
-import com.example.qrreader.service.MyService
 
 
 class Functions(var context: Context) {
@@ -80,45 +75,11 @@ class Functions(var context: Context) {
         return false
     }
 
-    private fun writeToFileEnd(jsonData: String?) {
-        try {
-            val outputStreamWriter = OutputStreamWriter(
-                context?.openFileOutput(
-                    "single.json",
-                    AppCompatActivity.MODE_PRIVATE
-                )
-            )
-            outputStreamWriter.write(jsonData)
 
-            outputStreamWriter.close()
-            println("good")
-        } catch (e: IOException) {
-            Log.e("Exception", "File write failed: $e")
-        }
-    }
-
-    fun saveBitmaps(bmp: ArrayList<Bitmap?>, numberOfOrder: ArrayList<String?>) {
-
-
-        var page=1
-        for (element in bmp) {
-            if(numberOfOrder!![page-1]==null)
-                continue
-            var numb = numberOfOrder!![page-1]!!.split("№")[1]
-            Log.d("MyLog",Environment.getExternalStorageDirectory().    absolutePath.toString()+"/"+"${numb}page${page}"+".png")
-            val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
-
-            element!!.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
-
-            page++
-            stream.close()
-        }
-
-    }
     fun saveBitmap(bmp: Bitmap,numberOfOrder: String,page:Int) {
             var numb = numberOfOrder.split("№")[1]
             val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
-            bmp.compress(CompressFormat.PNG, 70, stream) // пишем битмап на PNG с качеством 70%
+            bmp.compress(CompressFormat.PNG, 100, stream)
             stream.close()
 
     }
@@ -192,41 +153,8 @@ class Functions(var context: Context) {
         return false
     }
 
-    fun getBitmapFromString(stringPicture: String): Bitmap? {
-        val decodedString: ByteArray = android.util.Base64.decode(stringPicture, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-    }
-
-
-    fun getBitmapFromString(stringPictures: ArrayList<String>): ArrayList<Bitmap> {
-        var arrayListBitmap = ArrayList<Bitmap>()
-        var decodedString: ByteArray? = null
-        for (element in stringPictures) {
-            decodedString = android.util.Base64.decode(element, Base64.DEFAULT)
-            arrayListBitmap.add(BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size))
-        }
-
-        return arrayListBitmap
-    }
-
-
     fun saveJson() {
 
-//
-//
-//            val childObject = JsonObject()
-////             записываем текст в поле "message"
-////            childObject.addProperty("numberOfOrderField", element.numberOfOrderField)
-////            childObject.addProperty("documentFormatField", element.documentFormatField)
-////            childObject.addProperty("photo", element.stringImage)
-////            childObject.addProperty("day", element.day)
-////            childObject.addProperty("time", element.time)
-////            childObject.addProperty("status", element.status)
-////            childObject.addProperty("fullInformation",element.fullInformation)
-
-//            rootObject.add("documents", arrayObject)
-
-        //var str = "{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
         var str ="{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
         writeToFile(str)
         Log.d("MyLog ","savecompleted "+str )
@@ -251,22 +179,6 @@ class Functions(var context: Context) {
         intent.putExtra("error", error)
         (context as AppCompatActivity).startActivity(intent)
     }
-//     fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
-//
-//        val manager: ActivityManager =getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-//
-//
-//        for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
-//
-//
-//            if (myClass.name.equals(service.service.className)) {
-//
-//                return true
-//
-//            }
-//
-//        }
-//        return false
-//    }
+
 
 }

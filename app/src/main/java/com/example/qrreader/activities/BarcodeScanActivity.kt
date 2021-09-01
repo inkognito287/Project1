@@ -104,6 +104,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         } else if (MySingleton.dontGoOut == 1) {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
             MySingleton.dontGoOut = 2
+
         } else if (MySingleton.dontGoOut == 2) {
             finish()
             MySingleton.completedPages.clear()
@@ -127,7 +128,15 @@ class BarcodeScanActivity : AppCompatActivity() {
             MySingleton.status[MySingleton.currentPage - 1] = null
             MySingleton.day[MySingleton.currentPage - 1] = null
             MySingleton.time[MySingleton.currentPage - 1] = null
-
+            MySingleton.completedPages = java.util.ArrayList()
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.title = java.util.ArrayList()
+            MySingleton.text = String()
+            MySingleton.image = java.util.ArrayList()
+            MySingleton.day = java.util.ArrayList()
+            MySingleton.time = java.util.ArrayList()
+            MySingleton.status = java.util.ArrayList()
+            MySingleton.text = String()
         }
     }
 

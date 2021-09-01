@@ -83,27 +83,31 @@ class AddressKey : AppCompatActivity() {
                             runOnUiThread {
                                 Log.d("MyLog", "RESPONCEBODY=" + responseBody)
                             }
-                            if (responseBody == "true") {
+                            when (responseBody) {
+                                "true" -> {
 
-                                sharedPreference.edit()
-                                    .putString("key", binding.editTextTextKey.text.toString())
-                                    .putString(
-                                        "address",
-                                        binding.editTextTextAddress.text.toString()
+                                    sharedPreference.edit()
+                                        .putString("key", binding.editTextTextKey.text.toString())
+                                        .putString(
+                                            "address",
+                                            binding.editTextTextAddress.text.toString()
 
-                                    ).apply()
-                                val intent = Intent(this@AddressKey, Authorization::class.java)
-                                startActivity(intent)
-                                finish()
-                            } else if (responseBody == "false") {
-                                runOnUiThread {
-                                    binding.progressBarFirst.visibility = View.GONE
+                                        ).apply()
+                                    val intent = Intent(this@AddressKey, Authorization::class.java)
+                                    startActivity(intent)
+                                    finish()
                                 }
-                                myFunctions.showError("Неправильный пароль")
-                                Log.d("MyLog", responseBody)
+                                "false" -> {
+                                    runOnUiThread {
+                                        binding.progressBarFirst.visibility = View.GONE
+                                    }
+                                    myFunctions.showError("Неправильный пароль")
+                                    Log.d("MyLog", responseBody)
 
-                            } else {
-                                myFunctions.showError("Введённый сервер не отвечает")
+                                }
+                                else -> {
+                                    myFunctions.showError("Введённый сервер не отвечает")
+                                }
                             }
                             runOnUiThread {
                                 binding.progressBarFirst.visibility = View.GONE

@@ -8,18 +8,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qrreader.CustomRecyclerAdapter
-//import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 import com.example.qrreader.interfaces.UpdateAdapter
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.databinding.FragmentHistoryBinding
-import com.example.qrreader.singletones.MySingleton
 import java.io.OutputStreamWriter
 
 lateinit var myAdapter: CustomRecyclerAdapter

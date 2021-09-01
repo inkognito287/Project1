@@ -27,8 +27,6 @@ class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener
         }
 
     }
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView =
             LayoutInflater.from(parent.context)

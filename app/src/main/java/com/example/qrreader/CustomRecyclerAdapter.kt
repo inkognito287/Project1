@@ -21,7 +21,6 @@ class CustomRecyclerAdapter(
 
 
     private var mItemListener: OnItemListener = itemListener
-    var myFunctions: Functions = Functions(context.applicationContext)
 
     class MyViewHolder(itemView: View, onItemListener: OnItemListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
