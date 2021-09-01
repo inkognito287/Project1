@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                             if (x != null)
                                 notNull++
                         }
-                        if (notNull ==element.day.size)
+                        if (notNull == element.day.size)
 
                             if (element!!.status[0] == "no")
                                 count++
@@ -449,13 +449,15 @@ class MainActivity : AppCompatActivity() {
 
         Thread() {
 
-            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive) {
+            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive && myFunctions.notAllSent()) {
                 startService(Intent(this, MyService::class.java))
             }
 
         }.start()
         super.onStop()
     }
+
+
 
     override fun onPause() {
         super.onPause()

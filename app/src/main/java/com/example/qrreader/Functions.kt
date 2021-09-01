@@ -45,6 +45,7 @@ class Functions(var context: Context) {
 
     }
 
+
     private fun writeToFile(jsonData: String?) {
         try {
             val outputStreamWriter = OutputStreamWriter(
@@ -60,6 +61,23 @@ class Functions(var context: Context) {
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: $e")
         }
+    }
+
+    fun notAllSent(): Boolean {
+        var unsentCount = 0
+        for (x in 0 until MySingleton.arrayList!!.size) {
+            var count = 0
+            for (y in 0 until MySingleton.arrayList!![x]!!.day.size)
+                if (MySingleton.arrayList!![x]!!.day[y] == null)
+                    count++
+            if (count == 0) {
+                if (MySingleton.arrayList!![x]!!.status[0] == "no")
+                    return true
+
+
+            }
+        }
+        return false
     }
 
     private fun writeToFileEnd(jsonData: String?) {

@@ -94,12 +94,6 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                 sharedPreferencesUser
                             ) == "true"
                         ) {
-//                    MySingleton.countUnsent.set ((MySingleton.countUnsent.get()!!.toInt()-1).toString())
-//                    if(MySingleton.countUnsent.get()=="0")
-//                        runOnUiThread {
-//                            //(binding.counterUnsent as View).visibility =View.GONE
-//                            findViewById<View>(R.id.counter_unsent).visibility = View.GONE
-//                        }
                             item.status[x] = "yes"
                             if (x == 0) {
                                 MySingleton.countUnsent.set(

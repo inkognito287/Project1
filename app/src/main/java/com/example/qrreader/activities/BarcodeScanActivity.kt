@@ -39,7 +39,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     lateinit var code: String
     lateinit var binding: ActivityImageBinding
-
+    lateinit var myFunctions: Functions
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -49,11 +49,12 @@ class BarcodeScanActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        myFunctions = Functions(this)
         code = "не найден"
 
         MySingleton.countActivity = 1
         binding.button.setOnClickListener {
-            MySingleton.dontGoOut=0
+            MySingleton.dontGoOut = 0
             binding.button.isClickable = false
             //  if (code != "не найден") {
             MySingleton.temporaryImage = findViewById<PreviewView>(R.id.preview)?.bitmap!!
@@ -262,7 +263,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         Thread() {
 
-            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive) {
+            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive && myFunctions.notAllSent()) {
                 startService(Intent(this, MyService::class.java))
             }
 
