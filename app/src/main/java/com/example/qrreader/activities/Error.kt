@@ -30,17 +30,7 @@ class Error : AppCompatActivity() {
         MySingleton.applicationIsActive = false
         Log.d("MyLog","Error is active="+MySingleton.applicationIsActive)
     }
-    override fun onStop() {
 
-        Thread() {
-
-            if (!isMyServiceRunning(MyService::class.java)  && !MySingleton.applicationIsActive) {
-                startService(Intent(this, MyService::class.java))
-            }
-
-        }.start()
-        super.onStop()
-    }
     private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
 
         val manager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
