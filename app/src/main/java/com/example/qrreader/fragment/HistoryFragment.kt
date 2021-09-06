@@ -19,7 +19,7 @@ import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.databinding.FragmentHistoryBinding
 import java.io.OutputStreamWriter
 
-lateinit var myAdapter: CustomRecyclerAdapter
+
 lateinit var myAdapterUpdate: UpdateAdapter
 
 class HistoryFragment : Fragment()
@@ -71,8 +71,7 @@ class HistoryFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
         Log.d("MyLog", "OnViewCreated")
         //binding.progressBar2.visibility = View.VISIBLE
-        myAdapter = CustomRecyclerAdapter(requireContext(), this)
-        myAdapterUpdate = myAdapter
+        var myAdapter = CustomRecyclerAdapter(requireContext(), this)
         binding.recyclerView.adapter = myAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -98,16 +97,12 @@ class HistoryFragment : Fragment()
 
     override fun onItemClick(position: Int) {
 
-//        MySingleton.text = MySingleton.arrayList!![position].numberOfOrderField.toString()
-//        print(MySingleton.text)
-//        MySingleton.image = MySingleton.arrayList!![position].image
-//        MySingleton.title = MySingleton.arrayList!![position].documentFormatField.toString()
-//        MySingleton.status = if(MySingleton.arrayList!![position].status=="yes") "Статус: отправлен" else "Статус: ожидает отправки"
-        var bundle = Bundle()
+
+        val bundle = Bundle()
        bundle.putInt("position", position)
-        var fragment = HistoryItem()
+        val fragment = HistoryItem()
         fragment.arguments = bundle
-        var myFragmentTransaction = MyFragmentTransaction(requireContext())
+        val myFragmentTransaction = MyFragmentTransaction(requireContext())
         myFragmentTransaction.fragmentTransactionReplace(fragment)
     }
 

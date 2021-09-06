@@ -112,9 +112,10 @@ class Authorization : AppCompatActivity() {
                 }
                 if (responseBody != "{\"errorText\":\"Invalid username or password.\"}") {
                     var gson = Gson()
-                    var result=gson.fromJson(responseBody,User::class.java)
+                    var result = gson.fromJson(responseBody, User::class.java)
                     var token = result.access_token
-                    sharedPreferences.edit().putString("user", binding.editTextName.text.toString()).putString("token",token)
+                    sharedPreferences.edit().putString("user", binding.editTextName.text.toString())
+                        .putString("token", token)
                         .apply()
                     val intent = Intent(this@Authorization, MainActivity::class.java)
                     startActivity(intent)

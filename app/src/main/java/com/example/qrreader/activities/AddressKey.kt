@@ -1,15 +1,14 @@
 package com.example.qrreader.activities
 
+
 import android.content.Context
 import android.content.Intent
-import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Functions
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
-//import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request

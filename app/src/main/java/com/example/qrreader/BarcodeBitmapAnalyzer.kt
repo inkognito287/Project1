@@ -1,16 +1,13 @@
 package com.example.qrreader
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.activities.MainActivity
 import com.example.qrreader.fragment.ImageFragment
 //import com.example.qrreader.fragment.myAdapter
-import com.example.qrreader.fragment.myAdapterUpdate
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.mlkit.vision.barcode.Barcode
@@ -110,17 +107,17 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                             if (correctFormat) {
                                 var count = 0
                                 var flag = false
-                                for (x in 0 until MySingleton.arrayList!!.size) {
+                                for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
                                     Log.d("MyLog", information.split("/")[4].split("/")[0])
-                                    if (MySingleton.arrayList!![x]!!.numberOfOrderField!!.split("№")[1] == information.split(
+                                    if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField!!.split("№")[1] == information.split(
                                             "/"
                                         )[4].split("/")[0]
                                     ) {
 
-                                        for (element in MySingleton.arrayList!![x]!!.time)
+                                        for (element in MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time)
                                             if (element != null)
                                                 count++
-                                        if (count == MySingleton.arrayList!![x]!!.day.size) {
+                                        if (count == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
                                             myFunctions = Functions(context)
                                             myFunctions.showError("Этот заказ уже укомплектован")
                                             flag = true
@@ -182,7 +179,6 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                 }
                 .addOnFailureListener {
-
 
                     myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
                     (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =

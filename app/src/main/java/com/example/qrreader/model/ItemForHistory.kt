@@ -1,6 +1,5 @@
 package com.example.qrreader.model
 
-import android.graphics.Bitmap
 
 class ItemForHistory(
     var documentFormatField: ArrayList<String?>,

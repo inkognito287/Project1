@@ -114,12 +114,12 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         }
 
         var metCondition = false
-        for (x in 0 until MySingleton.arrayList!!.size)
+        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
-            if (MySingleton.arrayList!![x]!!.numberOfOrderField
+            if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                 == MySingleton.text
             ) {
-                if (MySingleton.arrayList!![x]!!.day.size != allNumberOfPages.toInt()) {
+                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size != allNumberOfPages.toInt()) {
                     MySingleton.completedPages = ArrayList()
                     MySingleton.image = ArrayList()
                     MySingleton.title = ArrayList()
@@ -163,18 +163,18 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
             }
 
         MySingleton.completedPages[numberOfPages.toInt() - 1] = true
-        for (x in 0 until MySingleton.arrayList!!.size)
+        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
-            if (MySingleton.arrayList!![x]!!.numberOfOrderField
+            if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                 == MySingleton.text
             ) {
 
-                if (allNumberOfPages.toInt() > MySingleton.arrayList!![x]!!.day.size) {
+                if (allNumberOfPages.toInt() > MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
                     MySingleton.completedPages[numberOfPages.toInt() - 1] = true
 
-                } else if (allNumberOfPages.toInt() == MySingleton.arrayList!![x]!!.day.size){
+                } else if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size){
                     for (i in 0 until allNumberOfPages.toInt()) {
-                        if (MySingleton.arrayList!![x]!!.day[i] != null) {
+                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] != null) {
                             MySingleton.completedPages[i] = true
 
                         }
@@ -196,35 +196,35 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
                 var checkThereIsAlreadyOne = false
 
-                for (x in 0 until MySingleton.arrayList!!.size)
+                for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
-                    if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                    if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                         == MySingleton.text
                     ) {
-                        if (allNumberOfPages.toInt() == MySingleton.arrayList!![x]!!.day.size) {
+                        if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
                             MySingleton.numberOfTheChangedItem = x
-                            for (i in 0 until MySingleton.arrayList!![x]!!.day.size) {
+                            for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
 
-                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
-                                    MySingleton.arrayList!![x]!!.documentFormatField[i] =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] =
                                         MySingleton.title[i]
-                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
-                                    MySingleton.arrayList!![x]!!.numberOfOrderField =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField =
                                         MySingleton.text
 
-                                if (MySingleton.arrayList!![x]!!.day[i] == null)
-                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
-                                if (MySingleton.arrayList!![x]!!.time[i] == null)
-                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
-                                if (MySingleton.arrayList!![x]!!.day[i] == null)
-                                    MySingleton.arrayList!![x]!!.status[i] =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] =
                                         MySingleton.status[i]
-                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
-                                    MySingleton.arrayList!![x]!!.fullInformation =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation =
                                         MySingleton.text
                             }
-                            for (m in 0 until MySingleton.arrayList!![x]!!.status.size)
-                                MySingleton.arrayList!![x]!!.status[m] = "no"
+                            for (m in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status.size)
+                                MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[m] = "no"
                             checkThereIsAlreadyOne = true
                             Log.d(
                                 "MyLog",
@@ -234,8 +234,8 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                             MySingleton.newSession = true
                             break
                         } else {
-                            MySingleton.arrayList!!.removeAt(x)
-                            MySingleton.arrayList!!.add(
+                            MySingleton.arrayListOfBundlesOfDocuments!!.removeAt(x)
+                            MySingleton.arrayListOfBundlesOfDocuments!!.add(
                                 x,
                                 ItemForHistory(
                                     MySingleton.title,
@@ -254,7 +254,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     }
                 if (!checkThereIsAlreadyOne&&MySingleton.newSession) {
 
-                        MySingleton.arrayList?.add(
+                        MySingleton.arrayListOfBundlesOfDocuments?.add(
                             0,
                             ItemForHistory(
                                 MySingleton.title,
@@ -279,7 +279,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
 
 
-                        MySingleton.arrayList!![0] = ItemForHistory(
+                        MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
                             MySingleton.title,
                             MySingleton.text,
                             MySingleton.day,
@@ -314,29 +314,29 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
                 var checkThereIsAlreadyOne = false
 
-                for (x in 0 until MySingleton.arrayList!!.size)
+                for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
-                    if (MySingleton.arrayList!![x]!!.numberOfOrderField
+                    if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                         == MySingleton.text
                     ) {
-                        if (allNumberOfPages.toInt() == MySingleton.arrayList!![x]!!.day.size) {
+                        if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
 
-                            for (i in 0 until MySingleton.arrayList!![x]!!.day.size) {
+                            for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
 
-                                if (MySingleton.arrayList!![x]!!.documentFormatField[i] == null)
-                                    MySingleton.arrayList!![x]!!.documentFormatField[i] =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] =
                                         MySingleton.title[i]
-                                if (MySingleton.arrayList!![x]!!.numberOfOrderField == null)
-                                    MySingleton.arrayList!![x]!!.numberOfOrderField =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField =
                                         MySingleton.text
-                                if (MySingleton.arrayList!![x]!!.day[i] == null)
-                                    MySingleton.arrayList!![x]!!.day[i] = MySingleton.day[i]
-                                if (MySingleton.arrayList!![x]!!.time[i] == null)
-                                    MySingleton.arrayList!![x]!!.time[i] = MySingleton.time[i]
-                                if (MySingleton.arrayList!![x]!!.day[i] == null)
-                                    MySingleton.arrayList!![x]!!.status[i] = "no"
-                                if (MySingleton.arrayList!![x]!!.fullInformation == null)
-                                    MySingleton.arrayList!![x]!!.fullInformation =
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] = MySingleton.day[i]
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] = MySingleton.time[i]
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] = "no"
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation == null)
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation =
                                         MySingleton.text
                             }
 
@@ -345,8 +345,8 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                             break
 
                         } else {
-                            MySingleton.arrayList!!.removeAt(x)
-                            MySingleton.arrayList!!.add(
+                            MySingleton.arrayListOfBundlesOfDocuments!!.removeAt(x)
+                            MySingleton.arrayListOfBundlesOfDocuments!!.add(
                                 x, ItemForHistory(
                                     MySingleton.title,
                                     MySingleton.text,
@@ -364,7 +364,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     }
                 if (MySingleton.newSession&&!checkThereIsAlreadyOne) {
 
-                        MySingleton.arrayList?.add(
+                        MySingleton.arrayListOfBundlesOfDocuments?.add(
                             0,
                             ItemForHistory(
                                 MySingleton.title,
@@ -379,7 +379,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     MySingleton.newSession = false
                 } else if (!MySingleton.newSession&&!checkThereIsAlreadyOne){
 
-                        MySingleton.arrayList!![0] = ItemForHistory(
+                        MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
                             MySingleton.title,
                             MySingleton.text,
                             MySingleton.day,
@@ -415,7 +415,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
     private  fun smartSaveBitmap(){
         myFunctions.saveBitmap(
             MySingleton.image!![MySingleton.currentPage - 1]!!,
-            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
+            MySingleton.arrayListOfBundlesOfDocuments!![0]!!.numberOfOrderField!!,
             MySingleton.currentPage
         )
     }

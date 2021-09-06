@@ -11,7 +11,6 @@ import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Constants.CHANNEL_ID
 import com.example.qrreader.Constants.NOTIFICATION_ID
 import com.example.qrreader.Functions
@@ -71,20 +70,20 @@ class MyService : Service() {
                 try {
 
 
-                    for (y in 0..MySingleton.arrayList!!.size - 1) {
-                        val item = MySingleton.arrayList!![y]
+                    for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
+                        val item = MySingleton.arrayListOfBundlesOfDocuments!![y]
                         var count =0
-                        for(z in 0..item!!.status!!.size - 1)
-                            if (MySingleton.arrayList!![y]!!.status[z]==null)
+                        for(z in 0 until item!!.status.size)
+                            if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
                                 count++
                         if(count==0)
 
-                        for (x in 0..item!!.status.size - 1)
+                        for (x in 0 until item.status.size)
                             if (item!!.status[x] == "no")
                                 if (myFunction.imageRequest(
                                         myFunction.getStringFromBitmap(
                                             BitmapFactory.decodeFile(
-                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField!!.split(
+                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
                                                     "№"
                                                 )[1] + "page" + (x + 1).toString() + ".png"))!!,
                                         item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
@@ -99,8 +98,8 @@ class MyService : Service() {
                                 }
                     }
                     var unsentItems = 0
-                    for (x in 0 until MySingleton.arrayList!!.size)
-                        if (MySingleton.arrayList!![x]!!.status[0] == "no")
+                    for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
+                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[0] == "no")
                             unsentItems++
 
                     if (unsentItems == 0) {
@@ -142,7 +141,6 @@ class MyService : Service() {
 
         startForeground(NOTIFICATION_ID, notification)
     }
-
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

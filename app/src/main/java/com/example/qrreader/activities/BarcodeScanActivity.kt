@@ -1,5 +1,6 @@
 package com.example.qrreader.activities
 
+
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
@@ -9,23 +10,18 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
-import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.qrreader.*
+import com.example.qrreader.BarcodeAnalyzer
+import com.example.qrreader.BarcodeBitmapAnalyzer
+import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
-import com.example.qrreader.fragment.ImageFragment
-import com.example.qrreader.fragment.myAdapter
-import com.example.qrreader.fragment.myAdapterUpdate
-import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
-//import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.util.concurrent.Executors
@@ -51,8 +47,6 @@ class BarcodeScanActivity : AppCompatActivity() {
         setContentView(binding.root)
         myFunctions = Functions(this)
         code = "не найден"
-
-        MySingleton.countActivity = 1
         binding.button.setOnClickListener {
             MySingleton.dontGoOut = 0
             binding.button.isClickable = false

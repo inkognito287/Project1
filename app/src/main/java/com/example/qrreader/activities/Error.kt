@@ -18,10 +18,8 @@ class Error : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.custom_dialog_error)
         findViewById<TextView>(R.id.text_dialog).text = intent.getStringExtra("error")
-        MySingleton.countActivity = 3
         findViewById<Button>(R.id.btn_ok).setOnClickListener() {
             finish()
-            MySingleton.countActivity = 1
         }
     }
 

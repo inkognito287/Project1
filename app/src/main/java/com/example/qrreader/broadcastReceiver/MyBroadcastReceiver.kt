@@ -9,14 +9,12 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Environment
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Functions
 import com.example.qrreader.R
-import com.example.qrreader.activities.MainActivity
-import com.example.qrreader.fragment.myAdapter
+
 //import com.example.qrreader.fragment.myAdapter
-import com.example.qrreader.fragment.myAdapterUpdate
 import com.example.qrreader.singletones.MySingleton
 
 
@@ -29,7 +27,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         sharedPreferencesAddress = context?.getSharedPreferences("address", Context.MODE_PRIVATE)!!
         sharedPreferencesUser = context.getSharedPreferences("user", Context.MODE_PRIVATE)!!
-        myFunctions = Functions(context.applicationContext)
+        myFunctions = Functions(context)
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wf = cm.activeNetwork
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
@@ -37,13 +35,13 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         if (wf != null) {
 
 
-            startSendImage(context.applicationContext)
+            startSendImage(context)
 
         } else
             if (activeNetwork == true) {
 
 
-                startSendImage(context.applicationContext)
+                startSendImage(context)
 
             }
     }
@@ -54,80 +52,54 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
         Thread {
 
-//            for (y in MySingleton.arrayList?.size!! - 1 downTo 0) {
-//                var countOfUncompleted=0
-//               loop@ for (x in 0..MySingleton.arrayList!!!![y]!!.status.size-1)
-//                    if (MySingleton.arrayList!!!![y]!!.status[x]=="uncopleted") {
-//                        countOfUncompleted = 1
-//                        break@loop
-//                    }
-//                if (countOfUncompleted==0)
-//
-//            }
 
+            for (y in MySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
+                val document = MySingleton.arrayListOfBundlesOfDocuments!![y]
 
-
-
-
-
-            for (y in MySingleton.arrayList?.size!! - 1 downTo 0) {
-                val item = MySingleton.arrayList!![y]
-
-                var count =0
-                for(z in 0..item!!.status!!.size - 1)
-                    if (MySingleton.arrayList!![y]!!.status[z]==null)
-                count++
-                    if(count==0)
-                for (x in 0..item!!.status!!.size - 1)
-                    if (item.status[x] == "no")
-                        if (myFunctions.imageRequest(
-                                myFunctions.getStringFromBitmap(
-                                    BitmapFactory.decodeFile(
-                                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayList!![y]!!.numberOfOrderField!!.split(
-                                            "№"
-                                        )[1] + "page" + (x + 1).toString() + ".png"
+                var count = 0
+                for (numberOfStatusField in 0 until document!!.status.size)
+                    if (document.status[numberOfStatusField] == null)
+                        count++
+                if (count == 0)
+                    for (x in 0 until document.status.size)
+                        if (document.status[x] == "no")
+                            if (myFunctions.imageRequest(
+                                    myFunctions.getStringFromBitmap(
+                                        BitmapFactory.decodeFile(
+                                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
+                                                "№"
+                                            )[1] + "page" + (x + 1).toString() + ".png"
+                                        )
+                                    )!!,
+                                    document.day[x]!! + " " + document.time!![x]!![0].toString() + document.time!![x]!![1].toString() + "-" + document.time!![x]!![3].toString() + document.time!![x]!![4].toString(),
+                                    document.fullInformation!!,
+                                    sharedPreferencesAddress,
+                                    sharedPreferencesUser
+                                ) == "true"
+                            ) {
+                                document.status[x] = "yes"
+                                if (x == 0) {
+                                    MySingleton.countUnsent.set(
+                                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
                                     )
-                                )!!,
-                                item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
-                                item.fullInformation!!,
-                                sharedPreferencesAddress,
-                                sharedPreferencesUser
-                            ) == "true"
-                        ) {
-                            item.status[x] = "yes"
-                            if (x == 0) {
-                                MySingleton.countUnsent.set(
-                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                                )
-                                try {
+                                    try {
+                                        (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
 
-
-                                    myAdapterUpdate = myAdapter
-
-                                    myAdapterUpdate.update()
-                                } catch (e: Exception) {
+                                    } catch (e: Exception) {
+                                    }
                                 }
                             }
-
-                        }
-
             }
 
-
-
             try {
-
-
-                myAdapterUpdate = myAdapter
-
-                myAdapterUpdate.update()
+                (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
             } catch (e: Exception) {
             }
 
             try {
-
-
-                myFunctions.saveJson()}catch (e:Exception){}
+                myFunctions.saveJson()
+            } catch (e: Exception) {
+            }
         }.start()
 
 

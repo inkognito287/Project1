@@ -60,13 +60,13 @@ class Functions(var context: Context) {
 
     fun notAllSent(): Boolean {
         var unsentCount = 0
-        for (x in 0 until MySingleton.arrayList!!.size) {
+        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
             var count = 0
-            for (y in 0 until MySingleton.arrayList!![x]!!.day.size)
-                if (MySingleton.arrayList!![x]!!.day[y] == null)
+            for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size)
+                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[y] == null)
                     count++
             if (count == 0) {
-                if (MySingleton.arrayList!![x]!!.status[0] == "no")
+                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[0] == "no")
                     return true
 
 
@@ -155,7 +155,7 @@ class Functions(var context: Context) {
 
     fun saveJson() {
 
-        var str ="{\"Response2\":"+gson.toJson(MySingleton.arrayList)+"}"
+        var str ="{\"Response2\":"+gson.toJson(MySingleton.arrayListOfBundlesOfDocuments)+"}"
         writeToFile(str)
         Log.d("MyLog ","savecompleted "+str )
     }

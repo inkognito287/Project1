@@ -4,16 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.singletones.MySingleton
 
 class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener: OnItemListener): RecyclerView.Adapter<recyclerImageResultAdapter.MyViewHolder>() {
 
     private var mItemListener: OnItemListener = itemListener
-    class  MyViewHolder(itemView: View,onItemListener: OnItemListener): RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    class  MyViewHolder(itemView: View, var onItemListener: OnItemListener): RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var numberOfPageTextView: TextView? = null
-        var onItemListener: OnItemListener = onItemListener
         var background:View? = null
 
     init {

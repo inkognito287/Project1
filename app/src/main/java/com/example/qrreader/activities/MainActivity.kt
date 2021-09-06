@@ -32,6 +32,7 @@ import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.io.File
+import java.io.OutputStreamWriter
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,12 +50,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
         sharedPreferencesUser = getSharedPreferences("user", Context.MODE_PRIVATE)
 
-        MySingleton.arrayList = ArrayList()
+        MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
         MySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
@@ -76,23 +79,22 @@ class MainActivity : AppCompatActivity() {
             1
         )
 
-        MySingleton.countActivity = 1
         myFunctions = Functions(applicationContext)
         binding.progressBarMainActivity.visibility = View.VISIBLE
         Thread {
-            MySingleton.arrayList = ArrayList()
+            MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
             val gson = Gson()
 
-            var text = myFunctions.readFromFile()
+            var textFromFile = myFunctions.readFromFile()
 
-            if (text != "" && text != "ERROR") {
+            if (textFromFile != "" && textFromFile != "ERROR") {
 
                 try {
                     val result =
-                        gson.fromJson(text, com.example.qrreader.pojo.Response2::class.java)
+                        gson.fromJson(textFromFile, com.example.qrreader.pojo.Response2::class.java)
 
                     for (element in result.response2!!)
-                        MySingleton.arrayList!!.add(
+                        MySingleton.arrayListOfBundlesOfDocuments!!.add(
                             ItemForHistory(
                                 element!!.documentFormatField as ArrayList<String?>,
                                 element.numberOfOrderField,
@@ -107,34 +109,29 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.d("MyLog", e.toString())
                 }
-                runOnUiThread {
-
-                }
-
-
             }
-            runOnUiThread {
 
-                var count = 0
+            runOnUiThread {
+                var countOfUnsentPacksOfDocuments = 0
 
                 try {
 
 
-                    for (element in MySingleton.arrayList!!) {
+                    for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
                         var notNull = 0
-                        for (x in element!!.day) {
-                            if (x != null)
+                        for (fieldOfElement in element!!.day) {
+                            if (fieldOfElement != null)
                                 notNull++
                         }
                         if (notNull == element.day.size)
 
                             if (element.status[0] == "no")
-                                count++
+                                countOfUnsentPacksOfDocuments++
                     }
 
                 } catch (e: Exception) {
                 }
-                MySingleton.countUnsent.set(count.toString())
+                MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
                 binding.count = MySingleton.countUnsent
             }
             myFragmentTransaction = MyFragmentTransaction(this)
@@ -223,16 +220,13 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
                 MySingleton.countUnsent.set("0")
-                myAdapterUpdate = myAdapter
-                if (myAdapter != null) {
-
-
-                    myAdapterUpdate.clear()
+                try {
+                    clear()
+                    findViewById<RecyclerView>(R.id.recycler_view).adapter!!.notifyDataSetChanged()
+                }catch (e:java.lang.Exception){
 
                 }
                 try {
-
-
                     val dir =
                         File(Environment.getExternalStorageDirectory().absolutePath)
                     if (dir.isDirectory) {
@@ -257,6 +251,21 @@ class MainActivity : AppCompatActivity() {
     fun historyBack(v: View) {
         finish()
     }
+    private fun clear(){
+
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                openFileOutput(
+                    "single.json",
+                    MODE_PRIVATE
+                )
+            )
+            MySingleton.arrayListOfBundlesOfDocuments?.clear()
+            outputStreamWriter.write("")
+            outputStreamWriter.close()
+
+    }catch (e:Exception){}
+    }
 
 
     override fun onBackPressed() {
@@ -270,7 +279,6 @@ class MainActivity : AppCompatActivity() {
 
             if (result.resultCode == 3) {
                 MySingleton.pageclick = 0
-                //binding.button.isClickable = false
 
                 Thread {
 
@@ -293,11 +301,10 @@ class MainActivity : AppCompatActivity() {
                         }catch (e:java.lang.Exception){
 
                         }
-//                        myAdapterUpdate.update()
-//                        binding.button.isClickable = true
+
 
                     }
-                    deserialize()
+                    sendDocuments()
 
                 }.start()
 
@@ -306,33 +313,33 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-    private fun deserialize() = Thread {
+    private fun sendDocuments() = Thread {
 
 
-        val item = MySingleton.arrayList!![MySingleton.numberOfTheChangedItem]
+        val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
 
 
-        for (x in 0 until item!!.status.size) {
+        for (numberOfStatusField in 0 until item!!.status.size) {
             if (myFunctions.imageRequest(
                     myFunctions.getStringFromBitmap(
                         BitmapFactory.decodeFile(
                             Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item.numberOfOrderField!!.split(
                                 "№"
-                            )[1] + "page" + (x + 1).toString() + ".png"
+                            )[1] + "page" + (numberOfStatusField + 1).toString() + ".png"
                         )
                     )!!,
-                    item.day[x]!! + " " + item.time[x]!![0].toString() + item.time[x]!![1].toString() + "-" + item.time[x]!![3].toString() + item.time[x]!![4].toString(),
+                    item.day[numberOfStatusField]!! + " " + item.time[numberOfStatusField]!![0].toString() + item.time[numberOfStatusField]!![1].toString() + "-" + item.time[numberOfStatusField]!![3].toString() + item.time[numberOfStatusField]!![4].toString(),
                     item.fullInformation!!,
                     sharedPreferencesAddress,
                     sharedPreferencesUser
                 ) == "true"
             ) {
-                item.status[x] = "yes"
+                item.status[numberOfStatusField] = "yes"
             }
         }
         var countOfSent = 0
-        for (x in 0 until item.status.size) {
-            if (item.status[x] == "yes")
+        for (status in  item.status) {
+            if (status == "yes")
                 countOfSent++
         }
         if (countOfSent == item.status.size)
@@ -340,10 +347,13 @@ class MainActivity : AppCompatActivity() {
                 (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
 
-        myAdapterUpdate = myAdapter
         runOnUiThread {
 
-            myAdapterUpdate.update()
+            try {
+                findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+            }catch (e:java.lang.Exception){
+
+            }
         }
 
         try {
@@ -373,7 +383,6 @@ class MainActivity : AppCompatActivity() {
     private var observableChangeCallback = object : Observable.OnPropertyChangedCallback() {
 
         override fun onPropertyChanged(observable: Observable, i: Int) {
-            Log.d("MyLog", "$observable $i")
             if (MySingleton.countUnsent.get() == "0")
                 runOnUiThread {
                     findViewById<View>(R.id.counter_unsent).visibility = View.GONE
@@ -402,7 +411,6 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         MySingleton.applicationIsActive = false
-        Log.d("MyLog", "Main is active=" + MySingleton.applicationIsActive)
     }
 
     override fun onResume() {
@@ -410,18 +418,17 @@ class MainActivity : AppCompatActivity() {
         MySingleton.currentOrderNumber = "0"
         MySingleton.dontGoOut = 0
         try {
-
-            findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-          //  myAdapterUpdate.update()
             Thread {
                 myFunctions.saveJson()
             }.start()
+            findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+
+
         } catch (e: Exception) {
             Log.d("MyLog", e.toString())
         }
 
         MySingleton.applicationIsActive = true
-        Log.d("MyLog", "Main is active=" + MySingleton.applicationIsActive)
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }
