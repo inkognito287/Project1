@@ -25,7 +25,7 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.settingItems = SettingData().getSettingItems()
-        binding.activity = activity as MainActivity?
+        binding.activity = activity as MainActivity
 
     }
 }

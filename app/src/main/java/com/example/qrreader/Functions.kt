@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.Error
 import com.example.qrreader.singletones.MySingleton
 import com.example.qrreader.singletones.MySingleton.gson
+import com.example.qrreader.sslAllTrusted.Ssl
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -95,7 +96,7 @@ class Functions(var context: Context) {
 
         val token = sharedPreferencesUser.getString("token", "")
         val url = sharedPreferencesAddress.getString("address", "")
-        val client = OkHttpClient()
+        val client = Ssl().getUnsafeOkHttpClient()!!
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("image", image)

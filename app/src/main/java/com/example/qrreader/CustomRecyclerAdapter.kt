@@ -8,15 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.interfaces.UpdateAdapter
 import com.example.qrreader.singletones.MySingleton
-import java.io.OutputStreamWriter
 
 class CustomRecyclerAdapter(
     var context: Context, itemListener: OnItemListener
-) : UpdateAdapter, RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+) :  RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
 
     private var mItemListener: OnItemListener = itemListener

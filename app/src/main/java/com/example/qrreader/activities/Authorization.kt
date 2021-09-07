@@ -14,6 +14,7 @@ import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityAuthorizationBinding
 import com.example.qrreader.pojo.User
 import com.example.qrreader.singletones.MySingleton
+import com.example.qrreader.sslAllTrusted.Ssl
 import com.google.gson.Gson
 //import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import okhttp3.*
@@ -77,10 +78,11 @@ class Authorization : AppCompatActivity() {
 
 
     private fun request(url: String, password: String, name: String) {
+        //https://giprinttest.corpitech.by:6080/connect/token
 
         var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
-            URL("$url/Account/Token?username=$name&password=$password")
+            URL("$url/Account/Token?login=$name&password=$password")
         binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
@@ -88,7 +90,7 @@ class Authorization : AppCompatActivity() {
                 var responseBody = ""
                 val name = binding.editTextName.text.toString()
                 val password = binding.editTextPassword.text.toString()
-                val client = OkHttpClient()
+                val client = Ssl().getUnsafeOkHttpClient()!!
                 val requestBody = MultipartBody.Builder()
 
                     .setType(MultipartBody.FORM)
@@ -110,7 +112,8 @@ class Authorization : AppCompatActivity() {
 
                     "Сервер не отвечает"
                 }
-                if (responseBody != "{\"errorText\":\"Invalid username or password.\"}") {
+
+                if ( responseBody != "invalid_grant") {
                     var gson = Gson()
                     var result = gson.fromJson(responseBody, User::class.java)
                     var token = result.access_token

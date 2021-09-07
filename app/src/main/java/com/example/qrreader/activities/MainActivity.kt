@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Functions
 import com.example.qrreader.MyFragmentTransaction
@@ -33,6 +34,7 @@ import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.io.File
 import java.io.OutputStreamWriter
+import kotlin.concurrent.fixedRateTimer
 
 
 class MainActivity : AppCompatActivity() {
@@ -190,13 +192,15 @@ class MainActivity : AppCompatActivity() {
         myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
     }
 
-    fun finish(v: View) {
+    fun logout(v: View) {
+        supportFragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear().apply()
+        finish()
         val intent = Intent(this, Authorization::class.java)
         startActivity(intent)
-        finish()
+
     }
 
     fun back(v: View) {

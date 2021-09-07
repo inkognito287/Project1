@@ -14,13 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qrreader.CustomRecyclerAdapter
 import com.example.qrreader.Functions
-import com.example.qrreader.interfaces.UpdateAdapter
+
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.databinding.FragmentHistoryBinding
 import java.io.OutputStreamWriter
 
 
-lateinit var myAdapterUpdate: UpdateAdapter
+
 
 class HistoryFragment : Fragment()
     ,CustomRecyclerAdapter.OnItemListener

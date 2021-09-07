@@ -112,9 +112,10 @@
                 android:onClick="@{(view)->activity.data(view)}"
                 app:image="@{settingItems.data.image}"
                 app:layout_constraintBottom_toTopOf="@+id/guideline37"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view4"
-                app:text="@{settingItems.data.text}"
-                tools:layout_editor_absoluteX="1dp">
+                app:text="@{settingItems.data.text}">
 
             </include>
 
@@ -124,12 +125,13 @@
                 layout="@layout/setting_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:onClick="@{(view)->activity.finish(view)}"
+                android:onClick="@{(view)->activity.logout(view)}"
                 app:image="@{settingItems.exit.image}"
                 app:layout_constraintBottom_toTopOf="@+id/guideline39"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/guideline38"
-                app:text="@{settingItems.exit.text}"
-                tools:layout_editor_absoluteX="1dp">
+                app:text="@{settingItems.exit.text}">
 
             </include>
 
