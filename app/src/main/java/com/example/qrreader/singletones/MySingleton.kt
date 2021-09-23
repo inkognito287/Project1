@@ -23,10 +23,12 @@ object MySingleton {
     var newSession = true
     var arrayListOfBundlesOfDocuments: ArrayList<ItemForHistory?>? = null
     var pageclick = 0
-    var completedPages: ArrayList<Boolean> = ArrayList()
+    lateinit var completedPages: ArrayList<Boolean>
     var numberOfTheChangedItem = 0
     var dontGoOut = 0
     var currentOrderNumber = "0"
+
+    var urlForParsing = ""
 
 
 }

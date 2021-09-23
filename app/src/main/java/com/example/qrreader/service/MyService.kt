@@ -80,7 +80,7 @@ class MyService : Service() {
 
                         for (x in 0 until item.status.size)
                             if (item!!.status[x] == "no")
-                                if (myFunction.imageRequest(
+                                if (myFunction.imageRequest(item.documentFormatField.size,
                                         myFunction.getStringFromBitmap(
                                             BitmapFactory.decodeFile(
                                                 Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
@@ -89,7 +89,8 @@ class MyService : Service() {
                                         item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
                                         item.fullInformation!!,
                                         sharedPreferencesAddress,
-                                        sharedPreferencesUser
+                                        sharedPreferencesUser,
+                                        "MyService"
                                     ) == "true"
                                 ) {
                                     item.status[x] = "yes"

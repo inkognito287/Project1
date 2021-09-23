@@ -7,17 +7,27 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.activities.Error
+import com.example.qrreader.pojo.DocumentInformation
+import com.example.qrreader.pojo.ItemsItem
 import com.example.qrreader.singletones.MySingleton
 import com.example.qrreader.singletones.MySingleton.gson
 import com.example.qrreader.sslAllTrusted.Ssl
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import com.google.gson.Gson
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.response.*
+import io.ktor.http.*
+import io.ktor.utils.io.streams.*
+import okhttp3.*
+import okhttp3.Headers
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.*
 
 
@@ -25,18 +35,18 @@ class Functions(var context: Context) {
 
     fun readFromFile(): String {
 
-         try {
+        try {
             val reader =
                 BufferedReader(InputStreamReader(context.openFileInput("single.json")))
             val text = reader.readLine()
             reader.close()
-             if(text==null){
-                 return "ERROR"
-             }
-             return text
+            if (text == null) {
+                return "ERROR"
+            }
+            return text
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: $e")
-             return "ERROR"
+            return "ERROR"
         }
 
     }
@@ -77,22 +87,29 @@ class Functions(var context: Context) {
     }
 
 
-    fun saveBitmap(bmp: Bitmap,numberOfOrder: String,page:Int) {
-            var numb = numberOfOrder.split("№")[1]
-            val stream: FileOutputStream = FileOutputStream(File(Environment.getExternalStorageDirectory().absolutePath.toString()+"/","${numb}page${page}"+".png"))
-            bmp.compress(CompressFormat.PNG, 100, stream)
-            stream.close()
+    fun saveBitmap(bmp: Bitmap, numberOfOrder: String, page: Int) {
+        var numb = numberOfOrder.split("№")[1]
+        val stream: FileOutputStream = FileOutputStream(
+            File(
+                Environment.getExternalStorageDirectory().absolutePath.toString() + "/",
+                "${numb}page${page}" + ".png"
+            )
+        )
+        bmp.compress(CompressFormat.PNG, 100, stream)
+        stream.close()
 
     }
 
     fun imageRequest(
+        numberOfPages: Int,
         image: String,
         name: String,
         code: String,
         sharedPreferencesAddress: SharedPreferences,
-        sharedPreferencesUser: SharedPreferences
+        sharedPreferencesUser: SharedPreferences,
+        className :String
     ): String? {
-
+        var listOfFiles:ArrayList<File> = ArrayList()
 
         val token = sharedPreferencesUser.getString("token", "")
         val url = sharedPreferencesAddress.getString("address", "")
@@ -104,12 +121,50 @@ class Functions(var context: Context) {
             .addFormDataPart("code", code)
             .build();
 
+
+
         var request = Request.Builder()
             .addHeader("Authorization", "Bearer " + token.toString())
             .url("$url/Account/image")
             .post(requestBody)
             .build();
 
+        var request2 = Request.Builder()
+            .addHeader("Authorization", "Bearer " + token.toString())
+            .url("$url/api/lead/?searchString=&status=&docNumber=${code.split("№")[1]}&dateFrom=&dateTo=&manager=&spam=&canceled=&pageSize=100&")
+            .get()
+            .build();
+        var a = getInformationFromCode(request2, client)!!
+        var gson = Gson()
+        var responce = gson.fromJson(a, DocumentInformation::class.java)
+
+        for (x in 1..numberOfPages) {
+            listOfFiles.add(
+            File(
+                Environment.getExternalStorageDirectory().absolutePath.toString() + "/",
+                code.split("№")[1] + "page" + x.toString() + ".png"
+            ))
+            }
+        val kek=MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+        for (x in 0..numberOfPages-1) {
+            kek.addFormDataPart("files",listOfFiles[x].name,RequestBody.create("image/png".toMediaTypeOrNull(),listOfFiles[x]))
+        }
+        val requestBody2 = kek.build();
+
+
+
+
+
+
+        var request3 = Request.Builder()
+            .addHeader("Authorization", "Bearer " + token.toString())
+            .url("$url/Api/Attachment/{${responce.items?.get(0)?.id.toString()}}/?requestType=LEA")
+            .post(requestBody2)
+            .build();
+        var b =addInformationInDatabase(request3,client)
+        Log.d("MyLog", "Информация о документе " + a)
+        Log.d("MyLog", className+" Информация по id " + b)
 
         try {
             val response: okhttp3.Response = client.newCall(request).execute()
@@ -120,9 +175,32 @@ class Functions(var context: Context) {
 
         }
 
-
         return null
 
+    }
+
+    fun getInformationFromCode(request: Request, client: OkHttpClient): String? {
+        try {
+            val response: okhttp3.Response = client.newCall(request).execute()
+
+            return response.body?.string()
+        } catch (e: IOException) {
+            Log.d("MyLog", "exception$e")
+
+        }
+        return "false"
+    }
+    fun addInformationInDatabase(request: Request, client: OkHttpClient): String? {
+        try {
+
+            val response: okhttp3.Response = client.newCall(request).execute()
+
+            return response.code.toString()+response.body?.string()
+        } catch (e: IOException) {
+            Log.d("MyLog", "exception$e")
+
+        }
+        return "false"
     }
 
     fun isNetworkAvailable(): Boolean {
@@ -156,9 +234,9 @@ class Functions(var context: Context) {
 
     fun saveJson() {
 
-        var str ="{\"Response2\":"+gson.toJson(MySingleton.arrayListOfBundlesOfDocuments)+"}"
+        var str = "{\"Response2\":" + gson.toJson(MySingleton.arrayListOfBundlesOfDocuments) + "}"
         writeToFile(str)
-        Log.d("MyLog ","savecompleted "+str )
+        Log.d("MyLog ", "savecompleted " + str)
     }
 
     fun getStringFromBitmap(bitmapPicture: Bitmap): String? {

@@ -10,8 +10,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Functions
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
+import com.example.qrreader.singletones.MySingleton
 import com.example.qrreader.sslAllTrusted.Ssl
-import com.mklimek.sslutilsandroid.SslUtils
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,7 +20,6 @@ import java.io.OutputStreamWriter
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-
 import javax.net.ssl.*
 
 
@@ -97,7 +96,7 @@ class AddressKey : AppCompatActivity() {
 
 
                             val request = Request.Builder()
-                                .url("$address/account/test")
+                                .url("$address/Account/test")
                                 .post(requestBody)
                                 .build();
 
@@ -112,7 +111,7 @@ class AddressKey : AppCompatActivity() {
                             }
                             when (responseBody) {
                                 "true" -> {
-
+                                    MySingleton.urlForParsing = binding.editTextTextAddress.text.toString()
                                     sharedPreference.edit()
                                         .putString("key", binding.editTextTextKey.text.toString())
                                         .putString(

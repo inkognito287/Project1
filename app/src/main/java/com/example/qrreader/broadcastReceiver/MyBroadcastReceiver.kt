@@ -63,7 +63,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 if (count == 0)
                     for (x in 0 until document.status.size)
                         if (document.status[x] == "no")
-                            if (myFunctions.imageRequest(
+                            if (myFunctions.imageRequest(document.documentFormatField.size,
                                     myFunctions.getStringFromBitmap(
                                         BitmapFactory.decodeFile(
                                             Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
@@ -74,7 +74,8 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                     document.day[x]!! + " " + document.time!![x]!![0].toString() + document.time!![x]!![1].toString() + "-" + document.time!![x]!![3].toString() + document.time!![x]!![4].toString(),
                                     document.fullInformation!!,
                                     sharedPreferencesAddress,
-                                    sharedPreferencesUser
+                                    sharedPreferencesUser,
+                                    "BroadcastReciever"
                                 ) == "true"
                             ) {
                                 document.status[x] = "yes"

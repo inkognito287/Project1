@@ -1,7 +1,6 @@
 package com.example.qrreader.activities
 
 
-
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
@@ -27,14 +26,15 @@ import com.example.qrreader.Functions
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
-import com.example.qrreader.fragment.*
+import com.example.qrreader.fragment.DataFragment
+import com.example.qrreader.fragment.HistoryFragment
+import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
 import java.io.File
 import java.io.OutputStreamWriter
-import kotlin.concurrent.fixedRateTimer
 
 
 class MainActivity : AppCompatActivity() {
@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        MySingleton.completedPages = ArrayList()
 
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
         sharedPreferencesUser = getSharedPreferences("user", Context.MODE_PRIVATE)
@@ -193,7 +195,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun logout(v: View) {
-        supportFragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear().apply()
@@ -227,7 +229,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     clear()
                     findViewById<RecyclerView>(R.id.recycler_view).adapter!!.notifyDataSetChanged()
-                }catch (e:java.lang.Exception){
+                } catch (e: java.lang.Exception) {
 
                 }
                 try {
@@ -255,7 +257,8 @@ class MainActivity : AppCompatActivity() {
     fun historyBack(v: View) {
         finish()
     }
-    private fun clear(){
+
+    private fun clear() {
 
         try {
             val outputStreamWriter = OutputStreamWriter(
@@ -268,7 +271,8 @@ class MainActivity : AppCompatActivity() {
             outputStreamWriter.write("")
             outputStreamWriter.close()
 
-    }catch (e:Exception){}
+        } catch (e: Exception) {
+        }
     }
 
 
@@ -302,7 +306,7 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         try {
                             findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-                        }catch (e:java.lang.Exception){
+                        } catch (e: java.lang.Exception) {
 
                         }
 
@@ -324,7 +328,7 @@ class MainActivity : AppCompatActivity() {
 
 
         for (numberOfStatusField in 0 until item!!.status.size) {
-            if (myFunctions.imageRequest(
+            if (myFunctions.imageRequest(item.documentFormatField.size,
                     myFunctions.getStringFromBitmap(
                         BitmapFactory.decodeFile(
                             Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item.numberOfOrderField!!.split(
@@ -335,14 +339,15 @@ class MainActivity : AppCompatActivity() {
                     item.day[numberOfStatusField]!! + " " + item.time[numberOfStatusField]!![0].toString() + item.time[numberOfStatusField]!![1].toString() + "-" + item.time[numberOfStatusField]!![3].toString() + item.time[numberOfStatusField]!![4].toString(),
                     item.fullInformation!!,
                     sharedPreferencesAddress,
-                    sharedPreferencesUser
+                    sharedPreferencesUser,
+                    "MainActivity"
                 ) == "true"
             ) {
                 item.status[numberOfStatusField] = "yes"
             }
         }
         var countOfSent = 0
-        for (status in  item.status) {
+        for (status in item.status) {
             if (status == "yes")
                 countOfSent++
         }
@@ -355,7 +360,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-            }catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception) {
 
             }
         }
@@ -409,7 +414,6 @@ class MainActivity : AppCompatActivity() {
         }.start()
         super.onStop()
     }
-
 
 
     override fun onPause() {
