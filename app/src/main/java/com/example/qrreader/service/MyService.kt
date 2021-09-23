@@ -76,27 +76,23 @@ class MyService : Service() {
                         for(z in 0 until item!!.status.size)
                             if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
                                 count++
-                        if(count==0)
+                        if(count==0){
 
-                        for (x in 0 until item.status.size)
+                        var x=0
                             if (item!!.status[x] == "no")
                                 if (myFunction.imageRequest(item.documentFormatField.size,
-                                        myFunction.getStringFromBitmap(
-                                            BitmapFactory.decodeFile(
-                                                Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
-                                                    "№"
-                                                )[1] + "page" + (x + 1).toString() + ".png"))!!,
-                                        item.day[x]!! + " " + item.time!![x]!![0].toString() + item.time!![x]!![1].toString() + "-" + item.time!![x]!![3].toString() + item.time!![x]!![4].toString(),
                                         item.fullInformation!!,
                                         sharedPreferencesAddress,
                                         sharedPreferencesUser,
-                                        "MyService"
-                                    ) == "true"
+                                        "MyService",
+                                        item
+                                    ) != "exception"
                                 ) {
-                                    item.status[x] = "yes"
+
+                                    item.status[0] = "yes"
 
 
-                                }
+                                }}
                     }
                     var unsentItems = 0
                     for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)

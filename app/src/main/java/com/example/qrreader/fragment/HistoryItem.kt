@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,10 +50,19 @@ class HistoryItem : Fragment() {
                 if (MySingleton.arrayListOfBundlesOfDocuments!![numberOfHistoryItem]?.time!![position] != null) {
 
                     var file = File(
-                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![numberOfHistoryItem]!!.numberOfOrderField!!.split(
-                            "№"
-                        )[1] + "page" + (position + 1).toString() + ".png"
+                        Environment.getExternalStorageDirectory().absolutePath.toString() + "/" +
+                                MySingleton.arrayListOfBundlesOfDocuments!![numberOfHistoryItem]!!.documentFormatField[position]!!.split(",")[0].replace(" ","-")+
+                                "-<"+
+                                MySingleton.arrayListOfBundlesOfDocuments!![numberOfHistoryItem]!!.numberOfOrderField!!.split("№")[1] +
+                                ">-<"+
+                                (position + 1).toString() +
+                                ">-<"+
+                                MySingleton.arrayListOfBundlesOfDocuments!![numberOfHistoryItem]!!.documentFormatField.size+
+                                ">"+
+                                ".jpg"
                     )
+                    Log.d("MyLog","Путь-"+file.path)
+                    //Бланк-заказа-<номер заказа>-<номер страницы>-<всего страниц>.jpg
                     var uri = Uri.fromFile(file)
                     imageView.setImageURI(uri)
                 }

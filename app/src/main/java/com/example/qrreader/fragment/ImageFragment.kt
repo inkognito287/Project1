@@ -416,7 +416,10 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         myFunctions.saveBitmap(
             MySingleton.image!![MySingleton.currentPage - 1]!!,
             MySingleton.arrayListOfBundlesOfDocuments!![0]!!.numberOfOrderField!!,
-            MySingleton.currentPage
+            MySingleton.currentPage,
+            MySingleton.status.size,
+            MySingleton.arrayListOfBundlesOfDocuments!![0]!!.documentFormatField[MySingleton.currentPage - 1]!!
+
         )
     }
     private fun submitImage() {

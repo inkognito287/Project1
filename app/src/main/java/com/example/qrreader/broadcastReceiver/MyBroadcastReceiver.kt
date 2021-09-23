@@ -60,25 +60,20 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 for (numberOfStatusField in 0 until document!!.status.size)
                     if (document.status[numberOfStatusField] == null)
                         count++
-                if (count == 0)
-                    for (x in 0 until document.status.size)
+
+
+                if (count == 0){
+                    var x=0
                         if (document.status[x] == "no")
                             if (myFunctions.imageRequest(document.documentFormatField.size,
-                                    myFunctions.getStringFromBitmap(
-                                        BitmapFactory.decodeFile(
-                                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + MySingleton.arrayListOfBundlesOfDocuments!![y]!!.numberOfOrderField!!.split(
-                                                "№"
-                                            )[1] + "page" + (x + 1).toString() + ".png"
-                                        )
-                                    )!!,
-                                    document.day[x]!! + " " + document.time!![x]!![0].toString() + document.time!![x]!![1].toString() + "-" + document.time!![x]!![3].toString() + document.time!![x]!![4].toString(),
                                     document.fullInformation!!,
                                     sharedPreferencesAddress,
                                     sharedPreferencesUser,
-                                    "BroadcastReciever"
-                                ) == "true"
+                                    "BroadcastReciever",
+                                    document
+                                ) != "exception"
                             ) {
-                                document.status[x] = "yes"
+                                document.status[0] = "yes"
                                 if (x == 0) {
                                     MySingleton.countUnsent.set(
                                         (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
@@ -89,7 +84,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                     } catch (e: Exception) {
                                     }
                                 }
-                            }
+                            }}
             }
 
             try {

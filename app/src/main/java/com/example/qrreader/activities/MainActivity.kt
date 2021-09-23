@@ -327,34 +327,32 @@ class MainActivity : AppCompatActivity() {
         val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
 
 
-        for (numberOfStatusField in 0 until item!!.status.size) {
-            if (myFunctions.imageRequest(item.documentFormatField.size,
-                    myFunctions.getStringFromBitmap(
-                        BitmapFactory.decodeFile(
-                            Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + item.numberOfOrderField!!.split(
-                                "№"
-                            )[1] + "page" + (numberOfStatusField + 1).toString() + ".png"
-                        )
-                    )!!,
-                    item.day[numberOfStatusField]!! + " " + item.time[numberOfStatusField]!![0].toString() + item.time[numberOfStatusField]!![1].toString() + "-" + item.time[numberOfStatusField]!![3].toString() + item.time[numberOfStatusField]!![4].toString(),
+       var numberOfStatusField =0
+            if (myFunctions.imageRequest(item!!.documentFormatField.size,
                     item.fullInformation!!,
                     sharedPreferencesAddress,
                     sharedPreferencesUser,
-                    "MainActivity"
-                ) == "true"
+                    "MainActivity",
+                    item
+                ) != "exception"
             ) {
-                item.status[numberOfStatusField] = "yes"
+
+                item.status[0] = "yes"
+            }
+
+        var countOfSent = 0
+        if (item != null) {
+            for (status in item.status) {
+                if (status == "yes")
+                    countOfSent++
             }
         }
-        var countOfSent = 0
-        for (status in item.status) {
-            if (status == "yes")
-                countOfSent++
+        if (item != null) {
+            if (countOfSent == item.status.size)
+                MySingleton.countUnsent.set(
+                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                )
         }
-        if (countOfSent == item.status.size)
-            MySingleton.countUnsent.set(
-                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-            )
 
         runOnUiThread {
 
