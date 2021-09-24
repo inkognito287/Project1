@@ -72,6 +72,7 @@ class HistoryFragment : Fragment()
         Log.d("MyLog", "OnViewCreated")
         //binding.progressBar2.visibility = View.VISIBLE
         var myAdapter = CustomRecyclerAdapter(requireContext(), this)
+
         binding.recyclerView.adapter = myAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 

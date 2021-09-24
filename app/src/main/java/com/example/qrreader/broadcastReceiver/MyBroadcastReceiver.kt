@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Environment
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Functions
@@ -47,6 +48,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun startSendImage(context: Context) {
 
 
@@ -79,7 +81,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                         (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
                                     )
                                     try {
-                                        (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+                                        //(context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
 
                                     } catch (e: Exception) {
                                     }
@@ -88,8 +90,10 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             }
 
             try {
-                (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+                (context as AppCompatActivity).runOnUiThread(){
+                (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()}
             } catch (e: Exception) {
+                Log.d("MyLog",e.toString())
             }
 
             try {

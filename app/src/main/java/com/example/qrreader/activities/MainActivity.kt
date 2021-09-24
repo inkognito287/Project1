@@ -2,6 +2,7 @@ package com.example.qrreader.activities
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -140,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             }
             myFragmentTransaction = MyFragmentTransaction(this)
             myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
-
+            //myBroadcastReceiver.
             runOnUiThread {
                 myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
                 binding.progressBarMainActivity.visibility = View.GONE
@@ -215,6 +216,7 @@ class MainActivity : AppCompatActivity() {
         myFragmentTransaction.fragmentTransactionReplace(data)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clearHistory(v: View) {
 
 
@@ -282,6 +284,7 @@ class MainActivity : AppCompatActivity() {
         else finish()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
@@ -321,6 +324,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun sendDocuments() = Thread {
 
 
@@ -419,6 +423,7 @@ class MainActivity : AppCompatActivity() {
         MySingleton.applicationIsActive = false
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         MySingleton.currentOrderNumber = "0"
@@ -428,8 +433,11 @@ class MainActivity : AppCompatActivity() {
                 myFunctions.saveJson()
             }.start()
             findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-
-
+            var countOfUnsentPacksOfDocuments=0
+            for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
+                if (element!!.status[0] == "no")
+                    countOfUnsentPacksOfDocuments++}
+                MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
         } catch (e: Exception) {
             Log.d("MyLog", e.toString())
         }

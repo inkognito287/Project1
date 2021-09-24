@@ -1,5 +1,6 @@
 package com.example.qrreader
 
+
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -116,15 +117,6 @@ class Functions(var context: Context) {
         val token = sharedPreferencesUser.getString("token", "")
         val url = sharedPreferencesAddress.getString("address", "")
         val client = Ssl().getUnsafeOkHttpClient()!!
-
-
-
-//
-//        var request = Request.Builder()
-//            .addHeader("Authorization", "Bearer " + token.toString())
-//            .url("$url/Account/image")
-//            .post(requestBody)
-//            .build();
         Log.d("MyLog","CODE="+code)
         var request2 = Request.Builder()
             .addHeader("Authorization", "Bearer " + token.toString())
@@ -167,27 +159,47 @@ class Functions(var context: Context) {
             }
             val requestBody2 = kek.build();
 
+            var requestBody4 =MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                //.addFormDataPart("id",responce.items?.get(0)?.id.toString())
+                .addFormDataPart("reason","")
+                .build()
 
             var request3 = Request.Builder()
                 .addHeader("Authorization", "Bearer " + token.toString())
                 .url("$url/Api/Attachment/{${responce.items?.get(0)?.id.toString()}}/?requestType=LEA")
                 .post(requestBody2)
                 .build();
+
+            var closeLeadRequest = Request.Builder()
+                .addHeader("Authorization", "Bearer " + token.toString())
+                .url("$url/api/lead/close/${responce.items?.get(0)?.id.toString()}")
+                .put(requestBody4)
+                .build()
+
+
             Log.d("MyLog", "$className Информация по id ")
 
             try {
-
-                return addInformationInDatabase(request3, client)
+                var response = addInformationInDatabase(request3, client)
+                if (response!="false")
+                {
+                    var c=closeLead(closeLeadRequest,client)
+                    Log.d("MyLog","closeLead"+c.toString())
+                    return response
+                }
 
             } catch (e: IOException) {
+                Log.d("MyLog","closeLeadEXCEpt"+e.toString())
                 return "exception"
 
             }
 
-
         }catch (e:Exception){
+            Log.d("MyLog","dontknow "+e.toString())
             return "exception"
         }
+        return "exception"
     }
 
     private fun getInformationFromCode(request: Request, client: OkHttpClient): String? {
@@ -211,6 +223,20 @@ class Functions(var context: Context) {
             Log.d("MyLog", "exception$e")
         }
         return "false"
+    }
+    private fun closeLead(request: Request, client: OkHttpClient): String? {
+
+
+        try {
+
+            val response: okhttp3.Response = client.newCall(request).execute()
+
+            return response.code.toString()+response.body?.string()
+        } catch (e: IOException) {
+            Log.d("MyLog", "exception$e")
+        }
+        return "false"
+
     }
 
     fun isNetworkAvailable(): Boolean {
@@ -248,20 +274,6 @@ class Functions(var context: Context) {
         writeToFile(str)
         Log.d("MyLog ", "savecompleted " + str)
     }
-
-    fun getStringFromBitmap(bitmapPicture: Bitmap): String? {
-        val COMPRESSION_QUALITY = 100
-        val encodedImage: String
-        val byteArrayBitmapStream = ByteArrayOutputStream()
-        bitmapPicture.compress(
-            Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
-            byteArrayBitmapStream
-        )
-        val b: ByteArray = byteArrayBitmapStream.toByteArray()
-        encodedImage = android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT)
-        return encodedImage
-    }
-
 
     fun showError(error: String) {
         var intent = Intent(context, Error::class.java)
