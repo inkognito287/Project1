@@ -1,10 +1,11 @@
-package com.example.qrreader
+package com.example.qrreader.recyclerAdapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.R
 import com.example.qrreader.singletones.MySingleton
 
 class recyclerImageResultAdapter(var Number:Int,var currentPage:Int,itemListener: OnItemListener): RecyclerView.Adapter<recyclerImageResultAdapter.MyViewHolder>() {

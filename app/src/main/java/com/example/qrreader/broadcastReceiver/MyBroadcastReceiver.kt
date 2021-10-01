@@ -57,7 +57,9 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
             for (y in MySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
                 val document = MySingleton.arrayListOfBundlesOfDocuments!![y]
-
+                var inf = document?.documentFormatField!![document.documentFormatField.size - 1]
+                var bool = false
+                bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
                 var count = 0
                 for (numberOfStatusField in 0 until document!!.status.size)
                     if (document.status[numberOfStatusField] == null)
@@ -72,7 +74,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                     sharedPreferencesAddress,
                                     sharedPreferencesUser,
                                     "BroadcastReciever",
-                                    document
+                                    document,bool
                                 ) != "exception"
                             ) {
                                 document.status[0] = "yes"
@@ -91,7 +93,15 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
             try {
                 (context as AppCompatActivity).runOnUiThread(){
-                (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()}
+                    try {
+
+
+                        var adapter =
+                            (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter
+                        if (adapter != null)
+                            adapter.notifyDataSetChanged()
+                    }catch (e:Exception){}
+                }
             } catch (e: Exception) {
                 Log.d("MyLog",e.toString())
             }

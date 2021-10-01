@@ -16,8 +16,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.qrreader.BarcodeAnalyzer
-import com.example.qrreader.BarcodeBitmapAnalyzer
+import com.example.qrreader.barcode.BarcodeAnalyzer
+import com.example.qrreader.barcode.BarcodeBitmapAnalyzer
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityImageBinding
@@ -176,7 +176,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         // Preview
         val preview = Preview.Builder().build()
-        preview.setSurfaceProvider(binding.preview.createSurfaceProvider())
+        preview.setSurfaceProvider(binding.preview.surfaceProvider)
 
         // Get screen metrics used to setup camera for full screen resolution
         val metrics = DisplayMetrics().also { binding.preview.display.getRealMetrics(it) }
@@ -185,7 +185,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         // ImageAnalysis
         val imageAnalyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
             .build()
             .apply {
                 setAnalyzer(cameraExecutor, BarcodeAnalyzer { result ->

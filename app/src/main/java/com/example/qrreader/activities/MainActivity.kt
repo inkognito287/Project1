@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun logout(v: View) {
-        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear().apply()
@@ -328,35 +328,36 @@ class MainActivity : AppCompatActivity() {
     private fun sendDocuments() = Thread {
 
 
+
+
         val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
+        var inf = item?.documentFormatField!![item.documentFormatField.size - 1]
+        var bool = false
+        bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
+        var numberOfStatusField = 0
+        if (myFunctions.imageRequest(
+                item.documentFormatField.size,
+                item.fullInformation!!,
+                sharedPreferencesAddress,
+                sharedPreferencesUser,
+                "MainActivity",
+                item,
+                bool
+            ) != "exception"
+        ) {
 
-
-       var numberOfStatusField =0
-            if (myFunctions.imageRequest(item!!.documentFormatField.size,
-                    item.fullInformation!!,
-                    sharedPreferencesAddress,
-                    sharedPreferencesUser,
-                    "MainActivity",
-                    item
-                ) != "exception"
-            ) {
-
-                item.status[0] = "yes"
-            }
+            item.status[0] = "yes"
+        }
 
         var countOfSent = 0
-        if (item != null) {
-            for (status in item.status) {
-                if (status == "yes")
-                    countOfSent++
-            }
+        for (status in item.status) {
+            if (status == "yes")
+                countOfSent++
         }
-        if (item != null) {
-            if (countOfSent == item.status.size)
-                MySingleton.countUnsent.set(
-                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                )
-        }
+        if (countOfSent == item.status.size)
+            MySingleton.countUnsent.set(
+                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+            )
 
         runOnUiThread {
 
@@ -433,11 +434,12 @@ class MainActivity : AppCompatActivity() {
                 myFunctions.saveJson()
             }.start()
             findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-            var countOfUnsentPacksOfDocuments=0
+            var countOfUnsentPacksOfDocuments = 0
             for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
                 if (element!!.status[0] == "no")
-                    countOfUnsentPacksOfDocuments++}
-                MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
+                    countOfUnsentPacksOfDocuments++
+            }
+            MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
         } catch (e: Exception) {
             Log.d("MyLog", e.toString())
         }

@@ -1,10 +1,11 @@
-package com.example.qrreader
+package com.example.qrreader.barcode
 
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.example.qrreader.data.ScanResult
 import com.google.mlkit.vision.barcode.Barcode
 
 

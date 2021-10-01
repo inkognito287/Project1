@@ -111,7 +111,7 @@
         </androidx.camera.view.PreviewView>
 
 
-        <com.example.qrreader.BarcodeOverlay
+        <com.example.qrreader.barcode.BarcodeOverlay
             android:id="@+id/barcode_overlay"
             android:layout_width="0dp"
             android:layout_height="0dp"

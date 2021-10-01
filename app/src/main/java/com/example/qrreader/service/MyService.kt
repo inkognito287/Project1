@@ -4,15 +4,13 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.os.Build
-import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.qrreader.Constants.CHANNEL_ID
-import com.example.qrreader.Constants.NOTIFICATION_ID
+import com.example.qrreader.constants.Constants.CHANNEL_ID
+import com.example.qrreader.constants.Constants.NOTIFICATION_ID
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.activities.MainActivity
@@ -45,7 +43,7 @@ class MyService : Service() {
             applicationContext.getSharedPreferences("user", Context.MODE_PRIVATE)!!
 
         timer = Timer()
-        var timeTask = object : TimerTask() {
+        val timeTask = object : TimerTask() {
             override fun run() {
                 try {
                     sendData()
@@ -77,16 +75,18 @@ class MyService : Service() {
                             if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
                                 count++
                         if(count==0){
-
+                            var inf = item?.documentFormatField!![item.documentFormatField.size - 1]
+                            var bool = false
+                            bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
                         var x=0
-                            if (item!!.status[x] == "no")
+                            if (item.status[x] == "no")
                                 if (myFunction.imageRequest(item.documentFormatField.size,
                                         item.fullInformation!!,
                                         sharedPreferencesAddress,
                                         sharedPreferencesUser,
                                         "MyService",
                                         item
-                                    ) != "exception"
+                                    ,bool) != "exception"
                                 ) {
 
                                     item.status[0] = "yes"

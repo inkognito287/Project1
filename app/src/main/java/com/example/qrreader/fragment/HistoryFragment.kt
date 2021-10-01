@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.qrreader.CustomRecyclerAdapter
+import com.example.qrreader.recyclerAdapter.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 
 import com.example.qrreader.MyFragmentTransaction
@@ -23,7 +23,7 @@ import java.io.OutputStreamWriter
 
 
 class HistoryFragment : Fragment()
-    ,CustomRecyclerAdapter.OnItemListener
+    , CustomRecyclerAdapter.OnItemListener
 {
 
 

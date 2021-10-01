@@ -1,4 +1,4 @@
-package com.example.qrreader
+package com.example.qrreader.recyclerAdapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qrreader.R
 import com.example.qrreader.singletones.MySingleton
 
 class CustomRecyclerAdapter(

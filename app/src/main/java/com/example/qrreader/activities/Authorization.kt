@@ -82,7 +82,7 @@ class Authorization : AppCompatActivity() {
 
         var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
-            URL("$url/Account/Token?login=$name&password=$password")
+            URL("$url/Account/SecondLogIn")
         binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
@@ -92,9 +92,8 @@ class Authorization : AppCompatActivity() {
                 val password = binding.editTextPassword.text.toString()
                 val client = Ssl().getUnsafeOkHttpClient()!!
                 val requestBody = MultipartBody.Builder()
-
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("name", name)
+                    .addFormDataPart("login", name)
                     .addFormDataPart("password", password)
                     .build();
 
@@ -114,9 +113,9 @@ class Authorization : AppCompatActivity() {
                 }
 
                 if ( responseBody != "invalid_grant") {
-                    var gson = Gson()
-                    var result = gson.fromJson(responseBody, User::class.java)
-                    var token = result.access_token
+                    val gson = Gson()
+                    val result = gson.fromJson(responseBody, User::class.java)
+                    val token = result.access_token
                     sharedPreferences.edit().putString("user", binding.editTextName.text.toString())
                         .putString("token", token)
                         .apply()

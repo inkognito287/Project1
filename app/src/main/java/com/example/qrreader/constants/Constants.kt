@@ -1,4 +1,4 @@
-package com.example.qrreader
+package com.example.qrreader.constants
 
 object   Constants {
 

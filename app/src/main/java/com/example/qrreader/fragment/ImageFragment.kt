@@ -12,12 +12,12 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
-//import com.example.qrreader.CustomRecyclerAdapter
+//import com.example.qrreader.recyclerAdapter.CustomRecyclerAdapter
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.databinding.FragmentImageBinding
 import com.example.qrreader.model.ItemForHistory
-import com.example.qrreader.recyclerImageResultAdapter
+import com.example.qrreader.recyclerAdapter.recyclerImageResultAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
@@ -87,10 +87,13 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                 numberOfOrder = "Заказ №${parts[2]}"
                 if (parts[3] == "OS")
                     documentFormat = "Бланк заказа, стр. ${parts[4]} из ${parts[5]}"
-                else if (parts[3] == "utd")
+                else if (parts[3] == "UT")
                     documentFormat = "УПД, стр. ${parts[4]} из ${parts[5]}"
-                else if (parts[3] == "inv")
+                else if (parts[3] == "CRO")
+                    documentFormat = "Приходной ордер, стр. ${parts[4]} из ${parts[5]}"
+                else if (parts[3] == "IN")
                     documentFormat = "Счёт-фактура, стр. ${parts[4]} из ${parts[5]}"
+
             } else {
                 numberOfOrder = "Неизвестный документ "
                 documentFormat = ""
@@ -414,7 +417,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
     private  fun smartSaveBitmap(){
         myFunctions.saveBitmap(
-            MySingleton.image!![MySingleton.currentPage - 1]!!,
+            MySingleton.image[MySingleton.currentPage - 1]!!,
             MySingleton.arrayListOfBundlesOfDocuments!![0]!!.numberOfOrderField!!,
             MySingleton.currentPage,
             MySingleton.status.size,

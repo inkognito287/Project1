@@ -21,6 +21,7 @@ import com.example.qrreader.sslAllTrusted.Ssl
 import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.*
 
 
@@ -63,7 +64,6 @@ class Functions(var context: Context) {
     }
 
     fun notAllSent(): Boolean {
-        var unsentCount = 0
         for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
             var count = 0
             for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size)
@@ -91,7 +91,7 @@ class Functions(var context: Context) {
         //documentFormatField="Бланк заказа, стр. 1 из 1"
         var numb = numberOfOrder.split("№")[1]
         var type = documentFormatField.split(",")[0]
-        type=type.replace(" ","-")
+        type = type.replace(" ", "-")
         val stream: FileOutputStream = FileOutputStream(
             File(
                 Environment.getExternalStorageDirectory().absolutePath.toString() + "/",
@@ -109,16 +109,17 @@ class Functions(var context: Context) {
         code: String,
         sharedPreferencesAddress: SharedPreferences,
         sharedPreferencesUser: SharedPreferences,
-        className :String,
-        item:ItemForHistory?
+        className: String,
+        item: ItemForHistory?,
+        bool: Boolean
     ): String? {
-        var listOfFiles:ArrayList<File> = ArrayList()
+        var listOfFiles: ArrayList<File> = ArrayList()
 
         val token = sharedPreferencesUser.getString("token", "")
         val url = sharedPreferencesAddress.getString("address", "")
         val client = Ssl().getUnsafeOkHttpClient()!!
-        Log.d("MyLog","CODE="+code)
-        var request2 = Request.Builder()
+        Log.d("MyLog", "CODE=" + code)
+        var informationFromCodeRequest = Request.Builder()
             .addHeader("Authorization", "Bearer " + token.toString())
             .url("$url/api/lead/?searchString=&status=&docNumber=${code.split("№")[1]}&dateFrom=&dateTo=&manager=&spam=&canceled=&pageSize=100&")
             .get()
@@ -126,77 +127,66 @@ class Functions(var context: Context) {
 
 
         try {
-            var a = getInformationFromCode(request2, client)!!
+            val a = getInformationFromCode(informationFromCodeRequest, client)!!
 
-            var gson = Gson()
-            var responce = gson.fromJson(a, DocumentInformation::class.java)
+            val gson = Gson()
+            val resultOfParsing = gson.fromJson(a, DocumentInformation::class.java)
 
             for (x in 1..numberOfPages) {
                 listOfFiles.add(
                     File(
                         Environment.getExternalStorageDirectory().absolutePath.toString() + "/",
-                         item!!.documentFormatField[0]!!.split(",")[0].replace(" ","-")+
-                                "-<"+
+                        item!!.documentFormatField[0]!!.split(",")[0].replace(" ", "-") +
+                                "-<" +
                                 code.split("№")[1] +
-                                ">-<"+
-                                 x+
-                                ">-<"+
-                                numberOfPages+
-                                ">"+
+                                ">-<" +
+                                x +
+                                ">-<" +
+                                numberOfPages +
+                                ">" +
                                 ".jpg"
                     )
                 )
             }
             //Бланк-заказа-<номер заказа>-<номер страницы>-<всего страниц>.jpg
-            val kek = MultipartBody.Builder()
+            val addIIDRequestBodyBuilder = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-            for (x in 0..numberOfPages - 1) {
-                kek.addFormDataPart(
+            for (x in 0 until numberOfPages) {
+                addIIDRequestBodyBuilder.addFormDataPart(
                     "files",
                     listOfFiles[x].name,
-                    RequestBody.create("image/jpg".toMediaTypeOrNull(), listOfFiles[x])
+                    listOfFiles[x].asRequestBody("image/jpg".toMediaTypeOrNull())
                 )
             }
-            val requestBody2 = kek.build();
+            val addInformationInDatabaseRequestBody = addIIDRequestBodyBuilder.build();
 
-            var requestBody4 =MultipartBody.Builder()
+            val closeLeadRequestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                //.addFormDataPart("id",responce.items?.get(0)?.id.toString())
-                .addFormDataPart("reason","")
+                .addFormDataPart("reason", "")
                 .build()
 
-            var request3 = Request.Builder()
+
+
+            val addInformationInDatabaseRequest = Request.Builder()
                 .addHeader("Authorization", "Bearer " + token.toString())
-                .url("$url/Api/Attachment/{${responce.items?.get(0)?.id.toString()}}/?requestType=LEA")
-                .post(requestBody2)
+                .url("$url/Api/Attachment/UploadLeadDocument/?documentId=${resultOfParsing.items?.get(0)?.id.toString()}&close=${bool}")
+                .post(addInformationInDatabaseRequestBody)
                 .build();
-
-            var closeLeadRequest = Request.Builder()
-                .addHeader("Authorization", "Bearer " + token.toString())
-                .url("$url/api/lead/close/${responce.items?.get(0)?.id.toString()}")
-                .put(requestBody4)
-                .build()
-
 
             Log.d("MyLog", "$className Информация по id ")
 
             try {
-                var response = addInformationInDatabase(request3, client)
-                if (response!="false")
-                {
-                    var c=closeLead(closeLeadRequest,client)
-                    Log.d("MyLog","closeLead"+c.toString())
-                    return response
-                }
+                var response = addInformationInDatabase(addInformationInDatabaseRequest, client)
+                return response
 
             } catch (e: IOException) {
-                Log.d("MyLog","closeLeadEXCEpt"+e.toString())
+                Log.d("MyLog", "closeLeadEXCEpt" + e.toString())
                 return "exception"
 
             }
 
-        }catch (e:Exception){
-            Log.d("MyLog","dontknow "+e.toString())
+        } catch (e: Exception) {
+            Log.d("MyLog", "dontknow " + e.toString())
             return "exception"
         }
         return "exception"
@@ -213,31 +203,19 @@ class Functions(var context: Context) {
         }
         return "false"
     }
+
     private fun addInformationInDatabase(request: Request, client: OkHttpClient): String? {
         try {
 
             val response: okhttp3.Response = client.newCall(request).execute()
 
-            return response.code.toString()+response.body?.string()
+            return response.code.toString() + response.body?.string()
         } catch (e: IOException) {
             Log.d("MyLog", "exception$e")
         }
         return "false"
     }
-    private fun closeLead(request: Request, client: OkHttpClient): String? {
 
-
-        try {
-
-            val response: okhttp3.Response = client.newCall(request).execute()
-
-            return response.code.toString()+response.body?.string()
-        } catch (e: IOException) {
-            Log.d("MyLog", "exception$e")
-        }
-        return "false"
-
-    }
 
     fun isNetworkAvailable(): Boolean {
         if (context == null) return false
@@ -276,7 +254,7 @@ class Functions(var context: Context) {
     }
 
     fun showError(error: String) {
-        var intent = Intent(context, Error::class.java)
+        val intent = Intent(context, Error::class.java)
         intent.putExtra("error", error)
         (context as AppCompatActivity).startActivity(intent)
     }

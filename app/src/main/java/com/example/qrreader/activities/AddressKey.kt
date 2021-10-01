@@ -50,7 +50,7 @@ class AddressKey : AppCompatActivity() {
                 outputStreamWriter.close()
             } catch (e: java.lang.Exception) {
             }
-            binding.enterDataButton.setOnClickListener() {
+            binding.enterDataButton.setOnClickListener {
 
 
                 if (!myFunctions.isNetworkAvailable())
@@ -72,7 +72,7 @@ class AddressKey : AppCompatActivity() {
 
                             val sslContext = SSLContext.getInstance("SSL")
                             sslContext.init(null, trustAllCerts, SecureRandom())
-                            var  sslSocketFactory: SSLSocketFactory = sslContext.getSocketFactory();
+                            val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
 
                             val builder:OkHttpClient. Builder = OkHttpClient.Builder()
 
@@ -80,25 +80,21 @@ class AddressKey : AppCompatActivity() {
                                 sslSocketFactory,
                                 trustAllCerts[0] as X509TrustManager
                             )
-                            builder.hostnameVerifier(object : HostnameVerifier {
-                                override fun verify(hostname: String?, session: SSLSession?): Boolean {
-                                    return true
-                                }
-                            })
+                            builder.hostnameVerifier { _, _ -> true }
 
-                            var client = Ssl().getUnsafeOkHttpClient()
+                            val client = Ssl().getUnsafeOkHttpClient()
 
 
                             val requestBody =  MultipartBody.Builder()
                                 .setType(MultipartBody.FORM)
                                 .addFormDataPart("password", key)
-                                .build();
+                                .build()
 
 
                             val request = Request.Builder()
-                                .url("$address/Account/test")
+                                .url("$address/Account/FirstLogIn")
                                 .post(requestBody)
-                                .build();
+                                .build()
 
                             responseBody = try {
                                 val response: Response = client!!.newCall(request).execute()
@@ -157,6 +153,7 @@ class AddressKey : AppCompatActivity() {
     private val trustAllCerts: Array<TrustManager> = arrayOf<TrustManager>(
         @SuppressLint("CustomX509TrustManager")
         object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
             @Throws(CertificateException::class)
             override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
             }
@@ -171,7 +168,7 @@ class AddressKey : AppCompatActivity() {
                 }
             }
 
-            override fun getAcceptedIssuers(): Array<X509Certificate?>? {
+            override fun getAcceptedIssuers(): Array<X509Certificate?> {
                 return arrayOf()
             }
 
