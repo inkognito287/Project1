@@ -5,31 +5,31 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qrreader.Pojo.Response
-import com.example.qrreader.fragment.array
-import com.example.qrreader.fragment.myAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Functions
-import com.example.qrreader.fragment.myAdapterUpdate
-import com.google.gson.Gson
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.IOException
-import java.lang.Exception
+import com.example.qrreader.R
+
+//import com.example.qrreader.fragment.myAdapter
+import com.example.qrreader.singletones.MySingleton
+import java.util.*
 
 
 class MyBroadcastReceiver : BroadcastReceiver() {
     lateinit var sharedPreferencesAddress: SharedPreferences
+    lateinit var sharedPreferencesUser: SharedPreferences
     lateinit var myFunctions: Functions
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver", "ServiceCast")
     override fun onReceive(context: Context?, intent: Intent?) {
         sharedPreferencesAddress = context?.getSharedPreferences("address", Context.MODE_PRIVATE)!!
-        myFunctions = Functions(context.applicationContext)
+        sharedPreferencesUser = context.getSharedPreferences("user", Context.MODE_PRIVATE)!!
+        myFunctions = Functions(context)
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wf = cm.activeNetwork
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
@@ -37,68 +37,80 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         if (wf != null) {
 
 
-           startSendImage(context.applicationContext)
+             startSendImage(context)
 
         } else
             if (activeNetwork == true) {
 
-
-                startSendImage(context.applicationContext)
+               startSendImage(context)
 
             }
     }
 
 
-    private fun startSendImage(context: Context){
-
-       var text = myFunctions.readToFile()
-        if (text!="")
-            try {
-                Thread {
-
-                    val gson = Gson()
-
-                    val result = gson.fromJson(text, Response::class.java)
+    @SuppressLint("NotifyDataSetChanged")
+    private fun startSendImage(context: Context) {
 
 
+        Thread {
 
-                    for (x in result.documents!!.size - 1 downTo 0) {
-                        val last = result.documents[x]
-                        if (last?.status == "no")
-                            if (myFunctions.imageRequest(
-                                    last.photo.toString(),
-                                    last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                                    last.documentFormatField!!,
-                                    sharedPreferencesAddress
-                                ) == "true"
+
+            for (y in MySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
+                val document = MySingleton.arrayListOfBundlesOfDocuments!![y]
+                var inf = document?.documentFormatField!![0]
+                var bool = false
+
+                bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
+                var count = 0
+                for (numberOfStatusField in 0 until document!!.status.size)
+                    if (document.status[numberOfStatusField] == null)
+                        count++
+
+
+                if (count == 0){
+                    var x=0
+                        if (document.status[x] == "no")
+                            if (myFunctions.imageRequest(document.documentFormatField.size,
+                                    document.fullInformation!!,
+                                    sharedPreferencesAddress,
+                                    sharedPreferencesUser,
+                                    "BroadcastReciever",
+                                    document,bool
+                                ) != "exception"
                             ) {
-                                result.documents[x]?.status = "yes"
-                                // array[x]!!.status = "yes"
+                                document.status[0] = "yes"
+                                MySingleton.countUnsent.set(
+                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                                )
+                            }}
+            }
 
-                            }
-                        array.clear()
-                        for (x in 0 until result.documents?.size!!)
-                            array.add(result.documents[x]!!)
-
-                        myAdapterUpdate = myAdapter
-                        myAdapterUpdate?.update()
-
-                        //myAdapter?.update()
+            try {
+                (context as AppCompatActivity).runOnUiThread(){
+                    try {
 
 
-                    }
+                        var adapter =
+                            (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter
+                        if (adapter != null)
+                            adapter.notifyDataSetChanged()
+                    }catch (e:Exception){}
+                }
+            } catch (e: Exception) {
+                Log.d("MyLog",e.toString())
+            }
 
-                    val resultEnd = gson.toJson(result)
-                    myFunctions.writeToFile(resultEnd)
+            try {
+                myFunctions.saveJson()
+            } catch (e: Exception) {
+            }
+        }.start()
 
-//                (context.applicationContext as AppCompatActivity).runOnUiThread {
-//                    myAdapterUpdate.update()
-//
-//                }
 
-                }.start()
-
-            }catch (e:Exception){}
     }
+
+}
+
+private fun Timer.schedule(function: () -> Unit, i: Int) {
 
 }

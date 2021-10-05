@@ -1,35 +1,41 @@
 package com.example.qrreader.activities
 
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
-import android.widget.AbsListView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.databinding.Observable
+import androidx.databinding.ObservableField
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.qrreader.fragment.*
+import com.example.qrreader.Functions
 import com.example.qrreader.MyFragmentTransaction
 import com.example.qrreader.R
 import com.example.qrreader.databinding.ActivityMainBinding
-import com.example.qrreader.Functions
-import com.example.qrreader.Pojo.DocumentsItem
+import com.example.qrreader.fragment.DataFragment
+import com.example.qrreader.fragment.HistoryFragment
+import com.example.qrreader.fragment.SettingFragment
+import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
+import com.example.qrreader.singletones.MySingleton
 import com.google.gson.Gson
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
-import java.lang.Exception
+import java.io.File
+import java.io.OutputStreamWriter
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,33 +44,127 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myBroadcastReceiver: com.example.qrreader.broadcastReceiver.MyBroadcastReceiver
     lateinit var text: String
     lateinit var binding: ActivityMainBinding
-    lateinit var sharedPreferences: SharedPreferences
+    lateinit var sharedPreferencesAddress: SharedPreferences
+    lateinit var sharedPreferencesUser: SharedPreferences
 
     lateinit var myFragmentTransaction: MyFragmentTransaction
     lateinit var myFunctions: Functions
-    //var kring : List<DocumentsItem?>? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPreferences = getSharedPreferences("address", Context.MODE_PRIVATE)
-        // kring= List<DocumentsItem>()
+
+        MySingleton.completedPages = ArrayList()
+
+        sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
+        sharedPreferencesUser = getSharedPreferences("user", Context.MODE_PRIVATE)
+
+        MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
+        MySingleton.countUnsent = ObservableField()
+        findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+
+        MySingleton.image = java.util.ArrayList()
+        MySingleton.title = java.util.ArrayList()
+        MySingleton.text = String()
+        MySingleton.image = java.util.ArrayList()
+        MySingleton.day = java.util.ArrayList()
+        MySingleton.time = java.util.ArrayList()
+        MySingleton.status = java.util.ArrayList()
 
 
-        array = ArrayList()
+        MySingleton.countUnsent.addOnPropertyChangedCallback(observableChangeCallback)
+
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            1
+        )
+
         myFunctions = Functions(applicationContext)
-        myFragmentTransaction = MyFragmentTransaction(this)
-        myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
-        val shardPreference = getSharedPreferences("user", Context.MODE_PRIVATE)
+        binding.progressBarMainActivity.visibility = View.VISIBLE
+        Thread {
+            MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
+            val gson = Gson()
 
-        // request()
-        val filter = IntentFilter().apply {
-            addAction("android.net.conn.CONNECTIVITY_CHANGE")
-            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
-        }
-        this.registerReceiver(myBroadcastReceiver, filter)
-        myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+            var textFromFile = myFunctions.readFromFile()
+
+            if (textFromFile != "" && textFromFile != "ERROR") {
+
+                try {
+                    val result =
+                        gson.fromJson(textFromFile, com.example.qrreader.pojo.Response2::class.java)
+
+                    for (element in result.response2!!)
+                        MySingleton.arrayListOfBundlesOfDocuments!!.add(
+                            ItemForHistory(
+                                element!!.documentFormatField as ArrayList<String?>,
+                                element.numberOfOrderField,
+                                element.day as ArrayList<String?>,
+                                element.time as ArrayList<String?>,
+                                element.status as ArrayList<String?>,
+                                element.fullInformation
+                            )
+                        )
+
+
+                } catch (e: Exception) {
+                    Log.d("MyLog", e.toString())
+                }
+            }
+
+            runOnUiThread {
+                var countOfUnsentPacksOfDocuments = 0
+
+                try {
+
+
+                    for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
+                        var notNull = 0
+                        for (fieldOfElement in element!!.day) {
+                            if (fieldOfElement != null)
+                                notNull++
+                        }
+                        if (notNull == element.day.size)
+
+                            if (element.status[0] == "no")
+                                countOfUnsentPacksOfDocuments++
+                    }
+
+                } catch (e: Exception) {
+                }
+                MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
+                binding.count = MySingleton.countUnsent
+            }
+            myFragmentTransaction = MyFragmentTransaction(this)
+            myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
+            //myBroadcastReceiver.
+            runOnUiThread {
+                myFragmentTransaction.fragmentTransactionReplace(HistoryFragment())
+                binding.progressBarMainActivity.visibility = View.GONE
+            }
+
+            val filter = IntentFilter().apply {
+                addAction("android.net.conn.CONNECTIVITY_CHANGE")
+                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            }
+            this.registerReceiver(myBroadcastReceiver, filter)
+        }.start()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == 1)
+            if (!isExternalPermissionGranted()) {
+                finish()
+            }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     fun history(v: View) {
@@ -72,40 +172,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun camera(v: View) {
+
         val intent = Intent(this, BarcodeScanActivity::class.java)
         resultLauncher.launch(intent)
 
     }
 
+    private fun isExternalPermissionGranted(): Boolean {
+        return (ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) ==
+                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) ==
+                PackageManager.PERMISSION_GRANTED)
+    }
 
     fun setting(v: View) {
 
         myFragmentTransaction.fragmentTransactionReplace(SettingFragment())
     }
 
-    fun finish(v: View) {
+    fun logout(v: View) {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear().apply()
+        finish()
         val intent = Intent(this, Authorization::class.java)
         startActivity(intent)
-        finish()
+
     }
 
     fun back(v: View) {
         onBackPressed()
     }
 
-    fun secure(v: View) {
-        myFragmentTransaction.fragmentTransactionReplace(SecureFragment())
-    }
 
     fun data(v: View) {
         val data = DataFragment()
         myFragmentTransaction.fragmentTransactionReplace(data)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clearHistory(v: View) {
+
 
         val builder = AlertDialog.Builder(this)
         builder
@@ -114,12 +227,26 @@ class MainActivity : AppCompatActivity() {
             .setIcon(R.drawable.clear_history)
             .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
-                myAdapterUpdate = myAdapter
-                if (myAdapter != null) {
+                MySingleton.countUnsent.set("0")
+                try {
+                    clear()
+                    findViewById<RecyclerView>(R.id.recycler_view).adapter!!.notifyDataSetChanged()
+                } catch (e: java.lang.Exception) {
 
-                    array.clear()
-                    myAdapterUpdate?.clear()
                 }
+                try {
+                    val dir =
+                        File(Environment.getExternalStorageDirectory().absolutePath)
+                    if (dir.isDirectory) {
+                        val children: Array<String> = dir.list()
+                        for (i in children.indices) {
+                            File(dir, children[i]).delete()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d("MyLog", e.toString())
+                }
+
             }
             .setNegativeButton("Отмена") { dialog, _ ->
                 dialog.dismiss()
@@ -133,6 +260,23 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun clear() {
+
+        try {
+            val outputStreamWriter = OutputStreamWriter(
+                openFileOutput(
+                    "single.json",
+                    MODE_PRIVATE
+                )
+            )
+            MySingleton.arrayListOfBundlesOfDocuments?.clear()
+            outputStreamWriter.write("")
+            outputStreamWriter.close()
+
+        } catch (e: Exception) {
+        }
+    }
+
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount != 1)
@@ -140,35 +284,38 @@ class MainActivity : AppCompatActivity() {
         else finish()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == 28) {
 
-                binding.button.isClickable=false
-                Thread() {
-                    val gson = Gson()
-                    val res =
-                        gson.fromJson(
-                            myFunctions.readToFile(),
-                            com.example.qrreader.Pojo.Response::class.java
-                        )
-                    array.clear()
-                    for (x in 0 until res.documents?.size!!)
-                        array.add(res.documents[x]!!)
+            if (result.resultCode == 3) {
+                MySingleton.pageclick = 0
 
+                Thread {
+
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.title = java.util.ArrayList()
+                    MySingleton.text = String()
+                    MySingleton.image = java.util.ArrayList()
+                    MySingleton.day = java.util.ArrayList()
+                    MySingleton.time = java.util.ArrayList()
+                    MySingleton.status = java.util.ArrayList()
+
+
+
+                    MySingleton.countUnsent.set(
+                        (MySingleton.countUnsent.get()!!.toInt() + 1).toString()
+                    )
                     runOnUiThread {
+                        try {
+                            findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+                        } catch (e: java.lang.Exception) {
+
+                        }
 
 
-                        myAdapter?.notifyDataSetChanged()
                     }
-//                       myAdapterUpdate= myAdapter
-//                       myAdapterUpdate.updateRecyclerView(array)
-//
-//
-//                   }
-
-                    deserialize()
-
+                    sendDocuments()
 
                 }.start()
 
@@ -177,73 +324,59 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-    private fun deserialize() {
-//        runOnUiThread {
-//            val gson = Gson()
-//            val res =
-//                gson.fromJson(
-//                    myFunctions.readToFile(),
-//                    com.example.qrreader.Pojo.Response::class.java
-//                )
-//            array?.clear()
-//            for (x in 0 until res.documents?.size!!)
-//                array.add(res.documents[x]!!)
-//            myAdapter?.notifyDataSetChanged()
-//
-//        }
+    @SuppressLint("NotifyDataSetChanged")
+    private fun sendDocuments() = Thread {
 
-        Thread {
-            val gson = Gson()
 
-            val result = gson.fromJson(
-                myFunctions.readToFile(),
-                com.example.qrreader.Pojo.Response::class.java
+
+
+        val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
+        var inf = item?.documentFormatField!![0]
+        var bool = false
+        bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
+        var numberOfStatusField = 0
+        if (myFunctions.imageRequest(
+                item.documentFormatField.size,
+                item.fullInformation!!,
+                sharedPreferencesAddress,
+                sharedPreferencesUser,
+                "MainActivity",
+                item,
+                bool
+            ) != "exception"
+        ) {
+            MySingleton.countUnsent.set(
+                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
+            item.status[0] = "yes"
+        }
 
-            val s = result.documents!!.size - 1
+//        var countOfSent = 0
+//        for (status in item.status) {
+//            if (status == "yes")
+//                countOfSent++
+//        }
+//        if (countOfSent == item.status.size)
+//            MySingleton.countUnsent.set(
+//                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+//            )
 
+        runOnUiThread {
 
-            val last = result.documents[s]
             try {
+                findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+            } catch (e: java.lang.Exception) {
 
-
-                if (last?.status == "no")
-                    if (myFunctions.imageRequest(
-                            last.photo.toString(),
-                            last.day!! + " " + last.time!![0].toString() + last.time!![1].toString() + "-" + last.time!![3].toString() + last.time!![4].toString(),
-                            last.numberOfOrderField!!,
-                            sharedPreferences
-                        ) == "true"
-                    ) {
-                        result.documents[s]!!.status = "yes"
-                        val resultEnd = gson.toJson(result)
-                        myFunctions.writeToFile(resultEnd)
-                        runOnUiThread {
-                            val gson = Gson()
-                            val res =
-                                gson.fromJson(
-                                    myFunctions.readToFile(),
-                                    com.example.qrreader.Pojo.Response::class.java
-                                )
-                            array?.clear()
-                            for (x in 0 until res.documents?.size!!)
-                                array.add(res.documents[x]!!)
-
-                            myAdapterUpdate = myAdapter
-                            myAdapterUpdate?.update()
-
-                        }
-                    }
-
-
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
-                }
             }
-            binding.button.isClickable=true
-        }.start()
-    }
+        }
+
+        try {
+            myFunctions.saveJson()
+        } catch (e: Exception) {
+            Log.d("MyLog", e.toString())
+        }
+
+    }.start()
 
     private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
 
@@ -251,8 +384,6 @@ class MainActivity : AppCompatActivity() {
 
 
         for (service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)) {
-
-
             if (myClass.name.equals(service.service.className)) {
 
                 return true
@@ -263,42 +394,63 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun checkStatus(): Boolean {
+    private var observableChangeCallback = object : Observable.OnPropertyChangedCallback() {
 
-
-        if (myAdapter != null) {
-            var s = 0
-            for (x in 0 until myAdapter!!.names1.size)
-                if (myAdapter!!.names1[x].status == "no")
-                    s++
-            if (s > 0)
-
-                return true
+        override fun onPropertyChanged(observable: Observable, i: Int) {
+            if (MySingleton.countUnsent.get() == "0")
+                runOnUiThread {
+                    findViewById<View>(R.id.counter_unsent).visibility = View.GONE
+                }
+            else if (MySingleton.countUnsent.get()!!.toInt() > 0)
+                runOnUiThread {
+                    findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
+                }
         }
-        return false
-
     }
 
     override fun onStop() {
-        super.onStop()
-        Log.d("life", "Stop")
-        Thread() {
-            if (checkStatus())
-                if (!isMyServiceRunning(MyService::class.java)) {
-                    startService(Intent(this, MyService::class.java))
-                }
+
+        Thread {
+
+            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive && myFunctions.notAllSent()) {
+                startService(Intent(this, MyService::class.java))
+            }
+
         }.start()
+        super.onStop()
     }
 
+
+    override fun onPause() {
+        super.onPause()
+        MySingleton.applicationIsActive = false
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
+        MySingleton.currentOrderNumber = "0"
+        MySingleton.dontGoOut = 0
+        try {
+            Thread {
+                myFunctions.saveJson()
+            }.start()
+            findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
+            var countOfUnsentPacksOfDocuments = 0
+            for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
+                if (element!!.status[0] == "no")
+                    countOfUnsentPacksOfDocuments++
+            }
+            MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
+        } catch (e: Exception) {
+            Log.d("MyLog", e.toString())
+        }
 
-        Log.d("life", "resume")
+        MySingleton.applicationIsActive = true
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }
     }
-
 
 }
 
