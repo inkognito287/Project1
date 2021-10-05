@@ -331,7 +331,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
-        var inf = item?.documentFormatField!![item.documentFormatField.size - 1]
+        var inf = item?.documentFormatField!![0]
         var bool = false
         bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
         var numberOfStatusField = 0
@@ -345,19 +345,21 @@ class MainActivity : AppCompatActivity() {
                 bool
             ) != "exception"
         ) {
-
-            item.status[0] = "yes"
-        }
-
-        var countOfSent = 0
-        for (status in item.status) {
-            if (status == "yes")
-                countOfSent++
-        }
-        if (countOfSent == item.status.size)
             MySingleton.countUnsent.set(
                 (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
+            item.status[0] = "yes"
+        }
+
+//        var countOfSent = 0
+//        for (status in item.status) {
+//            if (status == "yes")
+//                countOfSent++
+//        }
+//        if (countOfSent == item.status.size)
+//            MySingleton.countUnsent.set(
+//                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+//            )
 
         runOnUiThread {
 

@@ -75,7 +75,7 @@ class MyService : Service() {
                             if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
                                 count++
                         if(count==0){
-                            var inf = item?.documentFormatField!![item.documentFormatField.size - 1]
+                            var inf = item?.documentFormatField!![0]
                             var bool = false
                             bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
                         var x=0
@@ -90,14 +90,13 @@ class MyService : Service() {
                                 ) {
 
                                     item.status[0] = "yes"
+                                    MySingleton.countUnsent.set(     (MySingleton.countUnsent.get()!!.toInt() - 1).toString())
+
 
 
                                 }}
                     }
-                    var unsentItems = 0
-                    for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
-                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[0] == "no")
-                            unsentItems++
+                    var unsentItems = MySingleton.countUnsent.get()!!.toInt()
 
                     if (unsentItems == 0) {
                         timer.cancel()

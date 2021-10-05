@@ -147,11 +147,11 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
                     metCondition = true
                     //////////////////////////////////////////////////
-                     }
+                }
                 break
 
             }
-        if (!metCondition){
+        if (!metCondition) {
             MySingleton.image[numberOfPages.toInt() - 1] = saveImage
             MySingleton.title[numberOfPages.toInt() - 1] = documentFormat
             MySingleton.text = numberOfOrder
@@ -166,26 +166,32 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
             }
 
         MySingleton.completedPages[numberOfPages.toInt() - 1] = true
-        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
+        loop@ for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
             if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                 == MySingleton.text
             ) {
+                for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
+                    if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] != null && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i]!!.split(
+                            ","
+                        )[0] == documentFormat.split(",")[0]
+                    ) {
+                        if (allNumberOfPages.toInt() > MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
+                            MySingleton.completedPages[numberOfPages.toInt() - 1] = true
 
-                if (allNumberOfPages.toInt() > MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
-                    MySingleton.completedPages[numberOfPages.toInt() - 1] = true
+                        } else if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
+                            for (i in 0 until allNumberOfPages.toInt()) {
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] != null) {
+                                    MySingleton.completedPages[i] = true
 
-                } else if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size){
-                    for (i in 0 until allNumberOfPages.toInt()) {
-                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] != null) {
-                            MySingleton.completedPages[i] = true
+                                }
 
+
+                            }
                         }
+                        break@loop
 
-
-                }}
-                break
-
+                    }
             }
 
         var count = 0
@@ -199,76 +205,86 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
                 var checkThereIsAlreadyOne = false
 
-                for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
+         loop@  for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
                     if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
                         == MySingleton.text
                     ) {
-                        if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
-                            MySingleton.numberOfTheChangedItem = x
-                            for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
+                        for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
+                            if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] != null && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i]!!.split(
+                                    ","
+                                )[0] == documentFormat.split(",")[0]
+                            ){
 
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] =
-                                        MySingleton.title[i]
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField =
-                                        MySingleton.text
+                                if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
+                                    MySingleton.numberOfTheChangedItem = x
+                                    for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
 
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] = MySingleton.day[i]
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] = MySingleton.time[i]
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] =
-                                        MySingleton.status[i]
-                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation =
-                                        MySingleton.text
-                            }
-                            for (m in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status.size)
-                                MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[m] = "no"
-                            checkThereIsAlreadyOne = true
-                            Log.d(
-                                "MyLog",
-                                "currentpage = " + (MySingleton.currentPage - 1).toString()
-                            )
-                            smartSaveBitmap()
-                            MySingleton.newSession = true
-                            break
-                        } else {
-                            MySingleton.arrayListOfBundlesOfDocuments!!.removeAt(x)
-                            MySingleton.arrayListOfBundlesOfDocuments!!.add(
-                                x,
-                                ItemForHistory(
-                                    MySingleton.title,
-                                    MySingleton.text,
-                                    MySingleton.day,
-                                    MySingleton.time,
-                                    MySingleton.status,
-                                    MySingleton.text
-                                )
-                            )
-                            Log.d("MyLog", MySingleton.day.toString())
-                            smartSaveBitmap()
-                            checkThereIsAlreadyOne = true
-                            break
-                        }
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] =
+                                                MySingleton.title[i]
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField =
+                                                MySingleton.text
+
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] =
+                                                MySingleton.day[i]
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] =
+                                                MySingleton.time[i]
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] =
+                                                MySingleton.status[i]
+                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation == null)
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation =
+                                                MySingleton.text
+                                    }
+                                    for (m in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status.size)
+                                        MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[m] =
+                                            "no"
+                                    checkThereIsAlreadyOne = true
+                                    Log.d(
+                                        "MyLog",
+                                        "currentpage = " + (MySingleton.currentPage - 1).toString()
+                                    )
+                                    smartSaveBitmap()
+                                    MySingleton.newSession = true
+                                    break@loop
+                                } else {
+                                    MySingleton.arrayListOfBundlesOfDocuments!!.removeAt(x)
+                                    MySingleton.arrayListOfBundlesOfDocuments!!.add(
+                                        x,
+                                        ItemForHistory(
+                                            MySingleton.title,
+                                            MySingleton.text,
+                                            MySingleton.day,
+                                            MySingleton.time,
+                                            MySingleton.status,
+                                            MySingleton.text
+                                        )
+                                    )
+                                    Log.d("MyLog", MySingleton.day.toString())
+                                    smartSaveBitmap()
+                                    checkThereIsAlreadyOne = true
+                                    break
+                                }
                     }
-                if (!checkThereIsAlreadyOne&&MySingleton.newSession) {
+                    }
+                if (!checkThereIsAlreadyOne && MySingleton.newSession) {
 
-                        MySingleton.arrayListOfBundlesOfDocuments?.add(
-                            0,
-                            ItemForHistory(
-                                MySingleton.title,
-                                MySingleton.text,
-                                MySingleton.day,
-                                MySingleton.time,
-                                MySingleton.status,
-                                MySingleton.text
-                            )
+                    MySingleton.arrayListOfBundlesOfDocuments?.add(
+                        0,
+                        ItemForHistory(
+                            MySingleton.title,
+                            MySingleton.text,
+                            MySingleton.day,
+                            MySingleton.time,
+                            MySingleton.status,
+                            MySingleton.text
                         )
-                        smartSaveBitmap()
+                    )
+                    smartSaveBitmap()
                     MySingleton.newSession = true
                     MySingleton.image = java.util.ArrayList()
                     MySingleton.title = java.util.ArrayList()
@@ -277,20 +293,18 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     MySingleton.day = java.util.ArrayList()
                     MySingleton.time = java.util.ArrayList()
                     MySingleton.status = java.util.ArrayList()
-                } else if(!checkThereIsAlreadyOne&&!MySingleton.newSession){
+                } else if (!checkThereIsAlreadyOne && !MySingleton.newSession) {
 
 
-
-
-                        MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
-                            MySingleton.title,
-                            MySingleton.text,
-                            MySingleton.day,
-                            MySingleton.time,
-                            MySingleton.status,
-                            MySingleton.text
-                        )
-                          smartSaveBitmap()
+                    MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
+                        MySingleton.title,
+                        MySingleton.text,
+                        MySingleton.day,
+                        MySingleton.time,
+                        MySingleton.status,
+                        MySingleton.text
+                    )
+                    smartSaveBitmap()
                 }
                 submitImage()
                 MySingleton.newSession = true
@@ -320,7 +334,9 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                 for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
 
                     if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
-                        == MySingleton.text
+                        == MySingleton.text && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0]!!.split(
+                            ","
+                        )[0] == documentFormat.split(",")[0]
                     ) {
                         if (allNumberOfPages.toInt() == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
 
@@ -333,11 +349,14 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                                     MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField =
                                         MySingleton.text
                                 if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] = MySingleton.day[i]
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] =
+                                        MySingleton.day[i]
                                 if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] = MySingleton.time[i]
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time[i] =
+                                        MySingleton.time[i]
                                 if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[i] == null)
-                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] = "no"
+                                    MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[i] =
+                                        "no"
                                 if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation == null)
                                     MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation =
                                         MySingleton.text
@@ -365,24 +384,11 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                             break
                         }
                     }
-                if (MySingleton.newSession&&!checkThereIsAlreadyOne) {
+                if (MySingleton.newSession && !checkThereIsAlreadyOne) {
 
-                        MySingleton.arrayListOfBundlesOfDocuments?.add(
-                            0,
-                            ItemForHistory(
-                                MySingleton.title,
-                                MySingleton.text,
-                                MySingleton.day,
-                                MySingleton.time,
-                                MySingleton.status,
-                                MySingleton.text
-                            )
-                        )
-                        smartSaveBitmap()
-                    MySingleton.newSession = false
-                } else if (!MySingleton.newSession&&!checkThereIsAlreadyOne){
-
-                        MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
+                    MySingleton.arrayListOfBundlesOfDocuments?.add(
+                        0,
+                        ItemForHistory(
                             MySingleton.title,
                             MySingleton.text,
                             MySingleton.day,
@@ -390,14 +396,27 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                             MySingleton.status,
                             MySingleton.text
                         )
-                        smartSaveBitmap()
+                    )
+                    smartSaveBitmap()
+                    MySingleton.newSession = false
+                } else if (!MySingleton.newSession && !checkThereIsAlreadyOne) {
+
+                    MySingleton.arrayListOfBundlesOfDocuments!![0] = ItemForHistory(
+                        MySingleton.title,
+                        MySingleton.text,
+                        MySingleton.day,
+                        MySingleton.time,
+                        MySingleton.status,
+                        MySingleton.text
+                    )
+                    smartSaveBitmap()
 //                        myFunctions.saveBitmap(
 //                            MySingleton.image!![MySingleton.currentPage - 1]!!,
 //                            MySingleton.arrayList!![0]!!.numberOfOrderField!!,
 //                            MySingleton.currentPage
 //                        )
 
-                        MySingleton.newSession = false
+                    MySingleton.newSession = false
                 }
             }
         }
@@ -415,7 +434,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
         return binding.root
     }
 
-    private  fun smartSaveBitmap(){
+    private fun smartSaveBitmap() {
         myFunctions.saveBitmap(
             MySingleton.image[MySingleton.currentPage - 1]!!,
             MySingleton.arrayListOfBundlesOfDocuments!![0]!!.numberOfOrderField!!,
@@ -425,6 +444,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
 
         )
     }
+
     private fun submitImage() {
         binding.imageFragmentSubmit.isClickable = false
         binding.progressBar.visibility = View.VISIBLE

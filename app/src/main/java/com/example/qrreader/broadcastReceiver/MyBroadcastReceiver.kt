@@ -17,6 +17,7 @@ import com.example.qrreader.R
 
 //import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.singletones.MySingleton
+import java.util.*
 
 
 class MyBroadcastReceiver : BroadcastReceiver() {
@@ -36,13 +37,12 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         if (wf != null) {
 
 
-            startSendImage(context)
+             startSendImage(context)
 
         } else
             if (activeNetwork == true) {
 
-
-                startSendImage(context)
+               startSendImage(context)
 
             }
     }
@@ -57,8 +57,9 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
             for (y in MySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
                 val document = MySingleton.arrayListOfBundlesOfDocuments!![y]
-                var inf = document?.documentFormatField!![document.documentFormatField.size - 1]
+                var inf = document?.documentFormatField!![0]
                 var bool = false
+
                 bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
                 var count = 0
                 for (numberOfStatusField in 0 until document!!.status.size)
@@ -78,16 +79,9 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                 ) != "exception"
                             ) {
                                 document.status[0] = "yes"
-                                if (x == 0) {
-                                    MySingleton.countUnsent.set(
-                                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                                    )
-                                    try {
-                                        //(context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
-
-                                    } catch (e: Exception) {
-                                    }
-                                }
+                                MySingleton.countUnsent.set(
+                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                                )
                             }}
             }
 
@@ -114,5 +108,9 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 
     }
+
+}
+
+private fun Timer.schedule(function: () -> Unit, i: Int) {
 
 }

@@ -72,7 +72,7 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                     //0713/OS/1/1
                                     correctFormat = true
                                     thisOrderNumber = numberOfPages.split("/")[0]
-                                } else if ( numberOfPages.contains(number)
+                                } else if (numberOfPages.contains(number)
 //                                    numberOfPages.contains("https://static.giprint.ru/doc/$number/OS") ||
 //                                    numberOfPages.contains("https://static.giprint.ru/doc/$number/UT") ||
 //                                    numberOfPages.contains("https://static.giprint.ru/doc/$number/CRO") ||
@@ -113,22 +113,33 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                 }
                                 if (correctFormat) {
                                     //https://static.giprint.ru/doc/0848/OS/1/1
-                                        var partOfInf=information.replace("https://static.giprint.ru/doc/","").split("/")[1]
-                                        var typeOfDocument=if(partOfInf=="OS")"Бланк заказа" else if (partOfInf=="IN") "Счёт-фактура" else if (partOfInf=="UT") "Счёт-фактура" else if (partOfInf=="CRO") "приходной ордер" else ""
+                                    var partOfInf =
+                                        information.replace("https://static.giprint.ru/doc/", "")
+                                            .split("/")[1]
+                                    var typeOfDocument =
+                                        if (partOfInf == "OS") "Бланк заказа" else if (partOfInf == "IN") "Счёт-фактура" else if (partOfInf == "UT") "УПД" else if (partOfInf == "CRO") "Приходной ордер" else ""
                                     var count = 0
                                     var flag = false
                                     for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
                                         Log.d("MyLog", information.split("/")[4].split("/")[0])
+                                        var a =
+                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation
                                         if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField!!.split(
                                                 "№"
                                             )[1] == information.split(
                                                 "/"
-                                            )[4].split("/")[0] && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0]!!.split(",")[0]==typeOfDocument
+                                            )[4].split("/")[0]
+                                            && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0] != null
                                         ) {
+                                            for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
+                                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] != null && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i]!!.split(
+                                                        ","
+                                                    )[0] == typeOfDocument
+                                                ){
 
-                                            for (element in MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time)
-                                                if (element != null)
-                                                    count++
+                                                    for (element in MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time)
+                                                        if (element != null)
+                                                            count++
                                             if (count == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
                                                 myFunctions = Functions(context)
                                                 myFunctions.showError("Этот заказ уже укомплектован")
@@ -142,65 +153,66 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                             break
                                         }
                                     }
-
-
-                                    if (!flag) {
-
-
-                                        val bottomFragment = ImageFragment()
-                                        val bundle = Bundle()
-
-                                        bundle.putString("code", information)
-                                        bundle.putString("allNumberOfPages", allNumberOfPages)
-                                        bundle.putString("numberOfPages", numberOfPages)
-
-                                        bottomFragment.arguments = bundle
-                                        (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-                                            .replace(R.id.containerBottomSheet, bottomFragment)
-                                            .commit()
-
-                                        val bottomSheetBehaviour =
-                                            BottomSheetBehavior.from(
-                                                (context as AppCompatActivity).findViewById(
-                                                    R.id.containerBottomSheet
-                                                )
-                                            )
-
-                                        bottomSheetBehaviour.state =
-                                            BottomSheetBehavior.STATE_EXPANDED
-
-                                    }
                                 }
-                            }
-                        }
 
 
+                                if (!flag) {
 
 
+                                    val bottomFragment = ImageFragment()
+                                    val bundle = Bundle()
 
-                        when (valueType) {
+                                    bundle.putString("code", information)
+                                    bundle.putString("allNumberOfPages", allNumberOfPages)
+                                    bundle.putString("numberOfPages", numberOfPages)
 
-                            Barcode.TYPE_WIFI -> {
-                                val ssid = barcode.wifi!!.ssid
-                                val password = barcode.wifi!!.password
-                                val type = barcode.wifi!!.encryptionType
-                            }
-                            Barcode.TYPE_URL -> {
-                                val title = barcode.url!!.title
-                                val url = barcode.url!!.url
+                                    bottomFragment.arguments = bundle
+                                    (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                                        .replace(R.id.containerBottomSheet, bottomFragment)
+                                        .commit()
+
+                                    val bottomSheetBehaviour =
+                                        BottomSheetBehavior.from(
+                                            (context as AppCompatActivity).findViewById(
+                                                R.id.containerBottomSheet
+                                            )
+                                        )
+
+                                    bottomSheetBehaviour.state =
+                                        BottomSheetBehavior.STATE_EXPANDED
+
+                                }
                             }
                         }
                     }
 
-                }
-                .addOnFailureListener {
 
-                    myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
-                    (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
-                        true
+
+
+
+                    when (valueType) {
+
+                        Barcode.TYPE_WIFI -> {
+                            val ssid = barcode.wifi!!.ssid
+                            val password = barcode.wifi!!.password
+                            val type = barcode.wifi!!.encryptionType
+                        }
+                        Barcode.TYPE_URL -> {
+                            val title = barcode.url!!.title
+                            val url = barcode.url!!.url
+                        }
+                    }
                 }
-        }.start()
-    }
+
+        }
+            .addOnFailureListener {
+
+                myFunctions.showError("Ошибка распознавания qr кода, повторите попытку")
+                (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
+                    true
+            }
+    }.start()
+}
 
 
 }
