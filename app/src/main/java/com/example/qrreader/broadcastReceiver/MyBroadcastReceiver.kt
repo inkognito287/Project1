@@ -14,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qrreader.Functions
 import com.example.qrreader.R
+import com.example.qrreader.singletones.MySingleton
 
 //import com.example.qrreader.fragment.myAdapter
-import com.example.qrreader.singletones.MySingleton
 import java.util.*
 
 
@@ -24,12 +24,14 @@ class MyBroadcastReceiver : BroadcastReceiver() {
     lateinit var sharedPreferencesAddress: SharedPreferences
     lateinit var sharedPreferencesUser: SharedPreferences
     lateinit var myFunctions: Functions
+    lateinit var mySingleton:MySingleton
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver", "ServiceCast")
     override fun onReceive(context: Context?, intent: Intent?) {
         sharedPreferencesAddress = context?.getSharedPreferences("address", Context.MODE_PRIVATE)!!
         sharedPreferencesUser = context.getSharedPreferences("user", Context.MODE_PRIVATE)!!
         myFunctions = Functions(context)
+        mySingleton=MySingleton()
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wf = cm.activeNetwork
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
@@ -55,8 +57,8 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         Thread {
 
 
-            for (y in MySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
-                val document = MySingleton.arrayListOfBundlesOfDocuments!![y]
+            for (y in mySingleton.arrayListOfBundlesOfDocuments?.size!! - 1 downTo 0) {
+                val document = mySingleton.arrayListOfBundlesOfDocuments!![y]
                 var inf = document?.documentFormatField!![0]
                 var bool = false
 
@@ -79,8 +81,8 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                 ) != "exception"
                             ) {
                                 document.status[0] = "yes"
-                                MySingleton.countUnsent.set(
-                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                                mySingleton.countUnsent.set(
+                                    (mySingleton.countUnsent.get()!!.toInt() - 1).toString()
                                 )
                             }}
             }

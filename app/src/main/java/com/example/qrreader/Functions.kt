@@ -16,7 +16,6 @@ import com.example.qrreader.activities.Error
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.pojo.DocumentInformation
 import com.example.qrreader.singletones.MySingleton
-import com.example.qrreader.singletones.MySingleton.gson
 import com.example.qrreader.sslAllTrusted.Ssl
 import com.google.gson.Gson
 import okhttp3.*
@@ -26,7 +25,7 @@ import java.io.*
 
 
 class Functions(var context: Context) {
-
+        var mySingleton=MySingleton()
     fun readFromFile(): String {
 
         try {
@@ -64,13 +63,13 @@ class Functions(var context: Context) {
     }
 
     fun notAllSent(): Boolean {
-        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
+        for (x in 0 until mySingleton.arrayListOfBundlesOfDocuments!!.size) {
             var count = 0
-            for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size)
-                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[y] == null)
+            for (y in 0 until mySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size)
+                if (mySingleton.arrayListOfBundlesOfDocuments!![x]!!.day[y] == null)
                     count++
             if (count == 0) {
-                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[0] == "no")
+                if (mySingleton.arrayListOfBundlesOfDocuments!![x]!!.status[0] == "no")
                     return true
 
 
@@ -248,7 +247,7 @@ class Functions(var context: Context) {
 
     fun saveJson() {
 
-        var str = "{\"Response2\":" + gson.toJson(MySingleton.arrayListOfBundlesOfDocuments) + "}"
+        var str = "{\"Response2\":" + mySingleton.gson.toJson(mySingleton.arrayListOfBundlesOfDocuments) + "}"
         writeToFile(str)
         Log.d("MyLog ", "savecompleted " + str)
     }

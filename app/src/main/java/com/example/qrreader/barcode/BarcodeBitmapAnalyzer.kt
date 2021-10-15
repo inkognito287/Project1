@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Functions
 import com.example.qrreader.R
 import com.example.qrreader.fragment.ImageFragment
-//import com.example.qrreader.fragment.myAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.mlkit.vision.barcode.Barcode
@@ -19,6 +18,7 @@ import com.google.mlkit.vision.common.InputImage
 import java.lang.Exception
 
 class BarcodeBitmapAnalyzer(var context: Context) {
+    var mySingleton=MySingleton()
 
     fun scanBarcodes(bitmap: Bitmap, information: String) {
 
@@ -97,9 +97,9 @@ class BarcodeBitmapAnalyzer(var context: Context) {
 
                                 }
                             }
-                            if (thisOrderNumber != MySingleton.currentOrderNumber && MySingleton.currentOrderNumber != "0") {
+                            if (thisOrderNumber != mySingleton.currentOrderNumber && mySingleton.currentOrderNumber != "0") {
                                 Log.d("MyLog", thisOrderNumber.toString())
-                                Log.d("MyLog", MySingleton.currentOrderNumber.toString())
+                                Log.d("MyLog", mySingleton.currentOrderNumber.toString())
                                 myFunctions.showError("Документ не из этой серии")
                                 (context as AppCompatActivity).findViewById<Button>(R.id.button).isClickable =
                                     true
@@ -120,27 +120,27 @@ class BarcodeBitmapAnalyzer(var context: Context) {
                                         if (partOfInf == "OS") "Бланк заказа" else if (partOfInf == "IN") "Счёт-фактура" else if (partOfInf == "UT") "УПД" else if (partOfInf == "CRO") "Приходной ордер" else ""
                                     var count = 0
                                     var flag = false
-                                    for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
+                                    for (x in 0 until mySingleton.arrayListOfBundlesOfDocuments!!.size) {
                                         Log.d("MyLog", information.split("/")[4].split("/")[0])
                                         var a =
-                                            MySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation
-                                        if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField!!.split(
+                                            mySingleton.arrayListOfBundlesOfDocuments!![x]!!.fullInformation
+                                        if (mySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField!!.split(
                                                 "№"
                                             )[1] == information.split(
                                                 "/"
                                             )[4].split("/")[0]
-                                            && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0] != null
+                                            && mySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0] != null
                                         ) {
-                                            for (i in 0 until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
-                                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] != null && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i]!!.split(
+                                            for (i in 0 until mySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
+                                                if (mySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i] != null && mySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[i]!!.split(
                                                         ","
                                                     )[0] == typeOfDocument
                                                 ){
 
-                                                    for (element in MySingleton.arrayListOfBundlesOfDocuments!![x]!!.time)
+                                                    for (element in mySingleton.arrayListOfBundlesOfDocuments!![x]!!.time)
                                                         if (element != null)
                                                             count++
-                                            if (count == MySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
+                                            if (count == mySingleton.arrayListOfBundlesOfDocuments!![x]!!.day.size) {
                                                 myFunctions = Functions(context)
                                                 myFunctions.showError("Этот заказ уже укомплектован")
                                                 flag = true

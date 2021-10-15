@@ -13,7 +13,9 @@ import com.example.qrreader.R
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
 
+
 class Error : AppCompatActivity() {
+    var mySingleton = MySingleton()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.custom_dialog_error)
@@ -25,8 +27,8 @@ class Error : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        MySingleton.applicationIsActive = false
-        Log.d("MyLog","Error is active="+MySingleton.applicationIsActive)
+        mySingleton.applicationIsActive = false
+        Log.d("MyLog", "Error is active=" + mySingleton.applicationIsActive)
     }
 
     private fun isMyServiceRunning(myClass: Class<MyService>): Boolean {
@@ -49,7 +51,7 @@ class Error : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MySingleton.applicationIsActive = true
+        mySingleton.applicationIsActive = true
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }

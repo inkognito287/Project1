@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -33,6 +32,7 @@ import com.example.qrreader.fragment.SettingFragment
 import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.service.MyService
 import com.example.qrreader.singletones.MySingleton
+
 import com.google.gson.Gson
 import java.io.File
 import java.io.OutputStreamWriter
@@ -49,33 +49,33 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var myFragmentTransaction: MyFragmentTransaction
     lateinit var myFunctions: Functions
-
+    lateinit var mySingleton: MySingleton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        mySingleton= MySingleton()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MySingleton.completedPages = ArrayList()
+        mySingleton.completedPages = ArrayList()
 
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
         sharedPreferencesUser = getSharedPreferences("user", Context.MODE_PRIVATE)
 
-        MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
-        MySingleton.countUnsent = ObservableField()
+        mySingleton.arrayListOfBundlesOfDocuments = ArrayList()
+        mySingleton.countUnsent = ObservableField()
         findViewById<View>(R.id.counter_unsent).visibility = View.GONE
 
-        MySingleton.image = java.util.ArrayList()
-        MySingleton.title = java.util.ArrayList()
-        MySingleton.text = String()
-        MySingleton.image = java.util.ArrayList()
-        MySingleton.day = java.util.ArrayList()
-        MySingleton.time = java.util.ArrayList()
-        MySingleton.status = java.util.ArrayList()
+        mySingleton.image = java.util.ArrayList()
+        mySingleton.title = java.util.ArrayList()
+        mySingleton.text = String()
+        mySingleton.image = java.util.ArrayList()
+        mySingleton.day = java.util.ArrayList()
+        mySingleton.time = java.util.ArrayList()
+        mySingleton.status = java.util.ArrayList()
 
 
-        MySingleton.countUnsent.addOnPropertyChangedCallback(observableChangeCallback)
+        mySingleton.countUnsent.addOnPropertyChangedCallback(observableChangeCallback)
 
 
         ActivityCompat.requestPermissions(
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         myFunctions = Functions(applicationContext)
         binding.progressBarMainActivity.visibility = View.VISIBLE
         Thread {
-            MySingleton.arrayListOfBundlesOfDocuments = ArrayList()
+            mySingleton.arrayListOfBundlesOfDocuments = ArrayList()
             val gson = Gson()
 
             var textFromFile = myFunctions.readFromFile()
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                         gson.fromJson(textFromFile, com.example.qrreader.pojo.Response2::class.java)
 
                     for (element in result.response2!!)
-                        MySingleton.arrayListOfBundlesOfDocuments!!.add(
+                        mySingleton.arrayListOfBundlesOfDocuments!!.add(
                             ItemForHistory(
                                 element!!.documentFormatField as ArrayList<String?>,
                                 element.numberOfOrderField,
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                 try {
 
 
-                    for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
+                    for (element in mySingleton.arrayListOfBundlesOfDocuments!!) {
                         var notNull = 0
                         for (fieldOfElement in element!!.day) {
                             if (fieldOfElement != null)
@@ -136,8 +136,8 @@ class MainActivity : AppCompatActivity() {
 
                 } catch (e: Exception) {
                 }
-                MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
-                binding.count = MySingleton.countUnsent
+                mySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
+                binding.count = mySingleton.countUnsent
             }
             myFragmentTransaction = MyFragmentTransaction(this)
             myBroadcastReceiver = com.example.qrreader.broadcastReceiver.MyBroadcastReceiver()
@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
             .setIcon(R.drawable.clear_history)
             .setPositiveButton("Ок") { dialog, _ ->
                 dialog.cancel()
-                MySingleton.countUnsent.set("0")
+                mySingleton.countUnsent.set("0")
                 try {
                     clear()
                     findViewById<RecyclerView>(R.id.recycler_view).adapter!!.notifyDataSetChanged()
@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity() {
                     MODE_PRIVATE
                 )
             )
-            MySingleton.arrayListOfBundlesOfDocuments?.clear()
+            mySingleton.arrayListOfBundlesOfDocuments?.clear()
             outputStreamWriter.write("")
             outputStreamWriter.close()
 
@@ -289,22 +289,22 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
             if (result.resultCode == 3) {
-                MySingleton.pageclick = 0
+                mySingleton.pageclick = 0
 
                 Thread {
 
-                    MySingleton.image = java.util.ArrayList()
-                    MySingleton.title = java.util.ArrayList()
-                    MySingleton.text = String()
-                    MySingleton.image = java.util.ArrayList()
-                    MySingleton.day = java.util.ArrayList()
-                    MySingleton.time = java.util.ArrayList()
-                    MySingleton.status = java.util.ArrayList()
+                    mySingleton.image = java.util.ArrayList()
+                    mySingleton.title = java.util.ArrayList()
+                    mySingleton.text = String()
+                    mySingleton.image = java.util.ArrayList()
+                    mySingleton.day = java.util.ArrayList()
+                    mySingleton.time = java.util.ArrayList()
+                    mySingleton.status = java.util.ArrayList()
 
 
 
-                    MySingleton.countUnsent.set(
-                        (MySingleton.countUnsent.get()!!.toInt() + 1).toString()
+                    mySingleton.countUnsent.set(
+                        (mySingleton.countUnsent.get()!!.toInt() + 1).toString()
                     )
                     runOnUiThread {
                         try {
@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
+        val item = mySingleton.arrayListOfBundlesOfDocuments!![mySingleton.numberOfTheChangedItem]
         var inf = item?.documentFormatField!![0]
         var bool = false
         bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
@@ -345,8 +345,8 @@ class MainActivity : AppCompatActivity() {
                 bool
             ) != "exception"
         ) {
-            MySingleton.countUnsent.set(
-                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+            mySingleton.countUnsent.set(
+                (mySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
             item.status[0] = "yes"
         }
@@ -357,8 +357,8 @@ class MainActivity : AppCompatActivity() {
 //                countOfSent++
 //        }
 //        if (countOfSent == item.status.size)
-//            MySingleton.countUnsent.set(
-//                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+//            mySingleton.countUnsent.set(
+//                (mySingleton.countUnsent.get()!!.toInt() - 1).toString()
 //            )
 
         runOnUiThread {
@@ -397,11 +397,11 @@ class MainActivity : AppCompatActivity() {
     private var observableChangeCallback = object : Observable.OnPropertyChangedCallback() {
 
         override fun onPropertyChanged(observable: Observable, i: Int) {
-            if (MySingleton.countUnsent.get() == "0")
+            if (mySingleton.countUnsent.get() == "0")
                 runOnUiThread {
                     findViewById<View>(R.id.counter_unsent).visibility = View.GONE
                 }
-            else if (MySingleton.countUnsent.get()!!.toInt() > 0)
+            else if (mySingleton.countUnsent.get()!!.toInt() > 0)
                 runOnUiThread {
                     findViewById<View>(R.id.counter_unsent).visibility = View.VISIBLE
                 }
@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity() {
 
         Thread {
 
-            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive && myFunctions.notAllSent()) {
+            if (!isMyServiceRunning(MyService::class.java) && !mySingleton.applicationIsActive && myFunctions.notAllSent()) {
                 startService(Intent(this, MyService::class.java))
             }
 
@@ -423,30 +423,30 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        MySingleton.applicationIsActive = false
+        mySingleton.applicationIsActive = false
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
-        MySingleton.currentOrderNumber = "0"
-        MySingleton.dontGoOut = 0
+       mySingleton.currentOrderNumber = "0"
+        mySingleton.dontGoOut = 0
         try {
             Thread {
                 myFunctions.saveJson()
             }.start()
             findViewById<RecyclerView>(R.id.recycler_view).adapter?.notifyDataSetChanged()
             var countOfUnsentPacksOfDocuments = 0
-            for (element in MySingleton.arrayListOfBundlesOfDocuments!!) {
+            for (element in mySingleton.arrayListOfBundlesOfDocuments!!) {
                 if (element!!.status[0] == "no")
                     countOfUnsentPacksOfDocuments++
             }
-            MySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
+            mySingleton.countUnsent.set(countOfUnsentPacksOfDocuments.toString())
         } catch (e: Exception) {
             Log.d("MyLog", e.toString())
         }
 
-        MySingleton.applicationIsActive = true
+        mySingleton.applicationIsActive = true
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }

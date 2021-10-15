@@ -10,6 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qrreader.Functions
 import com.example.qrreader.databinding.ActivityAddressKeyBinding
+
 import com.example.qrreader.singletones.MySingleton
 import com.example.qrreader.sslAllTrusted.Ssl
 import okhttp3.MultipartBody
@@ -27,8 +28,10 @@ class AddressKey : AppCompatActivity() {
 
     lateinit var myFunctions: Functions
     lateinit var binding: ActivityAddressKeyBinding
+    lateinit var mySingleton:MySingleton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mySingleton=MySingleton()
         binding = ActivityAddressKeyBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val sharedPreference = getSharedPreferences("address", Context.MODE_PRIVATE)
@@ -107,7 +110,7 @@ class AddressKey : AppCompatActivity() {
                             }
                             when (responseBody) {
                                 "true" -> {
-                                    MySingleton.urlForParsing = binding.editTextTextAddress.text.toString()
+                                    mySingleton.urlForParsing = binding.editTextTextAddress.text.toString()
                                     sharedPreference.edit()
                                         .putString("key", binding.editTextTextKey.text.toString())
                                         .putString(

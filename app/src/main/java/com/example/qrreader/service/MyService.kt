@@ -26,7 +26,7 @@ class MyService : Service() {
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
-
+    var mySingleton=MySingleton()
     override fun onCreate() {
         super.onCreate()
 
@@ -68,11 +68,11 @@ class MyService : Service() {
                 try {
 
 
-                    for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
-                        val item = MySingleton.arrayListOfBundlesOfDocuments!![y]
+                    for (y in 0 until mySingleton.arrayListOfBundlesOfDocuments!!.size) {
+                        val item = mySingleton.arrayListOfBundlesOfDocuments!![y]
                         var count =0
                         for(z in 0 until item!!.status.size)
-                            if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
+                            if (mySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
                                 count++
                         if(count==0){
                             var inf = item?.documentFormatField!![0]
@@ -90,13 +90,13 @@ class MyService : Service() {
                                 ) {
 
                                     item.status[0] = "yes"
-                                    MySingleton.countUnsent.set(     (MySingleton.countUnsent.get()!!.toInt() - 1).toString())
+                                    mySingleton.countUnsent.set(     (mySingleton.countUnsent.get()!!.toInt() - 1).toString())
 
 
 
                                 }}
                     }
-                    var unsentItems = MySingleton.countUnsent.get()!!.toInt()
+                    var unsentItems = mySingleton.countUnsent.get()!!.toInt()
 
                     if (unsentItems == 0) {
                         timer.cancel()

@@ -39,22 +39,23 @@ class BarcodeScanActivity : AppCompatActivity() {
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-
+    lateinit var mySingleton:MySingleton
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        mySingleton= MySingleton()
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         myFunctions = Functions(this)
         code = "не найден"
         binding.button.setOnClickListener {
-            MySingleton.dontGoOut = 0
+            mySingleton.dontGoOut = 0
             binding.button.isClickable = false
             //  if (code != "не найден") {
-            MySingleton.temporaryImage = findViewById<PreviewView>(R.id.preview)?.bitmap!!
+            mySingleton.temporaryImage = findViewById<PreviewView>(R.id.preview)?.bitmap!!
 
             val barcodeBitmapAnalyzer = BarcodeBitmapAnalyzer(this)
-            barcodeBitmapAnalyzer.scanBarcodes(MySingleton.temporaryImage, code)
+            barcodeBitmapAnalyzer.scanBarcodes(mySingleton.temporaryImage, code)
 
 
         }
@@ -83,54 +84,56 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val bottomSheetBehaviour = BottomSheetBehavior.from(findViewById(R.id.containerBottomSheet))
-        if ((bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) && MySingleton.dontGoOut == 0) {
-            MySingleton.completedPages.clear()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.title = java.util.ArrayList()
-            MySingleton.text = String()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.day = java.util.ArrayList()
-            MySingleton.time = java.util.ArrayList()
-            MySingleton.status = java.util.ArrayList()
-            MySingleton.text = String()
-            MySingleton.newSession = true
-            super.onBackPressed()
-        } else if (MySingleton.dontGoOut == 1) {
-            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
-            MySingleton.dontGoOut = 2
+        if ((bottomSheetBehaviour.state == 4 || bottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN) && mySingleton.dontGoOut == 0) {
 
-        } else if (MySingleton.dontGoOut == 2) {
+            mySingleton.completedPages.clear()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.title = java.util.ArrayList()
+            mySingleton.text = String()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.day = java.util.ArrayList()
+            mySingleton.time = java.util.ArrayList()
+            mySingleton.status = java.util.ArrayList()
+            mySingleton.text = String()
+            mySingleton.newSession = true
+
+            super.onBackPressed()
+        } else if (mySingleton.dontGoOut == 1) {
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            mySingleton.dontGoOut = 2
+
+        } else if (mySingleton.dontGoOut == 2) {
             finish()
-            MySingleton.completedPages.clear()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.title = java.util.ArrayList()
-            MySingleton.text = String()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.day = java.util.ArrayList()
-            MySingleton.time = java.util.ArrayList()
-            MySingleton.status = java.util.ArrayList()
-            MySingleton.text = String()
-            MySingleton.newSession = true
+            mySingleton.completedPages.clear()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.title = java.util.ArrayList()
+            mySingleton.text = String()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.day = java.util.ArrayList()
+            mySingleton.time = java.util.ArrayList()
+            mySingleton.status = java.util.ArrayList()
+            mySingleton.text = String()
+            mySingleton.newSession = true
         } else {
             bottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
-            MySingleton.dontGoOut = 0
+            mySingleton.dontGoOut = 0
             binding.button.isClickable = true
-            MySingleton.completedPages[MySingleton.currentPage - 1] = false
-            MySingleton.image[MySingleton.currentPage - 1] = null
-            MySingleton.title[MySingleton.currentPage - 1] = null
-            MySingleton.text = null
-            MySingleton.status[MySingleton.currentPage - 1] = null
-            MySingleton.day[MySingleton.currentPage - 1] = null
-            MySingleton.time[MySingleton.currentPage - 1] = null
-            MySingleton.completedPages = java.util.ArrayList()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.title = java.util.ArrayList()
-            MySingleton.text = String()
-            MySingleton.image = java.util.ArrayList()
-            MySingleton.day = java.util.ArrayList()
-            MySingleton.time = java.util.ArrayList()
-            MySingleton.status = java.util.ArrayList()
-            MySingleton.text = String()
+            mySingleton.completedPages[mySingleton.currentPage - 1] = false
+            mySingleton.image[mySingleton.currentPage - 1] = null
+            mySingleton.title[mySingleton.currentPage - 1] = null
+            mySingleton.text = null
+            mySingleton.status[mySingleton.currentPage - 1] = null
+            mySingleton.day[mySingleton.currentPage - 1] = null
+            mySingleton.time[mySingleton.currentPage - 1] = null
+            mySingleton.completedPages = java.util.ArrayList()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.title = java.util.ArrayList()
+            mySingleton.text = String()
+            mySingleton.image = java.util.ArrayList()
+            mySingleton.day = java.util.ArrayList()
+            mySingleton.time = java.util.ArrayList()
+            mySingleton.status = java.util.ArrayList()
+            mySingleton.text = String()
         }
     }
 
@@ -242,8 +245,8 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MySingleton.applicationIsActive = true
-        Log.d("MyLog", "Barcode is active=" + MySingleton.applicationIsActive)
+        mySingleton.applicationIsActive = true
+        Log.d("MyLog", "Barcode is active=" + mySingleton.applicationIsActive)
         if (isMyServiceRunning(MyService::class.java)) {
             stopService(Intent(this, MyService::class.java))
         }
@@ -252,8 +255,8 @@ class BarcodeScanActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        MySingleton.applicationIsActive = false
-        Log.d("MyLog", "Barcode is active=" + MySingleton.applicationIsActive)
+        mySingleton.applicationIsActive = false
+        Log.d("MyLog", "Barcode is active=" + mySingleton.applicationIsActive)
     }
 
     companion object {
@@ -266,7 +269,7 @@ class BarcodeScanActivity : AppCompatActivity() {
 
         Thread() {
 
-            if (!isMyServiceRunning(MyService::class.java) && !MySingleton.applicationIsActive && myFunctions.notAllSent()) {
+            if (!isMyServiceRunning(MyService::class.java) && !mySingleton.applicationIsActive && myFunctions.notAllSent()) {
                 startService(Intent(this, MyService::class.java))
             }
 

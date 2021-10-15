@@ -27,6 +27,7 @@ class Authorization : AppCompatActivity() {
     private lateinit var sharedPreferencesAddress: SharedPreferences
     lateinit var url: String
     lateinit var myFunctions: Functions
+    lateinit var mySingleton: MySingleton
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
 
@@ -34,7 +35,7 @@ class Authorization : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        mySingleton= MySingleton()
         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
         sharedPreferencesAddress = getSharedPreferences("address", Context.MODE_PRIVATE)
 
@@ -141,12 +142,12 @@ class Authorization : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MySingleton.applicationIsActive = true
+        mySingleton.applicationIsActive = true
 
     }
 
     override fun onPause() {
         super.onPause()
-        MySingleton.applicationIsActive = false
+        mySingleton.applicationIsActive = false
     }
 }

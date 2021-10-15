@@ -16,7 +16,7 @@ class CustomRecyclerAdapter(
     var context: Context, itemListener: OnItemListener
 ) :  RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
-
+     var mySingleton=MySingleton()
     private var mItemListener: OnItemListener = itemListener
 
     class MyViewHolder(itemView: View, onItemListener: OnItemListener) :
@@ -56,42 +56,42 @@ class CustomRecyclerAdapter(
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        if (MySingleton.arrayListOfBundlesOfDocuments!!.size != 0) {
+        if (mySingleton.arrayListOfBundlesOfDocuments!!.size != 0) {
             var pageCount = 0
             var remember = 0
-            for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField.size)
-                if (MySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField[x] != null) {
+            for (x in 0 until mySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField.size)
+                if (mySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField[x] != null) {
                     pageCount++
                     remember = x
                 }
             holder.documentFormatField?.text =
-                MySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField[remember]!!.split(
+                mySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField[remember]!!.split(
                     ","
-                )[0] + ", стр. " + pageCount + " из " + MySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField.size
+                )[0] + ", стр. " + pageCount + " из " + mySingleton.arrayListOfBundlesOfDocuments!![position]!!.documentFormatField.size
             holder.numberOfOrderField?.text =
-                MySingleton.arrayListOfBundlesOfDocuments!![position]!!.numberOfOrderField.toString()
-            holder.day.text = MySingleton.arrayListOfBundlesOfDocuments!![position]!!.day[remember]
+                mySingleton.arrayListOfBundlesOfDocuments!![position]!!.numberOfOrderField.toString()
+            holder.day.text = mySingleton.arrayListOfBundlesOfDocuments!![position]!!.day[remember]
             holder.time.text =
-                MySingleton.arrayListOfBundlesOfDocuments!![position]!!.time[remember]
+                mySingleton.arrayListOfBundlesOfDocuments!![position]!!.time[remember]
             Log.d(
                 "MyLog",
-                MySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0].toString()
+                mySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0].toString()
             )
             var check = false
-            for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!![position]!!.day.size)
-                if (MySingleton.arrayListOfBundlesOfDocuments!![position]!!.day[x] == null) {
+            for (x in 0 until mySingleton.arrayListOfBundlesOfDocuments!![position]!!.day.size)
+                if (mySingleton.arrayListOfBundlesOfDocuments!![position]!!.day[x] == null) {
                     holder.status.setImageResource(R.drawable.ic_uncomplete)
                     check = true
                     break
                 }
             if (!check)
-                if (MySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0] == "no") {
+                if (mySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0] == "no") {
                     holder.status.setImageResource(R.drawable.history_status_no)
 
-                } else if (MySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0] == "yes") {
+                } else if (mySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0] == "yes") {
                     Log.d(
                         "MyLog",
-                        "status" + MySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0].toString()
+                        "status" + mySingleton.arrayListOfBundlesOfDocuments!![position]!!.status[0].toString()
                     )
                     holder.status.setImageResource(R.drawable.ic_submite)
                 }
@@ -101,8 +101,9 @@ class CustomRecyclerAdapter(
 
     override fun getItemCount(): Int {
 
-
-        return MySingleton.arrayListOfBundlesOfDocuments!!.size
+        if(mySingleton.arrayListOfBundlesOfDocuments==null)
+            return 0
+        return mySingleton.arrayListOfBundlesOfDocuments!!.size
 
     }
 
