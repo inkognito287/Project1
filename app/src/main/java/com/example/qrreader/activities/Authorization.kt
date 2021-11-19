@@ -55,9 +55,7 @@ class Authorization : AppCompatActivity() {
 
                 if (!authorized)
                     request(
-                        url,
-                        binding.editTextPassword.text.toString(),
-                        binding.editTextName.text.toString()
+                        url
                     )
             }
 
@@ -77,7 +75,7 @@ class Authorization : AppCompatActivity() {
     }
 
 
-    private fun request(url: String, password: String, name: String) {
+    private fun request(url: String) {
         //https://giprinttest.corpitech.by:6080/connect/token
 
         var token = sharedPreferencesAddress.getString("token", "")
@@ -90,19 +88,20 @@ class Authorization : AppCompatActivity() {
                 var responseBody = ""
                 val name = binding.editTextName.text.toString()
                 val password = binding.editTextPassword.text.toString()
-                val client = Ssl().getUnsafeOkHttpClient()!!
+                //val client = Ssl().getUnsafeOkHttpClient()!!
+                val client = OkHttpClient();
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("login", name)
                     .addFormDataPart("password", password)
-                    .build();
+                    .build()
 
 
                 val request = Request.Builder()
                     .url(fullUrl)
                     .addHeader("token", token.toString())
                     .post(requestBody)
-                    .build();
+                    .build()
 
                 responseBody = try {
                     val response: Response = client.newCall(request).execute()
@@ -112,7 +111,7 @@ class Authorization : AppCompatActivity() {
                     "Сервер не отвечает"
                 }
 
-                if ( responseBody != "invalid_grant") {
+                if ( responseBody != "invalid_grant" && responseBody!="") {
                     val gson = Gson()
                     val result = gson.fromJson(responseBody, User::class.java)
                     val token = result.access_token
@@ -123,6 +122,7 @@ class Authorization : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
+
                     runOnUiThread {
                         myFunctions.showError("Неверные логин или пароль")
                     }
