@@ -27,6 +27,7 @@ class AddressKey : AppCompatActivity() {
 
     lateinit var myFunctions: Functions
     lateinit var binding: ActivityAddressKeyBinding
+    var secondUrl = MySingleton.secondUrl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddressKeyBinding.inflate(layoutInflater)
@@ -55,7 +56,7 @@ class AddressKey : AppCompatActivity() {
 
                 if (!myFunctions.isNetworkAvailable())
                     myFunctions.showError("Проверьте подключение к интернету")
-                else if (binding.editTextTextAddress.text.toString()==""||binding.editTextTextKey.text.toString()=="")
+                else if (binding.editTextTextAddress.text.toString() == "" || binding.editTextTextKey.text.toString() == "")
                     myFunctions.showError("Проверьте введённые данные")
                 else {
 
@@ -69,12 +70,11 @@ class AddressKey : AppCompatActivity() {
                             var responseBody = ""
 
 
-
                             val sslContext = SSLContext.getInstance("SSL")
                             sslContext.init(null, trustAllCerts, SecureRandom())
                             val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
 
-                            val builder:OkHttpClient. Builder = OkHttpClient.Builder()
+                            val builder: OkHttpClient.Builder = OkHttpClient.Builder()
 
                             builder.sslSocketFactory(
                                 sslSocketFactory,
@@ -85,13 +85,13 @@ class AddressKey : AppCompatActivity() {
                             val client = Ssl().getUnsafeOkHttpClient()
 
 
-                            val requestBody =  MultipartBody.Builder()
+                            val requestBody = MultipartBody.Builder()
                                 .setType(MultipartBody.FORM)
                                 .addFormDataPart("password", key)
                                 .build()
 
 
-                            val request = Request.Builder()
+                            var request = Request.Builder()
                                 .url("$address/Account/FirstLogIn")
                                 .post(requestBody)
                                 .build()
@@ -100,14 +100,31 @@ class AddressKey : AppCompatActivity() {
                                 val response: Response = client!!.newCall(request).execute()
                                 response.body?.string().toString()
                             } catch (e: Exception) {
-                               ""
+                                ""
                             }
+                            if (responseBody == "") {
+                                request = Request.Builder()
+                                    .url("$secondUrl/Account/FirstLogIn")
+                                    .post(requestBody)
+                                    .build()
+                                responseBody=try{
+                                    val response: Response = client!!.newCall(request).execute()
+                                    response.body?.string().toString()
+                                }
+                                catch (e: Exception){
+                                    ""
+                                }
+
+                            }
+
+
                             runOnUiThread {
                                 Log.d("MyLog", "RESPONCEBODY=" + responseBody)
                             }
                             when (responseBody) {
                                 "true" -> {
-                                    MySingleton.urlForParsing = binding.editTextTextAddress.text.toString()
+                                    MySingleton.urlForParsing =
+                                        binding.editTextTextAddress.text.toString()
                                     sharedPreference.edit()
                                         .putString("key", binding.editTextTextKey.text.toString())
                                         .putString(
@@ -142,7 +159,10 @@ class AddressKey : AppCompatActivity() {
                                 binding.progressBarFirst.visibility = View.GONE
                                 //"Неверный формат адреса, ожидался URL типа 'http' или 'https' "
                                 myFunctions.showError(e.toString())
-                                Log.d("MyError","Неверный формат адреса, ожидался URL типа 'http' или 'https' ")
+                                Log.d(
+                                    "MyError",
+                                    "Неверный формат адреса, ожидался URL типа 'http' или 'https' "
+                                )
                             }
                         }
                     }.start()
@@ -150,6 +170,7 @@ class AddressKey : AppCompatActivity() {
             }
         }
     }
+
     private val trustAllCerts: Array<TrustManager> = arrayOf<TrustManager>(
         @SuppressLint("CustomX509TrustManager")
         object : X509TrustManager {
@@ -171,7 +192,6 @@ class AddressKey : AppCompatActivity() {
             override fun getAcceptedIssuers(): Array<X509Certificate?> {
                 return arrayOf()
             }
-
 
 
         }

@@ -29,6 +29,7 @@ class Authorization : AppCompatActivity() {
     lateinit var myFunctions: Functions
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
+    var secondUrl = MySingleton.secondUrl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +98,7 @@ class Authorization : AppCompatActivity() {
                     .build()
 
 
-                val request = Request.Builder()
+                var request = Request.Builder()
                     .url(fullUrl)
                     .addHeader("token", token.toString())
                     .post(requestBody)
@@ -107,11 +108,23 @@ class Authorization : AppCompatActivity() {
                     val response: Response = client.newCall(request).execute()
                     response.body?.string().toString()
                 } catch (e: Exception) {
-
                     "Сервер не отвечает"
                 }
+                if (responseBody == "Сервер не отвечает") {
+                    request = Request.Builder()
+                        .url(secondUrl)
+                        .addHeader("token", token.toString())
+                        .post(requestBody)
+                        .build()
+                    responseBody = try {
+                        val response: Response = client.newCall(request).execute()
+                        response.body?.string().toString()
+                    } catch (e: Exception) {
+                        "Сервер не отвечает"
+                    }
+                }
 
-                if ( responseBody != "invalid_grant" && responseBody!="") {
+                if (responseBody != "invalid_grant" && responseBody != "") {
                     val gson = Gson()
                     val result = gson.fromJson(responseBody, User::class.java)
                     val token = result.access_token
@@ -124,7 +137,10 @@ class Authorization : AppCompatActivity() {
                 } else {
 
                     runOnUiThread {
-                        myFunctions.showError("Неверные логин или пароль")
+                        if (responseBody == "")
+                            myFunctions.showError("Ошибка 400")
+                        else
+                            myFunctions.showError("Неверные логин или пароль")
                     }
 
                 }
