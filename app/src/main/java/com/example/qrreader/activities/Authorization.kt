@@ -29,7 +29,7 @@ class Authorization : AppCompatActivity() {
     lateinit var myFunctions: Functions
     var authorized = false
     private lateinit var binding: ActivityAuthorizationBinding
-    var secondUrl = MySingleton.secondUrl
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +82,7 @@ class Authorization : AppCompatActivity() {
         var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
             URL("$url/Account/SecondLogIn")
+        var secondUrl = ("${MySingleton.secondUrl}/Account/SecondLogIn")
         binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
@@ -90,7 +91,7 @@ class Authorization : AppCompatActivity() {
                 val name = binding.editTextName.text.toString()
                 val password = binding.editTextPassword.text.toString()
                 //val client = Ssl().getUnsafeOkHttpClient()!!
-                val client = OkHttpClient();
+                val client = Ssl().getUnsafeOkHttpClient()!!
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("login", name)

@@ -204,7 +204,7 @@ class Functions(var context: Context) {
     private fun getInformationFromCode(request: Request, client: OkHttpClient): String? {
         try {
             val response: okhttp3.Response = client.newCall(request).execute()
-
+            //var inf = response.body?.string()
             return response.body?.string()
         } catch (e: IOException) {
             Log.d("MyLog", "exception$e")

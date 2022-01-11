@@ -28,6 +28,6 @@ object MySingleton {
     var dontGoOut = 0
     var currentOrderNumber = "0"
     var urlForParsing = ""
-    var secondUrl = "http://192.168.102.111:80"
+    var secondUrl = "https://192.168.102.211:6080"
 
 }
