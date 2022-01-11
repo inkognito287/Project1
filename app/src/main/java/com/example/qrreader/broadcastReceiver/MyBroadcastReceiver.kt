@@ -37,12 +37,12 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         if (wf != null) {
 
 
-             startSendImage(context)
+            startSendImage(context)
 
         } else
             if (activeNetwork == true) {
 
-               startSendImage(context)
+                startSendImage(context)
 
             }
     }
@@ -67,26 +67,43 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                         count++
 
 
-                if (count == 0){
-                    var x=0
-                        if (document.status[x] == "no")
-                            if (myFunctions.imageRequest(document.documentFormatField.size,
-                                    document.fullInformation!!,
-                                    sharedPreferencesAddress,
-                                    sharedPreferencesUser,
-                                    "BroadcastReciever",
-                                    document,bool
-                                ) != "exception"
-                            ) {
-                                document.status[0] = "yes"
-                                MySingleton.countUnsent.set(
-                                    (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-                                )
-                            }}
+                if (count == 0) {
+                    var x = 0
+                    if (document.status[x] == "no")
+                        if (myFunctions.imageRequest(
+                                document.documentFormatField.size,
+                                document.fullInformation!!,
+                                sharedPreferencesAddress,
+                                sharedPreferencesUser,
+                                "BroadcastReciever",
+                                document, bool,
+                                1
+                            ) != "exception"
+                        ) {
+                            document.status[0] = "yes"
+                            MySingleton.countUnsent.set(
+                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                            )
+                        } else if (myFunctions.imageRequest(
+                                document.documentFormatField.size,
+                                document.fullInformation!!,
+                                sharedPreferencesAddress,
+                                sharedPreferencesUser,
+                                "BroadcastReciever",
+                                document, bool,
+                                2
+                            ) != "exception"
+                        ) {
+                            document.status[0] = "yes"
+                            MySingleton.countUnsent.set(
+                                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                            )
+                        }
+                }
             }
 
             try {
-                (context as AppCompatActivity).runOnUiThread(){
+                (context as AppCompatActivity).runOnUiThread() {
                     try {
 
 
@@ -94,10 +111,11 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             (context as AppCompatActivity).findViewById<RecyclerView>(R.id.recycler_view).adapter
                         if (adapter != null)
                             adapter.notifyDataSetChanged()
-                    }catch (e:Exception){}
+                    } catch (e: Exception) {
+                    }
                 }
             } catch (e: Exception) {
-                Log.d("MyLog",e.toString())
+                Log.d("MyLog", e.toString())
             }
 
             try {

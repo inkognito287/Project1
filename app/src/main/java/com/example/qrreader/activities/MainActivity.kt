@@ -328,8 +328,6 @@ class MainActivity : AppCompatActivity() {
     private fun sendDocuments() = Thread {
 
 
-
-
         val item = MySingleton.arrayListOfBundlesOfDocuments!![MySingleton.numberOfTheChangedItem]
         var inf = item?.documentFormatField!![0]
         var bool = false
@@ -342,24 +340,31 @@ class MainActivity : AppCompatActivity() {
                 sharedPreferencesUser,
                 "MainActivity",
                 item,
-                bool
+                bool,
+                1
             ) != "exception"
         ) {
             MySingleton.countUnsent.set(
                 (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
             )
             item.status[0] = "yes"
-        }
+        } else if (myFunctions.imageRequest(
+                item.documentFormatField.size,
+                item.fullInformation!!,
+                sharedPreferencesAddress,
+                sharedPreferencesUser,
+                "MainActivity",
+                item,
+                bool,
+                2
+            ) != "exception"
+        ) {
+            MySingleton.countUnsent.set(
+                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+            )
+            item.status[0] = "yes"
 
-//        var countOfSent = 0
-//        for (status in item.status) {
-//            if (status == "yes")
-//                countOfSent++
-//        }
-//        if (countOfSent == item.status.size)
-//            MySingleton.countUnsent.set(
-//                (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
-//            )
+        }
 
         runOnUiThread {
 

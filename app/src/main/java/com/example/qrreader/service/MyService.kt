@@ -70,31 +70,53 @@ class MyService : Service() {
 
                     for (y in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size) {
                         val item = MySingleton.arrayListOfBundlesOfDocuments!![y]
-                        var count =0
-                        for(z in 0 until item!!.status.size)
-                            if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z]==null)
+                        var count = 0
+                        for (z in 0 until item!!.status.size)
+                            if (MySingleton.arrayListOfBundlesOfDocuments!![y]!!.status[z] == null)
                                 count++
-                        if(count==0){
+                        if (count == 0) {
                             var inf = item?.documentFormatField!![0]
                             var bool = false
-                            bool = inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
-                        var x=0
+                            bool =
+                                inf!!.split(",")[0] == "Бланк заказа" || inf.split(",")[0] == "УПД"
+                            var x = 0
                             if (item.status[x] == "no")
-                                if (myFunction.imageRequest(item.documentFormatField.size,
+                                if (myFunction.imageRequest(
+                                        item.documentFormatField.size,
                                         item.fullInformation!!,
                                         sharedPreferencesAddress,
                                         sharedPreferencesUser,
                                         "MyService",
-                                        item
-                                    ,bool) != "exception"
+                                        item, bool,
+                                        1
+                                    ) != "exception"
                                 ) {
 
                                     item.status[0] = "yes"
-                                    MySingleton.countUnsent.set(     (MySingleton.countUnsent.get()!!.toInt() - 1).toString())
+                                    MySingleton.countUnsent.set(
+                                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                                    )
 
 
+                                } else if (myFunction.imageRequest(
+                                        item.documentFormatField.size,
+                                        item.fullInformation!!,
+                                        sharedPreferencesAddress,
+                                        sharedPreferencesUser,
+                                        "MyService",
+                                        item, bool,
+                                        2
+                                    ) != "exception"
+                                ) {
 
-                                }}
+                                    item.status[0] = "yes"
+                                    MySingleton.countUnsent.set(
+                                        (MySingleton.countUnsent.get()!!.toInt() - 1).toString()
+                                    )
+
+
+                                }
+                        }
                     }
                     var unsentItems = MySingleton.countUnsent.get()!!.toInt()
 
@@ -112,7 +134,9 @@ class MyService : Service() {
                 try {
 
 
-                myFunction.saveJson()}catch (e:Exception){}
+                    myFunction.saveJson()
+                } catch (e: Exception) {
+                }
             }.start()
 
 

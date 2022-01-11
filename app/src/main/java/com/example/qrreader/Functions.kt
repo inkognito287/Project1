@@ -111,17 +111,21 @@ class Functions(var context: Context) {
         sharedPreferencesUser: SharedPreferences,
         className: String,
         item: ItemForHistory?,
-        bool: Boolean
+        bool: Boolean,
+        numOfUrl: Int
     ): String? {
         var listOfFiles: ArrayList<File> = ArrayList()
 
         val token = sharedPreferencesUser.getString("token", "")
-        val url = sharedPreferencesAddress.getString("address", "")
+        var url = ""
+        if (numOfUrl == 1)
+            url = sharedPreferencesAddress.getString("address", "").toString()
+        else if (numOfUrl == 2) url = MySingleton.secondUrl
         val client = Ssl().getUnsafeOkHttpClient()!!
         Log.d("MyLog", "CODE=" + code)
         var informationFromCodeRequest = Request.Builder()
             .addHeader("Authorization", "Bearer " + token.toString())
-            .url("$url/api/lead/?searchString=&status=&docNumber=${code.split("№")[1]}&dateFrom=&dateTo=&manager=&spam=&canceled=&pageSize=100&")
+            .url( "$url/api/lead/?searchString=&status=&docNumber=${code.split("№")[1]}&dateFrom=&dateTo=&manager=&spam=&canceled=&pageSize=100&")
             .get()
             .build();
 
@@ -166,10 +170,15 @@ class Functions(var context: Context) {
                 .build()
 
 
-
             val addInformationInDatabaseRequest = Request.Builder()
                 .addHeader("Authorization", "Bearer " + token.toString())
-                .url("$url/Api/Attachment/UploadLeadDocument/?documentId=${resultOfParsing.items?.get(0)?.id.toString()}&close=${bool}")
+                .url(
+                    "$url/Api/Attachment/UploadLeadDocument/?documentId=${
+                        resultOfParsing.items?.get(
+                            0
+                        )?.id.toString()
+                    }&close=${bool}"
+                )
                 .post(addInformationInDatabaseRequestBody)
                 .build();
 
