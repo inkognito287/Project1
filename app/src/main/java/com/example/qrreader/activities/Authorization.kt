@@ -41,6 +41,9 @@ class Authorization : AppCompatActivity() {
 
         myFunctions = Functions(this)
         url = sharedPreferencesAddress.getString("address", "").toString()
+        /////////////
+            //url = "https://giprinttest.corpitech.by:6080"
+        /////////////
         if (sharedPreferences.contains("user")) {
             val intent = Intent(this@Authorization, MainActivity::class.java)
             startActivity(intent)
@@ -75,14 +78,14 @@ class Authorization : AppCompatActivity() {
         }
     }
 
-
+//6070
     private fun request(url: String) {
         //https://giprinttest.corpitech.by:6080/connect/token
 
         var token = sharedPreferencesAddress.getString("token", "")
         val fullUrl =
-            URL("$url/Account/SecondLogIn")
-        var secondUrl = ("${MySingleton.secondUrl}/Account/SecondLogIn")
+            URL("${url}/Account/SecondLogIn")
+       // var secondUrl = ("${MySingleton.secondUrl}/Account/SecondLogIn")
         binding.progressBarSecond.visibility = View.VISIBLE
         Thread {
 
@@ -101,7 +104,6 @@ class Authorization : AppCompatActivity() {
 
                 var request = Request.Builder()
                     .url(fullUrl)
-                    .addHeader("token", token.toString())
                     .post(requestBody)
                     .build()
 
@@ -113,15 +115,14 @@ class Authorization : AppCompatActivity() {
                 }
                 if (responseBody == "Сервер не отвечает") {
                     request = Request.Builder()
-                        .url(secondUrl)
-                        .addHeader("token", token.toString())
+                        .url("https://192.168.1.15:6070/api/RedirectSecondLogIn")
                         .post(requestBody)
                         .build()
                     responseBody = try {
                         val response: Response = client.newCall(request).execute()
-                        response.body?.string().toString()
+                        response.body!!.string()
                     } catch (e: Exception) {
-                        "Сервер не отвечает"
+                        e.toString()
                     }
                 }
 

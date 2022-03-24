@@ -64,8 +64,8 @@ class AddressKey : AppCompatActivity() {
                     Thread {
 
                         try {
-                            val address = binding.editTextTextAddress.text.toString()
-
+                            var address = binding.editTextTextAddress.text.toString()
+                            if(address[address.length-1]=='/')  address=address.dropLast(1)
                             val key = binding.editTextTextKey.text.toString()
                             var responseBody = ""
 

@@ -1,10 +1,14 @@
-<vector android:height="42dp" android:viewportHeight="44"
+<vector xmlns:tools="http://schemas.android.com/tools"
+    android:height="42dp" android:viewportHeight="44"
     android:viewportWidth="44" android:width="42dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#00000000"
         android:pathData="M22,42C24.627,42.0034 27.2287,41.4876 29.6556,40.4823C32.0826,39.477 34.2869,38.002 36.142,36.142C38.002,34.2869 39.477,32.0826 40.4823,29.6556C41.4876,27.2287 42.0034,24.627 42,22C42.0034,19.3731 41.4876,16.7714 40.4823,14.3444C39.4769,11.9175 38.0019,9.7131 36.142,7.858C34.2869,5.998 32.0826,4.523 29.6556,3.5177C27.2287,2.5124 24.627,1.9966 22,2C19.3731,1.9967 16.7714,2.5125 14.3444,3.5178C11.9175,4.5231 9.7131,5.9981 7.858,7.858C5.9981,9.7131 4.5231,11.9175 3.5178,14.3444C2.5125,16.7714 1.9967,19.3731 2,22C1.9966,24.627 2.5124,27.2287 3.5177,29.6556C4.523,32.0826 5.998,34.2869 7.858,36.142C9.7131,38.0019 11.9175,39.4769 14.3444,40.4823C16.7714,41.4876 19.3731,42.0034 22,42V42Z"
-        android:strokeColor="@color/projectOrangeError" android:strokeLineJoin="round" android:strokeWidth="4"/>
-    <path android:fillColor="@color/projectOrangeError" android:fillType="evenOdd" android:pathData="M22,35C22.663,35 23.2989,34.7366 23.7678,34.2678C24.2366,33.7989 24.5,33.163 24.5,32.5C24.5,31.837 24.2366,31.2011 23.7678,30.7322C23.2989,30.2634 22.663,30 22,30C21.337,30 20.7011,30.2634 20.2322,30.7322C19.7634,31.2011 19.5,31.837 19.5,32.5C19.5,33.163 19.7634,33.7989 20.2322,34.2678C20.7011,34.7366 21.337,35 22,35V35Z"/>
+        android:strokeColor="#FF9800" android:strokeLineJoin="round" android:strokeWidth="4"
+        tools:ignore="VectorRaster" />
+    <path android:fillColor="#FF9800"  android:pathData="M22,35C22.663,35 23.2989,34.7366 23.7678,34.2678C24.2366,33.7989 24.5,33.163 24.5,32.5C24.5,31.837 24.2366,31.2011 23.7678,30.7322C23.2989,30.2634 22.663,30 22,30C21.337,30 20.7011,30.2634 20.2322,30.7322C19.7634,31.2011 19.5,31.837 19.5,32.5C19.5,33.163 19.7634,33.7989 20.2322,34.2678C20.7011,34.7366 21.337,35 22,35V35Z"
+        tools:ignore="VectorRaster" />
     <path android:fillColor="#00000000" android:pathData="M22,10V26"
-        android:strokeColor="@color/projectOrangeError" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="4"/>
+        android:strokeColor="#FF9800" android:strokeLineCap="round"
+        android:strokeLineJoin="round" android:strokeWidth="4"
+        tools:ignore="VectorRaster" />
 </vector>

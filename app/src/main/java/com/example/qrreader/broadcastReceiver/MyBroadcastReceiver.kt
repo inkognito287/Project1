@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +32,12 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         sharedPreferencesUser = context.getSharedPreferences("user", Context.MODE_PRIVATE)!!
         myFunctions = Functions(context)
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val wf = cm.activeNetwork
+        val wf = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cm.activeNetwork
+        } else {
+
+            TODO("VERSION.SDK_INT < M")
+        }
         val activeNetwork = cm.getNetworkCapabilities(cm.activeNetwork)
             ?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
         if (wf != null) {

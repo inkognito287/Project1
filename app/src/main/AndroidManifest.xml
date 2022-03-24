@@ -29,7 +29,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QRReader.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AddressKey">
+        <activity android:name=".activities.AddressKey"
+            android:exported="true">
 
 
             <intent-filter>

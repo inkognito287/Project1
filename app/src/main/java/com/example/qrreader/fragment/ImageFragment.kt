@@ -20,7 +20,6 @@ import com.example.qrreader.model.ItemForHistory
 import com.example.qrreader.recyclerAdapter.recyclerImageResultAdapter
 import com.example.qrreader.singletones.MySingleton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import java.lang.Error
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -335,11 +334,18 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                     activity?.findViewById<Button>(R.id.button)?.isClickable = true
 
                     var checkThereIsAlreadyOne = false
-
-                    for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size)
+                    var notNullTypeOfDocumentNumber: String="";
+                        for (x in 0 until MySingleton.arrayListOfBundlesOfDocuments!!.size){
+                            for (y in 0  until MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField.size)
+                            {
+                                if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[y]!=null)
+                                notNullTypeOfDocumentNumber = MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[y].toString()
+                                break
+                            }
+                    //поиск ненулевого значения
 
                         if (MySingleton.arrayListOfBundlesOfDocuments!![x]!!.numberOfOrderField
-                            == MySingleton.text && MySingleton.arrayListOfBundlesOfDocuments!![x]!!.documentFormatField[0]!!.split(
+                            == MySingleton.text && notNullTypeOfDocumentNumber.split(
                                 ","
                             )[0] == documentFormat.split(",")[0]
                         ) {
@@ -388,7 +394,7 @@ class ImageFragment : Fragment(), recyclerImageResultAdapter.OnItemListener {
                                 checkThereIsAlreadyOne = true
                                 break
                             }
-                        }
+                        }}
                     if (MySingleton.newSession && !checkThereIsAlreadyOne) {
 
                         MySingleton.arrayListOfBundlesOfDocuments?.add(
